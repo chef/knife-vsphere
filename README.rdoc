@@ -1,0 +1,61 @@
+= Knife vSphere
+
+= DESCRIPTION:
+
+This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently lists, clones, and deletes Virtual Machines and Templates; it will soon be able to apply run lists to vSphere-manged virtual machines,
+
+= INSTALLATION:
+
+    gem install knife-vsphere
+
+= CONFIGURATION:
+
+For initial development, the plugin targets all communication at a vCenter instance rather than at specific hosts. Only named user authentication is currently supported; you'll need to add the credentials to your <tt>knife.rb</tt> file:
+
+    knife[:vsphere_host] = "vcenter-hostname"
+    knife[:vsphere_user] = "privileged username"
+    knife[:vsphere_pass] = "your password"
+    knife[:vsphere_dc] = "your-datacenter"
+
+Environment variables and command-line credentials are not currently supported, but will be forthcoming soon. 
+
+= SUBCOMMANDS:
+
+This plugin provides the following Knife subcommands.  Specific command options can be found by invoking the subcommand with a <tt>--help</tt> flag
+
+== knife vsphere vm list
+
+Enumerates the Virtual Machines registered in the target datacenter. Only name is currently displayed.
+
+== knife vsphere template list
+
+Enumerates the VM Templates registered in the target datacenter. Only name is currently displayed.
+
+== knife vsphere vm clone --template <source template name> --vmname <new vm name> 
+
+Clones an existing VM template into a new VM instance.
+
+== knife vsphere vm delete --vmname <vm name>
+
+Unregisters an existing VM. Currently, it does not perform any datastore cleanup to remove VM files.
+
+= LICENSE:
+
+Author:: Ezra Pagel (<ezra@cpan.org>)
+Copyright:: Copyright (c) 2011 Ezra Pagel
+
+VMware vSphere is a trademark of VMware, Inc.
+
+License:: Apache License, Version 2.0
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
