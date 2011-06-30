@@ -34,16 +34,14 @@ class Chef
 
         dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
         dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-        vmFolder = dc.vmFolder
-        
-        vms = vmFolder.childEntity.grep(RbVmomi::VIM::VirtualMachine)
-        if (!vms.nil?)
-          templates = vms.find_all{ |v| !v.config.nil? && v.config.template == true }
-          if (!templates.nil?)
-            templates.each do |vm|          
-              puts "#{ui.color("Template Name", :cyan)}: #{vm.name}"
-            end
-          end
+                       
+        vmFolders = get_folders(dc.vmFolder)
+
+        vms = find_all_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine).
+          select {|v| !v.config.nil? && v.config.template == true }
+      
+        vms.each do |vm|          
+          puts "#{ui.color("Template Name", :cyan)}: #{vm.name}"
         end
       end
     end

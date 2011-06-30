@@ -44,16 +44,15 @@ class Chef
 
         dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
         dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-        vmFolder = dc.vmFolder
-        hosts = dc.hostFolder.children
+
+        hosts = find_all_in_folders(dc.hostFolder, RbVmomi::VIM::ComputeResource)
         rp = hosts.first.resourcePool
 
         template = config[:template] or abort "source template name required"
         vmname = config[:vmname] or abort "destination vm name required"
 
-        puts "searching for template #{template}"
-
-        src_vm = dc.find_vm(template) or abort "VM not found"
+        src_vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, template) or
+          abort "VM/Template not found"
 
         rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
         spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
@@ -66,6 +65,7 @@ class Chef
         puts "Finished creating virtual machine #{vmname}"
 
       end
+
     end
   end
 end

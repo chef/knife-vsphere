@@ -100,6 +100,26 @@ class Chef
         vim = RbVmomi::VIM.connect conn_opts
         return vim
       end
+
+      def get_folders(folder)
+        folder.childEntity.grep(RbVmomi::VIM::Folder) << folder
+      end
+
+      def find_all_in_folders(folder, type)
+        get_folders(folder).
+          collect { |f| f.childEntity.grep(type) }.
+          flatten
+      end
+
+      def find_in_folders(folder, type, name)
+        get_folders(folder).
+          collect { |f| f.childEntity.grep(type) }.
+          flatten.
+          find { |o| o.name == name }
+      end
+
+     
+
     end
   end
 end

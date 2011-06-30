@@ -1,5 +1,4 @@
-#
-# Author:: Ezra Pagel (<ezra@cpan.org>)
+#r# Author:: Ezra Pagel (<ezra@cpan.org>)
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +24,10 @@ class Chef
 
       get_common_options
       
+      option :folder,
+      :short => "-f SHOWFOLDER",
+      :long => "--folder",
+      :description => "The folder to list VMs in"
 
       def run
 
@@ -32,12 +35,20 @@ class Chef
         
         vim = get_vim_connection
 
+
         dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
         dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-        vmFolder = dc.vmFolder
-        
-        vmFolder.childEntity.grep(RbVmomi::VIM::VirtualMachine).each do |vm|          
-          puts "#{ui.color("VM Name", :cyan)}: #{vm.name}"
+                       
+        baseFolder = dc.vmFolder;
+
+        if config[:folder]
+          baseFolder = get_folders(dc.vmFolder).find { |f| f.name == config[:folder]} or
+            abort "no such folder #{config[:folder]}"
+        end
+
+        vms = find_all_in_folders(baseFolder, RbVmomi::VIM::VirtualMachine)      
+        vms.each do |vm|          
+          puts "#{ui.color("Template Name", :cyan)}: #{vm.name}"
         end
       end
     end

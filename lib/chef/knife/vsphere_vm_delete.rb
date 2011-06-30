@@ -22,6 +22,7 @@ class Chef
   class Knife
     class VsphereVmDelete < VsphereBaseCommand
 
+
       banner "knife vsphere vm delete (options)"
 
       get_common_options
@@ -42,7 +43,8 @@ class Chef
         dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
         dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
 
-        vm = dc.find_vm(vmname) or abort "VM not found"
+        vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+          abort "VM not found"
 
         vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
         vm.UnregisterVM
