@@ -1,0 +1,6 @@
+knife-vsphere changelog
+-----------------------
+
+0.1.3 * added support for listing customization specs, applying during cloning
+
+0.1.2 * support nested vm/host folders

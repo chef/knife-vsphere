@@ -36,6 +36,10 @@ class Chef
       :long => "--vmname VMNAME",
       :description => "The name for the new virtual machine"
 
+      option :customization_spec,
+      :long => "--cspec CUSTOMIZATION_SPEC",
+      :description => "The name of any customization specification to apply"
+
       def run
 
         $stdout.sync = true
@@ -55,9 +59,17 @@ class Chef
           abort "VM/Template not found"
 
         rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+
+  
         spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
                                                     :powerOn => false,
                                                     :template => false)
+
+        if config[:customization_spec]
+          cs = find_customization(vim, config[:customization_spec]) or
+            abort "failed to find customization specification named #{config[:customization_spec]}"
+          spec.customization = cs.spec
+        end
 
         task = src_vm.CloneVM_Task(:folder => src_vm.parent, :name => vmname, :spec => spec)
         puts "Cloning template #{template} to new VM #{vmname}"
@@ -65,6 +77,12 @@ class Chef
         puts "Finished creating virtual machine #{vmname}"
 
       end
+
+      def find_customization(vim, name) 
+        csm = vim.serviceContent.customizationSpecManager
+        csm.GetCustomizationSpec(:name => name) 
+      end
+
 
     end
   end

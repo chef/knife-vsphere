@@ -31,9 +31,13 @@ Enumerates the Virtual Machines registered in the target datacenter. Only name i
 
 Enumerates the VM Templates registered in the target datacenter. Only name is currently displayed.
 
-== knife vsphere vm clone --template <source template name> --vmname <new vm name> 
+== knife vsphere customization list
 
-Clones an existing VM template into a new VM instance.
+Enumerates the customization specifications registered in the target datacenter. Only name is currently displayed.
+
+== knife vsphere vm clone --template <source template name> --vmname <new vm name> --cspec <customization spec>
+
+Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.
 
 == knife vsphere vm delete --vmname <vm name>
 
