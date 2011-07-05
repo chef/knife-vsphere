@@ -44,11 +44,11 @@ class Chef
         dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
 
         vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
-          abort "VM not found"
+          abort "VM #{vmname} not found"
 
         vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
-        vm.UnregisterVM
-        puts "Finished unregistering virtual machine #{vmname}"
+        vm.Destroy_Task
+        puts "Deleted virtual machine #{vmname}"
 
       end
     end

@@ -55,21 +55,18 @@ class Chef
       :description => "The Datacenter to create the VM in"
       
       option :path,
-      :short => "-P SOAP_PATH",
       :long => "--path SOAP_PATH",
       :description => "The SOAP endpoint path",
       :proc => Proc.new { |p| Chef::Config[:knife][:path] = p },
       :default => "/sdk"
 
       option :port,
-      :short => "-p PORT",
       :long => "--port PORT",
       :description => "The VI SDK port number to use",
       :proc => Proc.new { |p| Chef::Config[:knife][:port] = p },
       :default => 443
 
       option :use_ssl,
-      :short => "-s USE_SSL",
       :long => "--ssl USE_SSL",
       :description => "Whether to use SSL connection",
       :default => true
