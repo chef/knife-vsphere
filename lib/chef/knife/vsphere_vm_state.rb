@@ -49,7 +49,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::VsphereBaseCommand
   
     $stdout.sync = true
 
-    vmname = config[:vmname] || "4NicTest" # or abort "destination vm name required"
+    vmname = config[:vmname] or abort "destination vm name required"
    
     vim = get_vim_connection
 
