@@ -2,48 +2,48 @@
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # License:: Apache License, Version 2.0
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 require 'chef/knife'
-require 'chef/knife/VsphereBaseCommand'
+require 'chef/knife/BaseVsphereCommand'
 require 'rbvmomi'
 require 'netaddr'
 
-class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
+# Clone an existing template into a new VM, optionally applying a customization specification.
+# 
+# usage:
+# knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+#     --cips 192.168.0.99/24,192.168.1.99/24 \
+#     --chostname NODENAME --cdomain NODEDOMAIN
+class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
-  banner "knife vsphere vm clone (options)"
+  banner "knife vsphere vm clone VMNAME TEMPLATE (options)"
 
   get_common_options
 
-  option :template,
-  :short => "-t TEMPLATE",
-  :long => "--template TEMPLATE",
-  :description => "The template to create the VM from"
-  
-  option :vmname,
-  :short => "-N VMNAME",
-  :long => "--vmname VMNAME",
-  :description => "The name for the new virtual machine"
-
   option :customization_spec,
-  :long => "--cspec CUSTOMIZATION_SPEC",
+  :long => "--cspec CUST_SPEC",
   :description => "The name of any customization specification to apply"
 
   option :customization_ips,
-  :long => "--cips CUSTOMIZATION_IPS",
-  :description => "A comma-delimited list of CIDR notation static IPs to be mapped in order for "+
-    "any applied customization specification that expects IP addresses"
+  :long => "--cips CUST_IPS",
+  :description => "Comma-delimited list of CIDR IPs for customization"
 
+  option :customization_hostname,
+  :long => "--chostname CUST_HOSTNAME",
+  :description => "Unqualified hostname for customization"
+ 
+  option :customization_domain,
+  :long => "--cdomain CUST_DOMAIN",
+  :description => "Domain name for customization"
+
+  option :customization_tz,
+  :long => "--ctz CUST_TIMEZONE",
+  :description => "Timezone invalid 'Area/Location' format"
+
+  option :power,  
+  :long => "--start STARTVM",
+  :description => "Indicates whether to start the VM after a successful clone",
+  :default => true
 
 
 
@@ -51,9 +51,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
   
     $stdout.sync = true
 
-    template = config[:template] or abort "source template name required"
-    vmname = config[:vmname] or abort "destination vm name required"
-    
+    vmname = @name_args[0]
+    if vmname.nil?
+      show_usage
+      fatal_exit("You must specify a virtual machine name")
+    end
+
+    template = @name_args[1]
+    if template.nil?
+      show_usage
+      fatal_exit("You must specify a template name")
+    end
+
     vim = get_vim_connection
 
     dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
@@ -74,10 +83,35 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
 
     if config[:customization_spec]
       csi = find_customization(vim, config[:customization_spec]) or
-        abort "failed to find customization specification named #{config[:customization_spec]}"
+        fatal_exit("failed to find customization specification named #{config[:customization_spec]}")
+
+      if csi.info.type != "Linux"
+        fatal_exit("Only Linux customization specifications are currently supported")
+      end
 
       if config[:customization_ips]
         csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
+      end
+
+      use_ident = !config[:customization_hostname].nil? || !config[:customization_domain].nil?
+
+      if use_ident
+        # TODO - verify that we're deploying a linux spec, at least warn
+        ident = RbVmomi::VIM.CustomizationLinuxPrep
+
+        if config[:customization_hostname]
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName
+          ident.hostName.name = config[:customization_hostname]
+        else
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName
+          ident.hostName.name = config[:customization_domain]
+        end
+        
+        if config[:customization_domain]
+          ident.domain = config[:customization_domain]
+        end
+        
+        csi.spec.identity = ident
       end
 
       clone_spec.customization = csi.spec
@@ -86,8 +120,17 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
 
     task = src_vm.CloneVM_Task(:folder => src_vm.parent, :name => vmname, :spec => clone_spec)
     puts "Cloning template #{template} to new VM #{vmname}"
-    task.wait_for_completion        
+    task.wait_for_completion
     puts "Finished creating virtual machine #{vmname}"
+    
+    if config[:power]
+      vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+      fatal_exit("VM #{vmname} not found")
+      vm.PowerOnVM_Task.wait_for_completion
+      puts "Powered on virtual machine #{vmname}"
+    end
+        
+    
   end
   
 
@@ -116,7 +159,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
       settings.subnetMask = cidr_ip.netmask_ext
 
       # TODO - want to confirm gw/ip are in same subnet?
-      if [gw.nil?]
+      if gw.nil?
         settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
       else
         gw_cidr = NetAddr::CIDR.create(gw)
@@ -127,7 +170,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::VsphereBaseCommand
     adapter_map = RbVmomi::VIM.CustomizationAdapterMapping
     adapter_map.adapter = settings
     adapter_map
-    #end
+   
   end
   
 end
