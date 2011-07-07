@@ -2,24 +2,14 @@
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # License:: Apache License, Version 2.0
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 require 'chef/knife'
 require 'rbvmomi'
 
+# Base class for vsphere knife commands
 class Chef
   class Knife
-    class VsphereBaseCommand < Knife
+    class BaseVsphereCommand < Knife
 
       deps do
         require 'chef/knife/bootstrap'
@@ -34,11 +24,6 @@ class Chef
 
       def self.get_common_options
 
-      option :host,
-      :short => "-H HOST",
-      :long => "--host HOST",
-      :description => "The host to create the VM on"
-      
       option :vsphere_user,
       :short => "-u USERNAME",
       :long => "--user USERNAME",
@@ -115,6 +100,10 @@ class Chef
           find { |o| o.name == name }
       end
 
+      def fatal_exit(msg)
+        ui.fatal(msg)
+        exit 1
+      end
      
 
     end
