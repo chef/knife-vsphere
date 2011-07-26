@@ -159,11 +159,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       settings.subnetMask = cidr_ip.netmask_ext
 
       # TODO - want to confirm gw/ip are in same subnet?
-      if gw.nil?
-        settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
-      else
-        gw_cidr = NetAddr::CIDR.create(gw)
-        settings.gateway = [gw_cidr.ip]
+      # Only set gateway on first IP.
+      if config[:customization_ips].split(',').first == ip      
+        if gw.nil?
+            settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
+        else
+          gw_cidr = NetAddr::CIDR.create(gw)
+          settings.gateway = [gw_cidr.ip]
+        end
       end
     end
     
