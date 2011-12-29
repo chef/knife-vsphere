@@ -26,11 +26,9 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
     
     vim = get_vim_connection
 
-    dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-    dc = vim.serviceInstance.find_datacenter(dcname) or
-      fatal_exit("datacenter not found")
+    baseFolder = find_folder(vim,config[:folder] || '');
 
-    vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
       fatal_exit("VM #{vmname} not found")
 
     vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"

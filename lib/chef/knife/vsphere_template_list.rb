@@ -20,12 +20,9 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-    
-    vmFolders = get_folders(dc.vmFolder)
+    baseFolder = find_folder(vim,config[:folder] || '');
 
-    vms = find_all_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine).
+    vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine).
       select {|v| !v.config.nil? && v.config.template == true }
     
     vms.each do |vm|          

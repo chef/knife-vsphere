@@ -20,6 +20,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   get_common_options
 
+	option :dest_folder,
+		:long => "--dest_folder FOLDER",
+		:description => "The folder into which to put the cloned VM"
+
   option :customization_spec,
   :long => "--cspec CUST_SPEC",
   :description => "The name of any customization specification to apply"
@@ -68,10 +72,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
     dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
 
-    hosts = find_all_in_folders(dc.hostFolder, RbVmomi::VIM::ComputeResource)
+    hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
     rp = hosts.first.resourcePool
 
-    src_vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, template) or
+    src_folder = find_folder(vim,config[:folder] || '');
+
+    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, vmname) or
       abort "VM/Template not found"
 
     rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
@@ -118,13 +124,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     end
 
-    task = src_vm.CloneVM_Task(:folder => src_vm.parent, :name => vmname, :spec => clone_spec)
+    dest_folder = find_folder(vim,config[:dest_folder] || config[:folder] || '');
+
+    task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
     puts "Cloning template #{template} to new VM #{vmname}"
     task.wait_for_completion
     puts "Finished creating virtual machine #{vmname}"
     
     if config[:power]
-      vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+      vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
       fatal_exit("VM #{vmname} not found")
       vm.PowerOnVM_Task.wait_for_completion
       puts "Powered on virtual machine #{vmname}"

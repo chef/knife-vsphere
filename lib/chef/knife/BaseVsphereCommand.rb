@@ -62,6 +62,11 @@ class Chef
       :description => "Determines whether SSL certificate verification is skipped",
       :default => true
       
+				option :folder,
+					:short => "-f FOLDER",
+					:long => "--folder FOLDER",
+					:description => "The folder to get VMs from"
+
       end
 
       def get_vim_connection
@@ -83,21 +88,25 @@ class Chef
         return vim
       end
 
-      def get_folders(folder)
-        folder.childEntity.grep(RbVmomi::VIM::Folder) << folder
+			def find_folder(vim,foldername)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				basefolder = dc.vmFolder
+				folderarray = foldername.split('/')
+				folderarray.each do |folderarritem|
+					if folderarritem != ''
+						basefolder = basefolder.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == folderarritem } or abort "no such folder #{foldername} while looking for #{folderarritem}"
+      end
+				end
+				basefolder
+			end
+
+			def find_all_in_folder(folder, type)
+				folder.childEntity.grep(type)
       end
 
-      def find_all_in_folders(folder, type)
-        get_folders(folder).
-          collect { |f| f.childEntity.grep(type) }.
-          flatten
-      end
-
-      def find_in_folders(folder, type, name)
-        get_folders(folder).
-          collect { |f| f.childEntity.grep(type) }.
-          flatten.
-          find { |o| o.name == name }
+			def find_in_folder(folder, type, name)
+				folder.childEntity.grep(type).find { |o| o.name == name }
       end
 
       def fatal_exit(msg)
@@ -105,7 +114,6 @@ class Chef
         exit 1
       end
      
-
     end
   end
 end

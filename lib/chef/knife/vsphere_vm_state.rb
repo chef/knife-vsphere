@@ -43,13 +43,9 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
    
     vim = get_vim_connection
 
-    dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    baseFolder = find_folder(vim,config[:folder] || '');
 
-    hosts = find_all_in_folders(dc.hostFolder, RbVmomi::VIM::ComputeResource)
-    rp = hosts.first.resourcePool
-
-    vm = find_in_folders(dc.vmFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
       abort "VM #{vmname} not found"
 
     state = vm.runtime.powerState
