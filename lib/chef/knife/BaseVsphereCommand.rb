@@ -116,6 +116,14 @@ class Chef
 				baseEntity
 			end
 
+			def find_datastore(dsName)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				baseEntity = dc.datastore
+				baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
+			end
+
+
 			def find_all_in_folder(folder, type)
 				folder.childEntity.grep(type)
 			end

@@ -24,6 +24,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--dest_folder FOLDER",
 		:description => "The folder into which to put the cloned VM"
 
+	option :resource_pool,
+		:long => "--resource_pool RESOURCE_POOL",
+		:description => "The resource pool into which to put the cloned VM",
+		:default => ''
+
   option :customization_spec,
   :long => "--cspec CUST_SPEC",
   :description => "The name of any customization specification to apply"
@@ -69,19 +74,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-
-    hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
-    rp = hosts.first.resourcePool
-
-    src_folder = find_folder(config[:folder]);
+    src_folder = find_folder(config[:folder])
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, vmname) or
       abort "VM/Template not found"
 
-    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(config[:resource_pool]))
 
+    if config[:datastore]
+      rspec.datastore = find_datastore(config[:datastore])
+    end
     
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
                                                       :powerOn => false,
