@@ -90,26 +90,30 @@ class Chef
 				return vim
 			end
 
-			def find_entity(baseEntity,entityName)
-				entityArray = entityName.split('/')
+			def find_folder(folderName)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				baseEntity = dc.vmFolder
+				entityArray = folderName.split('/')
 				entityArray.each do |entityArrItem|
 					if entityArrItem != ''
-						baseEntity = baseEntity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } or abort "no such entity #{entityName} while looking for #{entityArrItem}"
+						baseEntity = baseEntity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } or abort "no such folder #{folderName} while looking for #{entityArrItem}"
 					end
 				end
 				baseEntity
 			end
 
-			def find_folder(folderName)
-				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-				find_entity(dc.vmFolder,folderName)
-			end
-
 			def find_pool(poolName)
 				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
 				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-				find_entity(dc.hostFolder,poolName)
+				baseEntity = dc.hostFolder
+				entityArray = poolName.split('/')
+				entityArray.each do |entityArrItem|
+					if entityArrItem != ''
+						baseEntity = baseEntity.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+					end
+				end
+				baseEntity
 			end
 
 			def find_all_in_folder(folder, type)
