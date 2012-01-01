@@ -20,7 +20,7 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    baseFolder = find_folder(vim,config[:folder] || '');
+    baseFolder = find_folder(config[:folder]);
 
     vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine).
       select {|v| !v.config.nil? && v.config.template == true }

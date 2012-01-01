@@ -65,7 +65,8 @@ class Chef
 				option :folder,
 					:short => "-f FOLDER",
 					:long => "--folder FOLDER",
-					:description => "The folder to get VMs from"
+					:description => "The folder to get VMs from",
+					:default => ''
 
 			end
 
@@ -85,20 +86,30 @@ class Chef
 				#    opt :debug, "Log SOAP messages", :short => 'd', :default => (ENV['RBVMOMI_DEBUG'] || false)
 
 				vim = RbVmomi::VIM.connect conn_opts
+				config[:vim] = vim
 				return vim
 			end
 
-			def find_folder(vim,foldername)
-				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
-				dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-				basefolder = dc.vmFolder
-				folderarray = foldername.split('/')
-				folderarray.each do |folderarritem|
-					if folderarritem != ''
-						basefolder = basefolder.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == folderarritem } or abort "no such folder #{foldername} while looking for #{folderarritem}"
+			def find_entity(baseEntity,entityName)
+				entityArray = entityName.split('/')
+				entityArray.each do |entityArrItem|
+					if entityArrItem != ''
+						baseEntity = baseEntity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } or abort "no such entity #{entityName} while looking for #{entityArrItem}"
 					end
 				end
-				basefolder
+				baseEntity
+			end
+
+			def find_folder(folderName)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				find_entity(dc.vmFolder,folderName)
+			end
+
+			def find_pool(poolName)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				find_entity(dc.hostFolder,poolName)
 			end
 
 			def find_all_in_folder(folder, type)

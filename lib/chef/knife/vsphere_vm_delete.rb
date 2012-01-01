@@ -26,7 +26,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
     
     vim = get_vim_connection
 
-    baseFolder = find_folder(vim,config[:folder] || '');
+    baseFolder = find_folder(config[:folder]);
 
     vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
       fatal_exit("VM #{vmname} not found")

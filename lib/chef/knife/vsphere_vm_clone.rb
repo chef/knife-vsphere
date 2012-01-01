@@ -75,7 +75,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
     rp = hosts.first.resourcePool
 
-    src_folder = find_folder(vim,config[:folder] || '');
+    src_folder = find_folder(config[:folder]);
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, vmname) or
       abort "VM/Template not found"
@@ -124,7 +124,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     end
 
-    dest_folder = find_folder(vim,config[:dest_folder] || config[:folder] || '');
+    dest_folder = find_folder(config[:dest_folder] || config[:folder]);
 
     task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
     puts "Cloning template #{template} to new VM #{vmname}"

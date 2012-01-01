@@ -18,7 +18,7 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    baseFolder = find_folder(vim,config[:folder] || '');
+    baseFolder = find_folder(config[:folder]);
 
     vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine)
     vms.each do |vm|

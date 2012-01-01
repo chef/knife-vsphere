@@ -43,7 +43,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
    
     vim = get_vim_connection
 
-    baseFolder = find_folder(vim,config[:folder] || '');
+    baseFolder = find_folder(config[:folder]);
 
     vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
       abort "VM #{vmname} not found"
