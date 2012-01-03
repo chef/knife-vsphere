@@ -110,7 +110,15 @@ class Chef
 				entityArray = poolName.split('/')
 				entityArray.each do |entityArrItem|
 					if entityArrItem != ''
-						baseEntity = baseEntity.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+						if baseEntity.is_a? RbVmomi::VIM::Folder
+							baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+						elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource
+							baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+						elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
+							baseEntity = baseEntity.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+						else
+							abort "Unexpected Object type encountered #{baseEntity.type} while finding resourcePool"
+						end
 					end
 				end
 				baseEntity

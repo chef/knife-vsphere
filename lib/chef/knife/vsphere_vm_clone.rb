@@ -16,7 +16,7 @@ require 'netaddr'
 #     --chostname NODENAME --cdomain NODEDOMAIN
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
-  banner "knife vsphere vm clone VMNAME TEMPLATE (options)"
+  banner "knife vsphere vm clone VMNAME (options)"
 
   get_common_options
 
@@ -25,9 +25,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "The folder into which to put the cloned VM"
 
 	option :resource_pool,
-		:long => "--resource_pool RESOURCE_POOL",
+		:long => "--resource_pool POOL",
 		:description => "The resource pool into which to put the cloned VM",
 		:default => ''
+
+	option :source_vm,
+		:long => "--template TEMPLATE",
+		:description => "The source VM / Template to clone from",
+		:required => true
 
   option :customization_spec,
   :long => "--cspec CUST_SPEC",
@@ -54,8 +59,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   :description => "Indicates whether to start the VM after a successful clone",
   :default => true
 
-
-
   def run
   
     $stdout.sync = true
@@ -66,17 +69,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fatal_exit("You must specify a virtual machine name")
     end
 
-    template = @name_args[1]
-    if template.nil?
-      show_usage
-      fatal_exit("You must specify a template name")
-    end
-
     vim = get_vim_connection
 
     src_folder = find_folder(config[:folder])
 
-    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, vmname) or
+    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
       abort "VM/Template not found"
 
     rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(config[:resource_pool]))
@@ -129,7 +126,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dest_folder = find_folder(config[:dest_folder] || config[:folder]);
 
     task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
-    puts "Cloning template #{template} to new VM #{vmname}"
+    puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
     task.wait_for_completion
     puts "Finished creating virtual machine #{vmname}"
     
