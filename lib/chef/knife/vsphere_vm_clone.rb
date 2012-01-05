@@ -24,6 +24,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--dest_folder FOLDER",
 		:description => "The folder into which to put the cloned VM"
 
+	option :datastore,
+		:long => "--datastore STORE",
+		:description => "The datastore into which to put the cloned VM"
+
 	option :resource_pool,
 		:long => "--resource_pool POOL",
 		:description => "The resource pool into which to put the cloned VM",
@@ -41,6 +45,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :customization_ips,
   :long => "--cips CUST_IPS",
   :description => "Comma-delimited list of CIDR IPs for customization"
+
+  option :customization_gw,
+  :long => "--cgw CUST_GW",
+  :description => "CIDR IP of gateway for customization"
 
   option :customization_hostname,
   :long => "--chostname CUST_HOSTNAME",
@@ -95,7 +103,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
 
       if config[:customization_ips]
-        csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
+				if config[:customization_gw]
+					csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i,config[:customization_gw]) }
+				else
+					csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
+				end
       end
 
       use_ident = !config[:customization_hostname].nil? || !config[:customization_domain].nil?
@@ -136,8 +148,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       vm.PowerOnVM_Task.wait_for_completion
       puts "Powered on virtual machine #{vmname}"
     end
-        
-    
   end
   
 
