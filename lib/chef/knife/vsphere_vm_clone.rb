@@ -66,6 +66,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   :long => "--ctz CUST_TIMEZONE",
   :description => "Timezone invalid 'Area/Location' format"
 
+  option :customization_cpucount,
+  :long => "--ccpu CUST_CPU_COUNT",
+  :description => "Number of CPUs"
+
+  option :customization_memory,
+  :long => "--cram CUST_MEMORY_GB",
+  :description => "Gigabytes of RAM"
+
   option :power,  
   :long => "--start STARTVM",
   :description => "Indicates whether to start the VM after a successful clone",
@@ -98,14 +106,23 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                                                       :powerOn => false,
                                                       :template => false)
 
+		clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
+
+		if config[:customization_cpucount]
+			clone_spec.config.numCPUs = config[:customization_cpucount]
+		end
+
+		if config[:customization_memory]
+			clone_spec.config.memoryMB = Integer(config[:customization_memory]) * 1024
+		end
+
 		if config[:customization_vlan]
 			network = find_network(config[:customization_vlan])
 			switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid ,:portgroupKey => network.key)
 			card = src_vm.config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
 			card.backing.port = switch_port
 			dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
-			config_spec = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => [dev_spec])
-			clone_spec.config = config_spec
+			clone_spec.config.deviceChange.push dev_spec
 		end
 
     if config[:customization_spec]
