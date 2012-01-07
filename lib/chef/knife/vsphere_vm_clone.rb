@@ -42,6 +42,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   :long => "--cspec CUST_SPEC",
   :description => "The name of any customization specification to apply"
 
+  option :customization_vlan,
+  :long => "--cvlan CUST_VLAN",
+  :description => "VLAN name for network adapter to join"
+
   option :customization_ips,
   :long => "--cips CUST_IPS",
   :description => "Comma-delimited list of CIDR IPs for customization"
@@ -93,6 +97,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
                                                       :powerOn => false,
                                                       :template => false)
+
+		if config[:customization_vlan]
+			network = find_network(config[:customization_vlan])
+			switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid ,:portgroupKey => network.key)
+			card = src_vm.config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
+			card.backing.port = switch_port
+			dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
+			config_spec = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => [dev_spec])
+			clone_spec.config = config_spec
+		end
 
     if config[:customization_spec]
       csi = find_customization(vim, config[:customization_spec]) or

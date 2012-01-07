@@ -103,6 +103,13 @@ class Chef
 				baseEntity
 			end
 
+			def find_network(networkName)
+				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+				baseEntity = dc.network
+				baseEntity.find { |f| f.name == networkName } or abort "no such network #{networkName}"
+			end
+
 			def find_pool(poolName)
 				dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
 				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
