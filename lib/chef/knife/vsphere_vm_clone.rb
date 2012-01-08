@@ -22,7 +22,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 	get_common_options
 
 	option :dest_folder,
-		:long => "--dest_folder FOLDER",
+		:long => "--dest-folder FOLDER",
 		:description => "The folder into which to put the cloned VM"
 
 	option :datastore,
@@ -30,7 +30,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "The datastore into which to put the cloned VM"
 
 	option :resource_pool,
-		:long => "--resource_pool POOL",
+		:long => "--resource-pool POOL",
 		:description => "The resource pool into which to put the cloned VM",
 		:default => ''
 
