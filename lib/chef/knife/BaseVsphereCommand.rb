@@ -1,5 +1,6 @@
 #
 # Author:: Ezra Pagel (<ezra@cpan.org>)
+# Contributor:: Jesse Campbell (<hikeit@gmail.com>)
 # License:: Apache License, Version 2.0
 #
 
