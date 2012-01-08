@@ -30,7 +30,7 @@ class Chef
 					:long => "--user USERNAME",
 					:description => "The username for the host"
 
-				option :password,
+				option :vsphere_pass,
 					:short => "-p PASSWORD",
 					:long => "--password PASSWORD",
 					:description => "The password for the host"
@@ -71,15 +71,20 @@ class Chef
 
 			end
 
+			def locate_config_value(key)
+				key = key.to_sym
+				Chef::Config[:knife][key] || config[key]
+			end
+
 			def get_vim_connection
 
 				conn_opts = {
-					:host => config[:host] || Chef::Config[:knife][:vsphere_host],
+					:host => locate_config_value(:vsphere_host),
 					:path => config[:path],
 					:port => config[:port],
 					:use_ssl => config[:ssl],
-					:user => config[:vsphere_user] || Chef::Config[:knife][:vsphere_user],
-					:password => config[:password] || Chef::Config[:knife][:vsphere_pass],
+					:user => locate_config_value(:vsphere_user),
+					:password => locate_config_value(:vsphere_pass),
 					:insecure => config[:insecure]
 				}
 
