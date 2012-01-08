@@ -80,6 +80,81 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "Indicates whether to start the VM after a successful clone",
 		:default => true
 
+	option :bootstrap,  
+		:long => "--bootstrap FALSE",
+		:description => "Indicates whether to bootstrap the VM",
+		:default => true
+
+	option :fqdn,
+		:long => "--fqdn SERVER_FQDN",
+		:description => "Fully qualified hostname for bootstrapping"
+
+	option :ssh_user,
+		:short => "-x USERNAME",
+		:long => "--ssh-user USERNAME",
+		:description => "The ssh username",
+		:default => "root"
+
+	option :ssh_password,
+		:short => "-P PASSWORD",
+		:long => "--ssh-password PASSWORD",
+		:description => "The ssh password"
+
+	option :ssh_port,
+		:short => "-p PORT",
+		:long => "--ssh-port PORT",
+		:description => "The ssh port",
+		:default => "22",
+		:proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+
+	option :identity_file,
+		:short => "-i IDENTITY_FILE",
+		:long => "--identity-file IDENTITY_FILE",
+		:description => "The SSH identity file used for authentication"
+
+	option :chef_node_name,
+		:short => "-N NAME",
+		:long => "--node-name NAME",
+		:description => "The Chef node name for your new node"
+
+	option :prerelease,
+		:long => "--prerelease",
+		:description => "Install the pre-release chef gems"
+
+	option :bootstrap_version,
+		:long => "--bootstrap-version VERSION",
+		:description => "The version of Chef to install",
+		:proc => lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
+
+	option :bootstrap_proxy,
+		:long => "--bootstrap-proxy PROXY_URL",
+		:description => "The proxy server for the node being bootstrapped",
+		:proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+
+	option :distro,
+		:short => "-d DISTRO",
+		:long => "--distro DISTRO",
+		:description => "Bootstrap a distro using a template",
+		:default => "ubuntu10.04-gems"
+
+	option :template_file,
+		:long => "--template-file TEMPLATE",
+		:description => "Full path to location of template to use",
+		:default => false
+
+	option :run_list,
+		:short => "-r RUN_LIST",
+		:long => "--run-list RUN_LIST",
+		:description => "Comma separated list of roles/recipes to apply",
+		:proc => lambda { |o| o.split(/[\s,]+/) },
+		:default => []
+
+	option :no_host_key_verify,
+		:long => "--no-host-key-verify",
+		:description => "Disable host key verification",
+		:boolean => true,
+		:default => false
+
 	def run
 
 		$stdout.sync = true
@@ -89,14 +164,43 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 			show_usage
 			fatal_exit("You must specify a virtual machine name")
 		end
+		config[:fqdn] = vmname unless config[:fqdn]
+		config[:chef_node_name] = vmname unless config[:chef_node_name]
 
-		vim = get_vim_connection
+		get_vim_connection
 
 		src_folder = find_folder(config[:folder])
 
 		src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
 		abort "VM/Template not found"
 
+		clone_spec = generate_clone_spec(src_vm.config)
+
+		dest_folder = find_folder(config[:dest_folder] || config[:folder]);
+
+		task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
+		puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
+		task.wait_for_completion
+		puts "Finished creating virtual machine #{vmname}"
+
+		if config[:power] || config[:bootstrap]
+			vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
+			fatal_exit("VM #{vmname} not found")
+			vm.PowerOnVM_Task.wait_for_completion
+			puts "Powered on virtual machine #{vmname}"
+		end
+
+		if config[:bootstrap]
+			print "Waiting for sshd..."
+			print "." until tcp_test_ssh(config[:fqdn])
+			puts "done"
+
+			bootstrap_for_node.run
+		end
+	end
+
+	# Builds a CloneSpec
+	def generate_clone_spec (src_config)
 		rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(config[:resource_pool]))
 
 		if config[:datastore]
@@ -120,14 +224,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		if config[:customization_vlan]
 			network = find_network(config[:customization_vlan])
 			switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid ,:portgroupKey => network.key)
-			card = src_vm.config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
+			card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
 			card.backing.port = switch_port
 			dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
 			clone_spec.config.deviceChange.push dev_spec
 		end
 
 		if config[:customization_spec]
-			csi = find_customization(vim, config[:customization_spec]) or
+			csi = find_customization(config[:customization_spec]) or
 			fatal_exit("failed to find customization specification named #{config[:customization_spec]}")
 
 			if csi.info.type != "Linux"
@@ -165,29 +269,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 			clone_spec.customization = csi.spec
 		end
-
-		dest_folder = find_folder(config[:dest_folder] || config[:folder]);
-
-		task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
-		puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
-		task.wait_for_completion
-		puts "Finished creating virtual machine #{vmname}"
-
-		if config[:power]
-			vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
-			fatal_exit("VM #{vmname} not found")
-			vm.PowerOnVM_Task.wait_for_completion
-			puts "Powered on virtual machine #{vmname}"
-		end
+		clone_spec
 	end
-
 
 	# Retrieves a CustomizationSpecItem that matches the supplied name
 	# @param vim [Connection] VI Connection to use
 	# @param name [String] name of customization
 	# @return [RbVmomi::VIM::CustomizationSpecItem]
-	def find_customization(vim, name) 
-		csm = vim.serviceContent.customizationSpecManager
+	def find_customization(name) 
+		csm = config[:vim].serviceContent.customizationSpecManager
 		csm.GetCustomizationSpec(:name => name) 
 	end
 
@@ -221,6 +311,49 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		adapter_map = RbVmomi::VIM.CustomizationAdapterMapping
 		adapter_map.adapter = settings
 		adapter_map
+	end
 
+	def bootstrap_for_node()
+		Chef::Knife::Bootstrap.load_deps
+		bootstrap = Chef::Knife::Bootstrap.new
+		bootstrap.name_args = [config[:fqdn]]
+		bootstrap.config[:run_list] = config[:run_list]
+		bootstrap.config[:ssh_user] = config[:ssh_user]
+		bootstrap.config[:ssh_password] = config[:ssh_password]
+		bootstrap.config[:ssh_port] = config[:ssh_port]
+		bootstrap.config[:identity_file] = config[:identity_file]
+		bootstrap.config[:chef_node_name] = config[:chef_node_name]
+		bootstrap.config[:prerelease] = config[:prerelease]
+		bootstrap.config[:bootstrap_version] = locate_config_value(:bootstrap_version)
+		bootstrap.config[:distro] = locate_config_value(:distro)
+		bootstrap.config[:use_sudo] = true unless config[:ssh_user] == 'root'
+		bootstrap.config[:template_file] = locate_config_value(:template_file)
+		bootstrap.config[:environment] = config[:environment]
+		# may be needed for vpc_mode
+		bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
+		bootstrap
+	end
+
+	def tcp_test_ssh(hostname)
+		tcp_socket = TCPSocket.new(hostname, 22)
+		readable = IO.select([tcp_socket], nil, nil, 5)
+		if readable
+			Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
+			true
+		else
+			false
+		end
+	rescue Errno::ETIMEDOUT
+		false
+	rescue Errno::EPERM
+		false
+	rescue Errno::ECONNREFUSED
+		sleep 2
+		false
+	rescue Errno::EHOSTUNREACH
+		sleep 2
+		false
+	ensure
+		tcp_socket && tcp_socket.close
 	end
 end
