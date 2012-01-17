@@ -1,5 +1,11 @@
 knife-vsphere changelog
 -----------------------
+0.1.6 * merged in changes from Jesse Campbell, supporting VLAN/resource
+	pool/folder/data store selection, run list support, and much more
+
+0.1.5 * support customized hostname, post-clone poweron
+
+0.1.4 * added support for vm powerstate control
 
 0.1.3 * added support for listing customization specs, applying during cloning
 

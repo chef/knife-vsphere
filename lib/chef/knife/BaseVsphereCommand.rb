@@ -103,7 +103,8 @@ class Chef
 				entityArray = folderName.split('/')
 				entityArray.each do |entityArrItem|
 					if entityArrItem != ''
-						baseEntity = baseEntity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } or abort "no such folder #{folderName} while looking for #{entityArrItem}"
+						baseEntity = baseEntity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } or
+              abort "no such folder #{folderName} while looking for #{entityArrItem}"
 					end
 				end
 				baseEntity
@@ -124,11 +125,14 @@ class Chef
 				entityArray.each do |entityArrItem|
 					if entityArrItem != ''
 						if baseEntity.is_a? RbVmomi::VIM::Folder
-							baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+							baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or
+                abort "no such pool #{poolName} while looking for #{entityArrItem}"
 						elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource
-							baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+							baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or
+                abort "no such pool #{poolName} while looking for #{entityArrItem}"
 						elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
-							baseEntity = baseEntity.resourcePool.find { |f| f.name == entityArrItem } or abort "no such pool #{poolName} while looking for #{entityArrItem}"
+							baseEntity = baseEntity.resourcePool.find { |f| f.name == entityArrItem } or
+                abort "no such pool #{poolName} while looking for #{entityArrItem}"
 						else
 							abort "Unexpected Object type encountered #{baseEntity.type} while finding resourcePool"
 						end

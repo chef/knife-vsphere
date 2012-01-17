@@ -224,7 +224,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		if config[:customization_vlan]
 			network = find_network(config[:customization_vlan])
 			switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid ,:portgroupKey => network.key)
-			card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
+			card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or
+        abort "Can't find source network card to customize"
 			card.backing.port = switch_port
 			dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
 			clone_spec.config.deviceChange.push dev_spec
@@ -276,9 +277,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 	# @param vim [Connection] VI Connection to use
 	# @param name [String] name of customization
 	# @return [RbVmomi::VIM::CustomizationSpecItem]
-	def find_customization(name) 
+	def find_customization(name)
 		csm = config[:vim].serviceContent.customizationSpecManager
-		csm.GetCustomizationSpec(:name => name) 
+		csm.GetCustomizationSpec(:name => name)
 	end
 
 	# Generates a CustomizationAdapterMapping (currently only single IPv4 address) object
@@ -298,7 +299,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 			# TODO - want to confirm gw/ip are in same subnet?
 			# Only set gateway on first IP.
-			if config[:customization_ips].split(',').first == ip      
+			if config[:customization_ips].split(',').first == ip
 				if gw.nil?
 					settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
 				else
