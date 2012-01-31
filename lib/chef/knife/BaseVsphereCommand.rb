@@ -138,7 +138,9 @@ class Chef
 						end
 					end
 				end
-				baseEntity
+
+        baseEntity = baseEntity.resourcePool if not baseEntity.is_a?(RbVmomi::VIM::ResourcePool) and baseEntity.respond_to?(:resourcePool)
+        baseEntity
 			end
 
 			def find_datastore(dsName)
