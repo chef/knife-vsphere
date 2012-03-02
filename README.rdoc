@@ -35,7 +35,39 @@ Enumerates the VM Templates registered in the target datacenter. Only name is cu
 
 Enumerates the customization specifications registered in the target datacenter. Only name is currently displayed.
 
-== knife vsphere vm clone --template <source template name> --vmname <new vm name> --cspec <customization spec>
+== knife vsphere vm clone --template <source template name> --vmname <new vm name> --cspec <customization_spec>
+e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+     --cips 192.168.0.99/24,192.168.1.99/24 \
+     --chostname NODENAME --cdomain NODEDOMAIN
+
+   --dest-folder FOLDER - The folder into which to put the cloned VM
+   --datastore STORE    - The datastore into which to put the cloned VM
+   --resource-pool POOL - The resource pool into which to put the cloned VM
+   --template TEMPLATE - The source VM / Template to clone from
+   --cspec CUST_SPEC - The name of any customization specification to apply
+   --cvlan CUST_VLAN - VLAN name for network adapter to join
+   --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization
+   --cgw CUST_GW - CIDR IP of gateway for customization
+   --chostname CUST_HOSTNAME - Unqualified hostname for customization
+   --cdomain CUST_DOMAIN - Domain name for customization
+   --ctz CUST_TIMEZONE - Timezone invalid 'Area/Location' format
+   --ccpu CUST_CPU_COUNT - Number of CPUs
+   --cram CUST_MEMORY_GB - Gigabytes of RAM
+   --start STARTVM - Indicates whether to start the VM after a successful clone
+   --bootstrap FALSE - Indicates whether to bootstrap the VM
+   --fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
+   --ssh-user USERNAME - SSH username
+   --ssh-password PASSWORD - SSH password
+   --ssh-port PORT - SSH port
+   --identity-file IDENTITY_FILE - SSH identity file used for authentication
+   --node-name NAME - The Chef node name for your new node
+   --prerelease - Install the pre-release chef gems
+   --bootstrap-version VERSION - The version of Chef to install
+   --bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
+   --distro DISTRO - Bootstrap a distro using a template
+   --template-file TEMPLATE - Full path to location of template to use
+   --run-list RUN_LIST - Comma separated list of roles/recipes to apply
+   --no-host-key-verify - Disable host key verification",
 
 Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.
 
@@ -45,8 +77,12 @@ Unregisters an existing VM. Currently, it does not perform any datastore cleanup
 
 = LICENSE:
 
-Author:: Ezra Pagel (<ezra@cpan.org>)
-Copyright:: Copyright (c) 2011 Ezra Pagel
+Authors:: Ezra Pagel <ezra@cpan.org>
+          Jesse Campbell <hikeit@gmail.com>
+          John Williams <john@37signals.com>
+
+
+Copyright:: Copyright (c) 2011-2012 Ezra Pagel
 
 VMware vSphere is a trademark of VMware, Inc.
 

@@ -31,8 +31,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 	option :resource_pool,
 		:long => "--resource-pool POOL",
-		:description => "The resource pool into which to put the cloned VM",
-		:default => ''
+		:description => "The resource pool into which to put the cloned VM"
 
 	option :source_vm,
 		:long => "--template TEMPLATE",
@@ -83,15 +82,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--cram CUST_MEMORY_GB",
 		:description => "Gigabytes of RAM"
 
-	option :power,  
+	option :power,
 		:long => "--start STARTVM",
 		:description => "Indicates whether to start the VM after a successful clone",
-		:default => true
+		:default => false
 
-	option :bootstrap,  
+	option :bootstrap,
 		:long => "--bootstrap FALSE",
 		:description => "Indicates whether to bootstrap the VM",
-		:default => true
+		:default => false
 
 	option :fqdn,
 		:long => "--fqdn SERVER_FQDN",
@@ -164,7 +163,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:default => false
 
 	def run
-
 		$stdout.sync = true
 
 		vmname = @name_args[0]
@@ -176,16 +174,21 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		config[:chef_node_name] = vmname unless config[:chef_node_name]
 		config[:vmname] = vmname
 
-		get_vim_connection
+		vim = get_vim_connection
 
-		src_folder = find_folder(config[:folder])
+    dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+
+		src_folder = find_folder(config[:folder]) || dc.vmFolder
 
 		src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
 		abort "VM/Template not found"
 
 		clone_spec = generate_clone_spec(src_vm.config)
 
-		dest_folder = find_folder(config[:dest_folder] || config[:folder]);
+    cust_folder = config[:dest_folder] || config[:folder]
+
+		dest_folder = cust_folder.nil? ? src_vm.vmFolder : find_folder(cust_folder)
 
 		task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
 		puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
@@ -210,7 +213,17 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 	# Builds a CloneSpec
 	def generate_clone_spec (src_config)
-		rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(config[:resource_pool]))
+
+    rspec = nil
+    if config[:resource_pool]
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(config[:resource_pool]))
+    else
+      dcname = config[:vsphere_dc] || Chef::Config[:knife][:vsphere_dc]
+      dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+      hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
+      rp = hosts.first.resourcePool
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+    end
 
 		if config[:datastore]
 			rspec.datastore = find_datastore(config[:datastore])
@@ -233,7 +246,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		if config[:customization_vlan]
 			network = find_network(config[:customization_vlan])
 			switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid ,:portgroupKey => network.key)
-			card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or abort "Can't find source network card to customize"
+			card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or
+        abort "Can't find source network card to customize"
 			card.backing.port = switch_port
 			dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
 			clone_spec.config.deviceChange.push dev_spec
@@ -300,9 +314,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 	# @param vim [Connection] VI Connection to use
 	# @param name [String] name of customization
 	# @return [RbVmomi::VIM::CustomizationSpecItem]
-	def find_customization(name) 
+	def find_customization(name)
 		csm = config[:vim].serviceContent.customizationSpecManager
-		csm.GetCustomizationSpec(:name => name) 
+		csm.GetCustomizationSpec(:name => name)
 	end
 
 	# Generates a CustomizationAdapterMapping (currently only single IPv4 address) object
@@ -322,7 +336,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 			# TODO - want to confirm gw/ip are in same subnet?
 			# Only set gateway on first IP.
-			if config[:customization_ips].split(',').first == ip      
+			if config[:customization_ips].split(',').first == ip
 				if gw.nil?
 					settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
 				else
