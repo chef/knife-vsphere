@@ -1,5 +1,5 @@
 # Copyright (C) 2012, SCM Ventures AB
-# Author: Ian Delahorne <ian.delahorne@gmail.com>
+# Author: Ian Delahorne <ian@scmventures.se>
 # 
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -13,7 +13,7 @@
 # DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.require 'chef/knife'
+# PERFORMANCE OF THIS SOFTWARE
 
 require 'chef/knife'
 require 'chef/knife/BaseVsphereCommand'
