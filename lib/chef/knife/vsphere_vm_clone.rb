@@ -50,6 +50,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--cips CUST_IPS",
 		:description => "Comma-delimited list of CIDR IPs for customization"
 
+	option :customization_dns_ips,
+		:long => "--cdnsips CUST_DNS_IPS",
+		:description => "Comma-delimited list of DNS IP addresses"
+
+	option :customization_dns_suffixes,
+		:long => "--cdnssuffix CUST_DNS_SUFFIXES",
+		:description => "Comma-delimited list of DNS search suffixes"
+
 	option :customization_gw,
 		:long => "--cgw CUST_GW",
 		:description => "CIDR IP of gateway for customization"
@@ -164,6 +172,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		end
 		config[:fqdn] = vmname unless config[:fqdn]
 		config[:chef_node_name] = vmname unless config[:chef_node_name]
+		config[:vmname] = vmname
 
 		vim = get_vim_connection
 
@@ -251,38 +260,53 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 			if csi.info.type != "Linux"
 				fatal_exit("Only Linux customization specifications are currently supported")
 			end
-
-			if config[:customization_ips]
-				if config[:customization_gw]
-					csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i,config[:customization_gw]) }
-				else
-					csi.spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
-				end
-			end
-
-			use_ident = !config[:customization_hostname].nil? || !config[:customization_domain].nil?
-
-			if use_ident
-				# TODO - verify that we're deploying a linux spec, at least warn
-				ident = RbVmomi::VIM.CustomizationLinuxPrep
-
-				if config[:customization_hostname]
-					ident.hostName = RbVmomi::VIM.CustomizationFixedName
-					ident.hostName.name = config[:customization_hostname]
-				else
-					ident.hostName = RbVmomi::VIM.CustomizationFixedName
-					ident.hostName.name = config[:customization_domain]
-				end
-
-				if config[:customization_domain]
-					ident.domain = config[:customization_domain]
-				end
-
-				csi.spec.identity = ident
-			end
-
-			clone_spec.customization = csi.spec
+			cust_spec = csi.spec
+		else
+			global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
+			cust_spec = RbVmomi::VIM.CustomizationSpec(:globalIPSettings => global_ipset)
 		end
+
+		if config[:customization_dns_ips]
+			cust_spec.globalIPSettings.dnsServerList = config[:customization_dns_ips].split(',')
+		end
+
+		if config[:customization_dns_suffixes]
+			cust_spec.globalIPSettings.dnsSuffixList = config[:customization_dns_suffixes].split(',')
+		end
+
+		if config[:customization_ips]
+			if config[:customization_gw]
+				cust_spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i,config[:customization_gw]) }
+			else
+				cust_spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
+			end
+		end
+
+		use_ident = !config[:customization_hostname].nil? || !config[:customization_domain].nil? || cust_spec.identity.nil?
+
+		if use_ident
+			# TODO - verify that we're deploying a linux spec, at least warn
+			ident = RbVmomi::VIM.CustomizationLinuxPrep
+
+			ident.hostName = RbVmomi::VIM.CustomizationFixedName
+			if config[:customization_hostname]
+				ident.hostName.name = config[:customization_hostname]
+			elsif config[:customization_domain]
+				ident.hostName.name = config[:customization_domain]
+			else
+				ident.hostName.name = config[:vmname]
+			end
+
+			if config[:customization_domain]
+				ident.domain = config[:customization_domain]
+			else
+				ident.domain = ''
+			end
+
+			cust_spec.identity = ident
+		end
+
+		clone_spec.customization = cust_spec
 		clone_spec
 	end
 

@@ -24,5 +24,9 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
     vms.each do |vm|
       puts "#{ui.color("VM Name", :cyan)}: #{vm.name}"
     end
+		folders = find_all_in_folder(baseFolder, RbVmomi::VIM::Folder)
+    folders.each do |folder|
+      puts "#{ui.color("Folder Name", :cyan)}: #{folder.name}"
+    end
   end
 end
