@@ -10,30 +10,30 @@ require 'rbvmomi'
 # Delete a virtual machine from vCenter
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
-  banner "knife vsphere vm delete VMNAME"
+	banner "knife vsphere vm delete VMNAME"
 
-  get_common_options
-  
-  def run
-    $stdout.sync = true
+	get_common_options
 
-    vmname = @name_args[0]
+	def run
+		$stdout.sync = true
 
-    if vmname.nil?
-      show_usage
-      fatal_exit("You must specify a virtual machine name")
-    end
-    
-    vim = get_vim_connection
+		vmname = @name_args[0]
 
-    baseFolder = find_folder(config[:folder]);
+		if vmname.nil?
+			show_usage
+			fatal_exit("You must specify a virtual machine name")
+		end
 
-    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
-      fatal_exit("VM #{vmname} not found")
+		vim = get_vim_connection
 
-    vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
-    vm.Destroy_Task
-    puts "Deleted virtual machine #{vmname}"
+		baseFolder = find_folder(config[:folder]);
 
-  end
+		vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+		fatal_exit("VM #{vmname} not found")
+
+		vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
+		vm.Destroy_Task
+		puts "Deleted virtual machine #{vmname}"
+
+	end
 end
