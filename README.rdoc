@@ -23,9 +23,11 @@ Environment variables and command-line credentials are not currently supported, 
 
 This plugin provides the following Knife subcommands.  Specific command options can be found by invoking the subcommand with a <tt>--help</tt> flag
 
-== knife vsphere vm list
+== knife vsphere vm list [-r, --recursive [--only-folders]]
 
 Enumerates the Virtual Machines registered in the target datacenter. Only name is currently displayed.
+    -r, --recursive    - Recurse down through sub-folders to the specified folder
+    --only-folders     - In combination with --recursive, print only folder names
 
 == knife vsphere template list
 
