@@ -75,6 +75,10 @@ Clones an existing VM template into a new VM instance, optionally applying an ex
 
 Unregisters an existing VM. Currently, it does not perform any datastore cleanup to remove VM files.
 
+== knife vsphere datastore list
+
+Lists all known datastores with capacity and usage
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
