@@ -11,7 +11,36 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm list"
 
   get_common_options
+
+  option :recursive,
+         :long  => "--recursive",
+         :short => "-r",
+         :description => "Recurse down through sub-folders"
+
+  option :only_folders,
+         :long  => "--only-folders",
+         :description => "Print only sub-folders"
   
+  def traverse_folders(folder)
+    puts "#{ui.color("Folder", :cyan)}: "+(folder.path[3..-1].map{|x| x[1]}.*'/')
+
+    print_vms_in_folder(folder) unless config[:only_folders]
+    
+    folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
+
+    folders.each do |child|
+      traverse_folders(child)
+    end
+  end
+
+  def print_vms_in_folder(folder)
+    vms = find_all_in_folder(folder, RbVmomi::VIM::VirtualMachine)
+
+    vms.each do |vm|
+      puts "#{ui.color("VM Name", :cyan)}: #{vm.name}"
+    end
+  end
+
   def run
 
     $stdout.sync = true
@@ -20,13 +49,10 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 
     baseFolder = find_folder(config[:folder]);
 
-    vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine)
-    vms.each do |vm|
-      puts "#{ui.color("VM Name", :cyan)}: #{vm.name}"
-    end
-		folders = find_all_in_folder(baseFolder, RbVmomi::VIM::Folder)
-    folders.each do |folder|
-      puts "#{ui.color("Folder Name", :cyan)}: #{folder.name}"
+    if config[:recursive]
+      traverse_folders(baseFolder)
+    else
+      print_vms_in_folder(baseFolder)
     end
   end
 end
