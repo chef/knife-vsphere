@@ -37,6 +37,13 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 		end
 	end
 
+	def print_subfolders(folder)
+		folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
+    folders.each do |subfolder|
+      puts "#{ui.color("Folder Name", :cyan)}: #{subfolder.name}"
+    end
+	end
+
 	def run
 		$stdout.sync = true
 		vim = get_vim_connection
@@ -44,6 +51,7 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 		if config[:recursive]
 			traverse_folders(baseFolder)
 		else
+			print_subfolders(baseFolder)
 			print_vms_in_folder(baseFolder)
 		end
 	end
