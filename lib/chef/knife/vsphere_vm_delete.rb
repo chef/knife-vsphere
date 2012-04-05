@@ -20,7 +20,6 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 		:short => "-P",
 		:long => "--purge",
 		:boolean => true,
-		:default => false,
 		:description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the EC2 node itself."
 
 	get_common_options
@@ -48,7 +47,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
 		vim = get_vim_connection
 
-		baseFolder = find_folder(config[:folder]);
+		baseFolder = find_folder(get_config(:folder));
 
 		vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
 		fatal_exit("VM #{vmname} not found")

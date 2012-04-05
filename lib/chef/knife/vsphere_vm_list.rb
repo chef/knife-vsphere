@@ -23,7 +23,7 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 
 	def traverse_folders(folder)
 		puts "#{ui.color("Folder", :cyan)}: "+(folder.path[3..-1].map{|x| x[1]}.*'/')
-		print_vms_in_folder(folder) unless config[:only_folders]
+		print_vms_in_folder(folder) unless get_config(:only_folders)
 		folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
 		folders.each do |child|
 			traverse_folders(child)
@@ -47,8 +47,8 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 	def run
 		$stdout.sync = true
 		vim = get_vim_connection
-		baseFolder = find_folder(config[:folder]);
-		if config[:recursive]
+		baseFolder = find_folder(get_config(:folder));
+		if get_config(:recursive)
 			traverse_folders(baseFolder)
 		else
 			print_subfolders(baseFolder)
