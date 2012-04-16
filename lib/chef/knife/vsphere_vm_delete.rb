@@ -7,33 +7,61 @@ require 'chef/knife'
 require 'chef/knife/BaseVsphereCommand'
 require 'rbvmomi'
 
+# These two are needed for the '--purge' deletion case
+require 'chef/node'
+require 'chef/api_client'
+
 # Delete a virtual machine from vCenter
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
-  banner "knife vsphere vm delete VMNAME"
+	banner "knife vsphere vm delete VMNAME"
 
-  get_common_options
-  
-  def run
-    $stdout.sync = true
+	option :purge,
+		:short => "-P",
+		:long => "--purge",
+		:boolean => true,
+		:default => false,
+		:description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the EC2 node itself."
 
-    vmname = @name_args[0]
+	get_common_options
 
-    if vmname.nil?
-      show_usage
-      fatal_exit("You must specify a virtual machine name")
-    end
-    
-    vim = get_vim_connection
+	# Extracted from Chef::Knife.delete_object, because it has a
+	# confirmation step built in... By specifying the '--purge'
+	# flag (and also explicitly confirming the server destruction!)
+	# the user is already making their intent known. It is not
+	# necessary to make them confirm two more times.
+	def destroy_item(itemClass, name, type_name)
+		object = itemClass.load(name)
+		object.destroy
+		puts "Deleted #{type_name} #{name}"
+	end
 
-    baseFolder = find_folder(config[:folder]);
+	def run
+		$stdout.sync = true
 
-    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
-      fatal_exit("VM #{vmname} not found")
+		vmname = @name_args[0]
 
-    vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
-    vm.Destroy_Task
-    puts "Deleted virtual machine #{vmname}"
+		if vmname.nil?
+			show_usage
+			fatal_exit("You must specify a virtual machine name")
+		end
 
-  end
+		vim = get_vim_connection
+
+		baseFolder = find_folder(config[:folder]);
+
+		vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+		fatal_exit("VM #{vmname} not found")
+
+		vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
+		vm.Destroy_Task
+		puts "Deleted virtual machine #{vmname}"
+
+		if config[:purge]
+			destroy_item(Chef::Node, vmname, "node")
+			destroy_item(Chef::ApiClient, vmname, "client")
+		else
+			puts "Corresponding node and client for the #{vmname} server were not deleted and remain registered with the Chef Server"
+		end
+	end
 end
