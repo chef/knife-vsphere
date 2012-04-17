@@ -1,5 +1,12 @@
 knife-vsphere changelog
 -----------------------
+0.1.9 * jcam - add support for configuring options from the command line or config files 
+
+0.1.8 * add Ian Delahorne's support for showing datastores with their available size and
+        capacity, bug fixes
+
+0.1.7 * rev'd changelog/readme, formatting cleanup
+
 0.1.6 * merged in changes from Jesse Campbell, supporting VLAN/resource
 	pool/folder/data store selection, run list support, and much more
 
