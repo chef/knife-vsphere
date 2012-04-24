@@ -23,7 +23,9 @@ class Chef
 			end
 
 			def self.get_common_options
-				$default = Hash.new
+				unless defined? $default
+					$default = Hash.new
+				end
 
 				option :vsphere_user,
 					:short => "-u USERNAME",
@@ -72,7 +74,9 @@ class Chef
 
 			def get_config(key)
 				key = key.to_sym
-				config[key] || Chef::Config[:knife][key] || $default[key]
+				rval = config[key] || Chef::Config[:knife][key] || $default[key]
+				Chef::Log.debug("value for config item #{key}: #{rval}")
+				rval
 			end
 
 			def get_vim_connection
