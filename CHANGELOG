@@ -1,5 +1,6 @@
 knife-vsphere changelog
------------------------
+----------------------
+0.2.0 * jcam - allow defaults from subcommands, error for missing .chef with bootstrap
 0.1.9 * jcam - add support for configuring options from the command line or config files 
 
 0.1.8 * add Ian Delahorne's support for showing datastores with their available size and
