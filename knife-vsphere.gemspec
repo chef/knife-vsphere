@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency('netaddr', ["~> 1.5.0"])
   s.add_dependency('chef', ["~> 0.10.0"])
-  s.add_dependency('rbvmomi', ["~> 1.2.3"])
+  s.add_dependency('rbvmomi', ["~> 1.5.1"])
 end
