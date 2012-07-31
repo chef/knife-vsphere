@@ -1,5 +1,6 @@
 knife-vsphere changelog
 ----------------------
+0.2.2 * jcam - add pool list subcommand, adjust gemspec to support chef 10.x.x
 0.2.1 * robharrop - update to rbvmomi 1.5.1
 0.2.0 * jcam - allow defaults from subcommands, error for missing .chef with bootstrap
 0.1.9 * jcam - add support for configuring options from the command line or config files 
