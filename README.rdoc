@@ -2,7 +2,29 @@
 
 = DESCRIPTION:
 
-This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently lists, clones, and deletes Virtual Machines and Templates; it will soon be able to apply run lists to vSphere-manged virtual machines,
+This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently supports the following:
+Listings:
+-VMs
+-Folders
+-Templates
+-Datastores
+-VLANs (currently requires distributed vswitch)
+-Resource Pools and Clusters
+-Customization Specifications
+VM Operations:
+-Power on/off
+-Clone (with optional chef bootstrap and run list)
+-Delete
+Clone-specific customization options (for linux guests):
+-Destination folder
+-CPU core count
+-Memory size
+-DNS settings
+-Hostname / Domain name
+-IP addresses / default gateway
+-vlan (currently requires distributed vswitch)
+-datastore
+-resource pool
 
 = INSTALLATION:
 
@@ -10,14 +32,18 @@ This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin c
 
 = CONFIGURATION:
 
-For initial development, the plugin targets all communication at a vCenter instance rather than at specific hosts. Only named user authentication is currently supported; you'll need to add the credentials to your <tt>knife.rb</tt> file:
+For initial development, the plugin targets all communication at a vCenter instance rather than at specific hosts. Only named user authentication is currently supported; you can add the credentials to your <tt>knife.rb</tt> file:
 
     knife[:vsphere_host] = "vcenter-hostname"
     knife[:vsphere_user] = "privileged username"
     knife[:vsphere_pass] = "your password"
     knife[:vsphere_dc] = "your-datacenter"
 
-Environment variables and command-line credentials are not currently supported, but will be forthcoming soon. 
+If you get the following error, you may need to disable SSL certificate checking:
+ERROR: OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
+    knife[:vsphere_insecure] = true
+
+Credentials can also be specified on the command line for multiple VSphere servers/data centers
 
 = SUBCOMMANDS:
 
@@ -28,6 +54,10 @@ This plugin provides the following Knife subcommands.  Specific command options 
 Enumerates the Virtual Machines registered in the target datacenter. Only name is currently displayed.
     -r, --recursive    - Recurse down through sub-folders to the specified folder
     --only-folders     - In combination with --recursive, print only folder names
+
+== knife vsphere pool list
+
+Enumerates the Resource Pools and Clusters registered in the target datacenter.
 
 == knife vsphere template list
 

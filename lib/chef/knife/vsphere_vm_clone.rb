@@ -83,11 +83,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "Gigabytes of RAM"
 
 	option :power,
-		:long => "--start STARTVM",
+		:long => "--start",
 		:description => "Indicates whether to start the VM after a successful clone"
 
 	option :bootstrap,
-		:long => "--bootstrap FALSE",
+		:long => "--bootstrap",
 		:description => "Indicates whether to bootstrap the VM"
 
 	option :fqdn,
