@@ -84,11 +84,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 	option :power,
 		:long => "--start",
-		:description => "Indicates whether to start the VM after a successful clone"
+		:description => "Indicates whether to start the VM after a successful clone",
+		:boolean => false
 
 	option :bootstrap,
 		:long => "--bootstrap",
-		:description => "Indicates whether to bootstrap the VM"
+		:description => "Indicates whether to bootstrap the VM",
+		:boolean => false
 
 	option :fqdn,
 		:long => "--fqdn SERVER_FQDN",
@@ -123,7 +125,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 	option :prerelease,
 		:long => "--prerelease",
-		:description => "Install the pre-release chef gems"
+		:description => "Install the pre-release chef gems",
+		:boolean => false
 
 	option :bootstrap_version,
 		:long => "--bootstrap-version VERSION",
