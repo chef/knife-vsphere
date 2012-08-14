@@ -56,14 +56,13 @@ class Chef
 					:description => "The VI SDK port number to use"
 				$default[:vsphere_port] = 443
 
-				option :vshere_ssl,
-					:long => "--vsssl USE_SSL",
-					:description => "Whether to use SSL connection"
-				$default[:vsphere_ssl] = true
+				option :vshere_nossl,
+					:long => "--vsnossl",
+					:description => "Disable SSL connectivity"
 
 				option :vsphere_insecure,
-					:long => "--vsinsecure USE_INSECURE_SSL",
-					:description => "Determines whether SSL certificate verification is skipped"
+					:long => "--vsinsecure",
+					:description => "Disable SSL certificate verification"
 
 				option :folder,
 					:short => "-f FOLDER",
@@ -85,7 +84,7 @@ class Chef
 					:host => get_config(:vsphere_host),
 					:path => get_config(:vshere_path),
 					:port => get_config(:vsphere_port),
-					:use_ssl => get_config(:vsphere_ssl),
+					:use_ssl => !get_config(:vsphere_nossl),
 					:user => get_config(:vsphere_user),
 					:password => get_config(:vsphere_pass),
 					:insecure => get_config(:vsphere_insecure)
@@ -154,7 +153,17 @@ class Chef
 
 
 			def find_all_in_folder(folder, type)
-				folder.childEntity.grep(type)
+				if folder.instance_of?(RbVmomi::VIM::ClusterComputeResource)
+					folder = folder.resourcePool
+				end
+				if folder.instance_of?(RbVmomi::VIM::ResourcePool)
+					folder.resourcePool.grep(type)
+				elsif folder.instance_of?(RbVmomi::VIM::Folder)
+					folder.childEntity.grep(type)
+				else
+					puts "Unknown type #{folder.class}, not enumerating"
+					nil
+				end
 			end
 
 			def find_in_folder(folder, type, name)
