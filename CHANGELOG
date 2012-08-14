@@ -1,5 +1,7 @@
 knife-vsphere changelog
 ----------------------
+0.2.3 * leeor - Fix --cvlan handling when VC is not using a distributed switch
+	jcam - Added pool list command, updated readme, fixed chef version constraint
 0.2.2 * jcam - add pool list subcommand, adjust gemspec to support chef 10.x.x
 0.2.1 * robharrop - update to rbvmomi 1.5.1
 0.2.0 * jcam - allow defaults from subcommands, error for missing .chef with bootstrap

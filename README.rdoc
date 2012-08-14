@@ -117,6 +117,7 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           Jesse Campbell <hikeit@gmail.com>
           John Williams <john@37signals.com>
           Ian Delahorne <ian@scmventures.se>
+          Leeor Aharon <>
 
 Copyright:: Copyright (c) 2011-2012 Ezra Pagel
 
