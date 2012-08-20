@@ -167,7 +167,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 			show_usage
 			fatal_exit("You must specify a virtual machine name")
 		end
-		config[:fqdn] = vmname unless config[:fqdn]
 		config[:chef_node_name] = vmname unless config[:chef_node_name]
 		config[:vmname] = vmname
 
@@ -204,6 +203,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		end
 
 		if get_config(:bootstrap)
+			sleep 2 until vm.guest.ipAddress
+			config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
 			print "Waiting for sshd..."
 			print "." until tcp_test_ssh(config[:fqdn])
 			puts "done"
