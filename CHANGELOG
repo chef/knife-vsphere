@@ -1,5 +1,7 @@
 knife-vsphere changelog
 ----------------------
+0.3.0 * Ian Delahorne - added support for tools script execution
+	jcam - bootstrap dhcp nodes
 0.2.3 * leeor - Fix --cvlan handling when VC is not using a distributed switch
 	jcam - Added pool list command, updated readme, fixed chef version constraint
 0.2.2 * jcam - add pool list subcommand, adjust gemspec to support chef 10.x.x
