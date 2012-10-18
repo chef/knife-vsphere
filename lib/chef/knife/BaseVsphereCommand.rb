@@ -38,7 +38,7 @@ class Chef
 					:description => "The password for vsphere"
 
 				option :vsphere_host,
-					:long => "--vshost",
+					:long => "--vshost HOST",
 					:description => "The vsphere host"
 
 				option :vsphere_dc,
