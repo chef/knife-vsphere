@@ -111,6 +111,22 @@ Unregisters an existing VM. Currently, it does not perform any datastore cleanup
 
 Lists all known datastores with capacity and usage
 
+== knife vsphere vm execute VMNAME COMMAND [ARGUMENTS] --exec-user USER --exec-passwd PASSWD [ --exec-dir DIRECTORY ]
+
+Executes a program on the guest. Requires vCenter 5.0 or higher. 
+
+Command path must be absolute. For Linux guest operating systems,
+/bin/bash is used to start the program. For Solaris guest operating
+systems, /bin/bash is used to start the program if it
+exists. Otherwise /bin/sh is used.
+
+Arguments are optional, and allow for redirection in Linux and Solaris.
+
+  --exec-user USERNAME - The username on the guest to execute as.
+  --exec-passwd PASSWD - The password for the user executing as.
+  --exec-dir DIRECTORY - Optional: Working directory to execute in. Will default to $HOME of user.
+
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
