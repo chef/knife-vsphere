@@ -159,6 +159,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "Disable host key verification",
 		:boolean => true
 
+  option :first_boot_attributes,
+    :short => "-j JSON_ATTRIBS",
+    :long => "--json-attributes",
+    :description => "A JSON string to be added to the first run of chef-client",
+    :proc => lambda { |o| JSON.parse(o) },
+    :default => {}
+
 	def run
 		$stdout.sync = true
 
@@ -372,6 +379,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		bootstrap.config[:use_sudo] = true unless get_config(:ssh_user) == 'root'
 		bootstrap.config[:template_file] = get_config(:template_file)
 		bootstrap.config[:environment] = get_config(:environment)
+    bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)
 		# may be needed for vpc_mode
 		bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
 		bootstrap
