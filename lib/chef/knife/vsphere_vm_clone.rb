@@ -1,6 +1,8 @@
 #
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # Contributor:: Jesse Campbell (<hikeit@gmail.com>)
+# Contributor:: Bethany Erskine (<bethany@paperlesspost.com>)
+# Contributor:: Adrian Stanila (https://github.com/sacx)
 # License:: Apache License, Version 2.0
 #
 
@@ -10,7 +12,6 @@ require 'rbvmomi'
 require 'netaddr'
 
 # Clone an existing template into a new VM, optionally applying a customization specification.
-# 
 # usage:
 # knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
 #     --cips 192.168.0.99/24,192.168.1.99/24 \
@@ -166,6 +167,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     :proc => lambda { |o| JSON.parse(o) },
     :default => {}
 
+	option :disable_customization,
+		:long => "--disable-customization",
+		:description => "Disable default customization",
+		:boolean => true,
+		:default => false
+
 	def run
 		$stdout.sync = true
 
@@ -296,7 +303,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 			end
 		end
 
-		use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
+    unless get_config(:disable_customization)
+      use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
+    end
+
 
 		if use_ident
 			# TODO - verify that we're deploying a linux spec, at least warn

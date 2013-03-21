@@ -99,7 +99,10 @@ e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
    --distro DISTRO - Bootstrap a distro using a template
    --template-file TEMPLATE - Full path to location of template to use
    --run-list RUN_LIST - Comma separated list of roles/recipes to apply
-   --no-host-key-verify - Disable host key verification",
+   --no-host-key-verify - Disable host key verification
+   --json-attributes - A JSON string to be added to the first run of chef-client
+   --disable-customization - Disable default customization
+
 
 Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.
 
@@ -133,9 +136,11 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           Jesse Campbell <hikeit@gmail.com>
           John Williams <john@37signals.com>
           Ian Delahorne <ian@scmventures.se>
-          Leeor Aharon <>
+          Bethany Erskine <bethany@paperlesspost.com>
+          Adrian Stanila
+          Leeor Aharon
 
-Copyright:: Copyright (c) 2011-2012 Ezra Pagel
+Copyright:: Copyright (c) 2011-2013 Ezra Pagel
 
 VMware vSphere is a trademark of VMware, Inc.
 

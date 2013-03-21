@@ -1,5 +1,8 @@
 knife-vsphere changelog
 ----------------------
+0.4.0 * Bethany Erskine - add support for --json-attribute option, json string
+	for use w/ --bootstrap
+	Adrian Stanila - option to disable customizations
 0.3.0 * Ian Delahorne - added support for tools script execution
 	jcam - bootstrap dhcp nodes
 0.2.3 * leeor - Fix --cvlan handling when VC is not using a distributed switch
