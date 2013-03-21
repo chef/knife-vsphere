@@ -43,6 +43,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--cspec CUST_SPEC",
 		:description => "The name of any customization specification to apply"
 
+	option :customization_plugin,
+		:long => "--cplugin CUST_PLUGIN_PATH",
+		:description => "Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm"
+
+	option :customization_plugin_data,
+		:long => "--cplugin-data CUST_PLUGIN_DATA",
+		:description => "String of data to pass to the plugin.  Use any format you wish."
+
 	option :customization_vlan,
 		:long => "--cvlan CUST_VLAN",
 		:description => "VLAN name for network adapter to join"
@@ -209,6 +217,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		task.wait_for_completion
 		puts "Finished creating virtual machine #{vmname}"
 
+		if customization_plugin && customization_plugin.respond_to?(:reconfig_vm)
+			target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or abort "VM could not be found in #{dest_folder}"
+			customization_plugin.reconfig_vm(target_vm)
+		end
+
 		if get_config(:power) || get_config(:bootstrap)
 			vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
 			fatal_exit("VM #{vmname} not found")
@@ -328,8 +341,41 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 			cust_spec.identity = ident
 		end
 
+		if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
+			clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
+		end
+
 		clone_spec.customization = cust_spec
 		clone_spec
+	end
+
+	# Loads the customization plugin if one was specified
+	# @return [KnifeVspherePlugin] the loaded and initialized plugin or nil
+	def customization_plugin
+		if @customization_plugin.nil?
+			if cplugin_path = get_config(:customization_plugin)
+				if File.exists? cplugin_path
+					require cplugin_path
+				else
+					abort "Customization plugin could not be found at #{cplugin_path}"
+				end
+
+				if Object.const_defined? 'KnifeVspherePlugin'
+					@customization_plugin = Object.const_get('KnifeVspherePlugin').new
+					if cplugin_data = get_config(:customization_plugin_data)
+						if @customization_plugin.respond_to?(:data=)
+							@customization_plugin.data = cplugin_data
+						else
+							abort "Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither."
+						end
+					end
+				else
+					abort "KnifeVspherePlugin class is not defined in #{cplugin_path}"
+				end
+			end
+		end
+
+		@customization_plugin
 	end
 
 	# Retrieves a CustomizationSpecItem that matches the supplied name
