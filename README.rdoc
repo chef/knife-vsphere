@@ -77,6 +77,8 @@ e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
    --resource-pool POOL - The resource pool into which to put the cloned VM
    --template TEMPLATE - The source VM / Template to clone from
    --cspec CUST_SPEC - The name of any customization specification to apply
+   --cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
+   --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
    --cvlan CUST_VLAN - VLAN name for network adapter to join
    --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization
    --cgw CUST_GW - CIDR IP of gateway for customization
@@ -105,6 +107,27 @@ e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
 
 
 Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.
+
+Customization Plugin Example:
+
+# cplugin_example.rb
+
+class KnifeVspherePlugin
+  def data=(cplugin_data)
+    # Parse your cplugin_data from the format of your choosing.
+  end
+
+  # optional
+  def customize_clone_spec(src_config, clone_spec)
+    # Customize the clone spec as you see fit.
+    return customized_clone_spec
+  end
+
+  # optional
+  def reconfig_vm(target_vm)
+    # Do anything you want in here with the cloned VM.
+  end
+end
 
 == knife vsphere vm delete --vmname <vm name>
 
