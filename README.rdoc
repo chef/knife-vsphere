@@ -15,6 +15,7 @@ VM Operations:
 -Power on/off
 -Clone (with optional chef bootstrap and run list)
 -Delete
+-VMDK addition
 Clone-specific customization options (for linux guests):
 -Destination folder
 -CPU core count
@@ -129,6 +130,13 @@ Arguments are optional, and allow for redirection in Linux and Solaris.
   --exec-passwd PASSWD - The password for the user executing as.
   --exec-dir DIRECTORY - Optional: Working directory to execute in. Will default to $HOME of user.
 
+== knife vsphere vm vmdk add VMNAME SIZE
+
+Adds VMDK to VM.
+
+Optional arguments
+
+  --vmdk-type TYPE - VMDK type, "thick" or "thin", defaults to "thin"
 
 = LICENSE:
 
