@@ -151,6 +151,12 @@ class Chef
 				baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
 			end
 
+			def find_device(vm,deviceName)
+			  vm.config.hardware.device.each do |device|
+			    return device if device.deviceInfo.label == deviceName
+			  end
+			  nil
+			end
 
 			def find_all_in_folder(folder, type)
 				if folder.instance_of?(RbVmomi::VIM::ClusterComputeResource)
