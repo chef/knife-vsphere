@@ -30,6 +30,11 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   :long => "--state STATE",
   :description => "The power state to transition the VM into; one of on|off|suspended"
 
+  option :wait_port,
+    :short => "-w PORT",
+    :long => "--wait-port PORT",
+    :description => "Wait for VM to be accessible on a port"
+
   def run
   
     $stdout.sync = true
@@ -79,6 +84,12 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
       when 'reset'
         vm.ResetVM_Task.wait_for_completion
         puts "Reset virtual machine #{vmname}"
+      end
+
+      if get_config(:wait_port)
+        print "Waiting for port #{get_config(:wait_port)}..."
+        print "." until tcp_test_port(vmname,get_config(:wait_port))
+        puts "done"
       end
     end
   end

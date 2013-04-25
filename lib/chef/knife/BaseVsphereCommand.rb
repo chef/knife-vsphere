@@ -175,6 +175,29 @@ class Chef
 				exit 1
 			end
 
+			def tcp_test_port(hostname,port)
+			  tcp_socket = TCPSocket.new(hostname, port)
+			  readable = IO.select([tcp_socket], nil, nil, 5)
+			  if readable
+			    Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}") if port == 22
+			    true
+			  else
+			    false
+			  end
+			  rescue Errno::ETIMEDOUT
+			    false
+			  rescue Errno::EPERM
+			    false
+			  rescue Errno::ECONNREFUSED
+			    sleep 2
+			    false
+			  rescue Errno::EHOSTUNREACH, Errno::ENETUNREACH
+			    sleep 2
+			    false
+			  ensure
+			    tcp_socket && tcp_socket.close
+			end
+			
 		end
 	end
 end
