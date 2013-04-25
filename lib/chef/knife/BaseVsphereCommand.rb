@@ -89,12 +89,22 @@ class Chef
 					:password => get_config(:vsphere_pass),
 					:insecure => get_config(:vsphere_insecure)
 				}
+				
+				# Grab the password from the command line
+				# if tt is not in the config file
+				if not conn_opts[:password]
+                                  conn_opts[:password] = get_password
+                                end
 
 				#    opt :debug, "Log SOAP messages", :short => 'd', :default => (ENV['RBVMOMI_DEBUG'] || false)
 
 				vim = RbVmomi::VIM.connect conn_opts
 				config[:vim] = vim
 				return vim
+			end
+			
+			def get_password
+			  @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
 			end
 
 			def find_folder(folderName)
