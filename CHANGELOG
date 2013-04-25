@@ -1,5 +1,8 @@
 knife-vsphere changelog
 ----------------------
+0.5.0 * kirtfitzpatrick - Added plugin support to vm clone; Brian Flad - Added
+	--wait-port option to vm state command, Add command to add VMDK to VM; Troy
+	Troy Ready - add password query prompt
 0.4.0 * Bethany Erskine - add support for --json-attribute option, json string
 	for use w/ --bootstrap
 	Adrian Stanila - option to disable customizations
