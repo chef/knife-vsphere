@@ -72,7 +72,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vmdk_backing = RbVmomi::VIM::VirtualDiskFlatVer2BackingInfo(
       :datastore => vmdk_datastore,
       :diskMode => "persistent",
-      :fileName => vmdk_name,
+      :fileName => vmdk_name
     )
 
     device = RbVmomi::VIM::VirtualDisk(
