@@ -1,8 +1,10 @@
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'fileutils'
 
+GEMSPEC = eval(File.read('knife-vsphere.gemspec'))
+
 spec = Gem::Specification.load(Dir['*.gemspec'].first)
-gem = Rake::GemPackageTask.new(spec)
+gem = Gem::PackageTask.new(GEMSPEC)
 gem.define
 
 desc "Push gem to rubygems.org"
