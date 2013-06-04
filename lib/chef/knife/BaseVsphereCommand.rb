@@ -107,6 +107,35 @@ class Chef
 			  @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
 			end
 
+			def get_vm(vmname)
+		          vim = get_vim_connection
+		          baseFolder = find_folder(get_config(:folder));
+                          retval = traverse_folders_for_vm(baseFolder,vmname)
+                          return retval
+                        end 
+
+                        def traverse_folders_for_vm(folder,vmname)
+                           # not sure why @vm is necessary, but it returns class Array
+                           # instead of class VirtualMachine without it... ugh
+                           @vm = nil
+		           folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
+		           folders.each do |child|
+                             traverse_folders_for_vm(child,vmname)
+                             vms = find_all_in_folder(folder,RbVmomi::VIM::VirtualMachine)
+                             vms.each do |vm|
+                               if vm.name == vmname
+                                 @vm = vm
+                                 return @vm
+                               end
+                             end
+                           end
+                           return @vm
+	                end
+
+                        def get_datacenter
+                           dc = config[:vim].serviceInstance.find_datacenter(get_config(:vsphere_dc)) or abort "datacenter not found"
+                        end
+
 			def find_folder(folderName)
 				dcname = get_config(:vsphere_dc)
 				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
