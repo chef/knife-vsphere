@@ -19,7 +19,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   $default[:vmdk_type] = "thin"      
 
   option :target_lun, 
-    :long => "--target_lun NAME",
+    :long => "--target-lun NAME",
     :description => "name of target LUN"
 
   def run
@@ -46,6 +46,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         puts "Could not find #{vmname}"
         return 
     end
+
     target_lun = get_config(:target_lun) unless get_config(:target_lun).nil?
     vmdk_size_kb = size.to_i * 1024 * 1024
     vmdk_size_B  = size.to_i * 1024 * 1024 * 1024 
@@ -74,13 +75,19 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       if candidates.length > 0
         puts "looks like we can put #{size.to_i} in #{candidates.join(" or ")}, using #{candidates[0]}";
         vmdk_datastore = candidates[0]
+
       else
         puts "Insufficient space on all LUNs currently assigned to #{vmname}. Please specify a new target."
         return 0
       end
-    # else
-        # we need a get_store method in BaseVsphereCommand
-        # vmdk_datastore = target_lun
+    else
+        vmdk_datastore = find_datastore(target_lun)
+        vmdk_dir  = "[#{vmdk_datastore.name}] #{vmname}"
+        # create the vm folder on the LUN or subsequent operations will fail.
+        if not vmdk_datastore.exists? vmname
+          dc = get_datacenter
+          dc._connection.serviceContent.fileManager.MakeDirectory :name => vmdk_dir, :datacenter => dc, :createParentDirectories => false
+        end
     end
 
     # now we need to inspect the files in this datastore to get our next file name
@@ -105,30 +112,126 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     puts "Next vmdk name is => #{vmdk_name}"
     
     # create the disk
-    vmdk_spec = RbVmomi::VIM::FileBackedVirtualDiskSpec(
-      :adapterType => "lsiLogic",
-      :capacityKb => vmdk_size_kb,
-      :diskType => vmdk_type
-    )
+    if not vmdk_datastore.exists? vmdk_fileName
+      vmdk_spec = RbVmomi::VIM::FileBackedVirtualDiskSpec(
+        :adapterType => "lsiLogic",
+        :capacityKb => vmdk_size_kb,
+        :diskType => vmdk_type
+      )
+      ui.info "Creating VMDK"
+      ui.info "#{ui.color "Capacity:", :cyan} #{size} GB"
+      ui.info "#{ui.color "Disk:", :cyan} #{vmdk_name}"
 
-    ui.info "Creating VMDK"
-    ui.info "#{ui.color "Capacity:", :cyan} #{size} GB"
-    ui.info "#{ui.color "Disk:", :cyan} #{vmdk_name}"
-
-
-    if get_config(:noop)
-      ui.info "#{ui.color "Skipping disk creation process because --noop specified.", :red}"
-    else
-      vdm.CreateVirtualDisk_Task(
-        :datacenter => get_datacenter,
-        :name => vmdk_name,
-        :spec => vmdk_spec
-      ).wait_for_completion
+      if get_config(:noop)
+        ui.info "#{ui.color "Skipping disk creation process because --noop specified.", :red}"
+      else
+        vdm.CreateVirtualDisk_Task(
+          :datacenter => get_datacenter,
+          :name => vmdk_name,
+          :spec => vmdk_spec
+        ).wait_for_completion
+      end
     end
-
     ui.info "Attaching VMDK to #{vmname}"
 
-    controller = find_device(vm,"SCSI controller 0")
+    # now we run through the SCSI controllers to see if there's an available one
+    available_controllers = Array.new()
+    use_controller = nil
+    scsi_tree = Hash.new()
+    vm.config.hardware.device.each do |device|
+      if device.class == RbVmomi::VIM::VirtualLsiLogicController
+        if scsi_tree[device.controllerKey].nil?
+            scsi_tree[device.key]=Hash.new()
+            scsi_tree[device.key]['children'] = Array.new();
+            scsi_tree[device.key]['device'] = device;
+        end
+      end
+      if device.class == RbVmomi::VIM::VirtualDisk
+        if scsi_tree[device.controllerKey].nil?
+            scsi_tree[device.controllerKey]=Hash.new()
+            scsi_tree[device.controllerKey]['children'] = Array.new();
+        end
+        scsi_tree[device.controllerKey]['children'].push(device)
+      end
+    end
+    scsi_tree.keys.sort.each do |controller|
+      if scsi_tree[controller]['children'].length < 15
+          available_controllers.push(scsi_tree[controller]['device'].deviceInfo.label)
+      end
+    end
+
+    if available_controllers.length > 0 
+
+      use_controller = available_controllers[0]
+
+      puts "using #{use_controller}"
+    else
+
+      if scsi_tree.keys.length < 4
+
+        # Add a controller if none are available
+        puts "no controllers available. Will attempt to create"
+        new_scsi_key       = scsi_tree.keys.sort[0] + 1
+        new_scsi_busNumber = scsi_tree[scsi_tree.keys.sort[0]]['device'].busNumber + 1
+
+        controller_device = RbVmomi::VIM::VirtualLsiLogicController(
+          :key       => new_scsi_key,
+          :busNumber => new_scsi_busNumber,
+          :sharedBus => :noSharing
+        )
+
+        device_config_spec = RbVmomi::VIM::VirtualDeviceConfigSpec(
+          :device => controller_device,
+          :operation => RbVmomi::VIM::VirtualDeviceConfigSpecOperation("add")
+        )
+  
+        vm_config_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
+          :deviceChange => [device_config_spec]
+        )
+
+        if get_config(:noop)
+          ui.info "#{ui.color "Skipping controller creation process because --noop specified.", :red}"
+        else
+          vm.ReconfigVM_Task(:spec => vm_config_spec).wait_for_completion
+        end
+      else
+        ui.info "Controllers maxed out at 4."
+        exit -1;
+      end
+    end
+     
+    # now go back and get the new device's name
+    vm.config.hardware.device.each do |device|
+      if device.class == RbVmomi::VIM::VirtualLsiLogicController
+        if device.key == new_scsi_key
+          use_controller = device.deviceInfo.label
+        end
+      end
+    end
+
+    # add the disk
+    controller = find_device(vm,use_controller)
+
+    used_unitNumbers = Array.new()
+    scsi_tree.keys.sort.each do |c|
+      if controller.key == scsi_tree[c]['device'].key
+        used_unitNumbers.push(scsi_tree[c]['device'].scsiCtlrUnitNumber)
+        scsi_tree[c]['children'].each do |disk|
+          used_unitNumbers.push(disk.unitNumber)
+        end
+      end
+    end
+    available_unitNumbers = Array.new
+    (0 .. 15).each do |scsi_id|
+      if used_unitNumbers.grep(scsi_id).length > 0 
+      else
+          available_unitNumbers.push(scsi_id)
+      end
+    end
+
+    # ensure we don't try to add the controllers SCSI ID
+    new_unitNumber = available_unitNumbers.sort[0]
+     puts "using SCSI ID #{new_unitNumber}"
 
     vmdk_backing = RbVmomi::VIM::VirtualDiskFlatVer2BackingInfo(
       :datastore => vmdk_datastore,
@@ -141,7 +244,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       :capacityInKB => vmdk_size_kb,
       :controllerKey => controller.key,
       :key => -1,
-      :unitNumber => controller.device.size + 1
+      :unitNumber => new_unitNumber
     )
 
     device_config_spec = RbVmomi::VIM::VirtualDeviceConfigSpec(
