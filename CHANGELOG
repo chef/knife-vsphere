@@ -1,5 +1,9 @@
 knife-vsphere changelog
 ----------------------
+0.7.0 * James White - added a ton of LUN selection support, corresponding automatic
+	LSILogic adapter creation
+0.6.0 * Greg Swallow - fixed a rake break.
+        Mark Malone - added vm snapshot support!
 0.5.0 * kirtfitzpatrick - Added plugin support to vm clone; Brian Flad - Added
 	--wait-port option to vm state command, Add command to add VMDK to VM; Troy
 	Troy Ready - add password query prompt
@@ -13,7 +17,7 @@ knife-vsphere changelog
 0.2.2 * jcam - add pool list subcommand, adjust gemspec to support chef 10.x.x
 0.2.1 * robharrop - update to rbvmomi 1.5.1
 0.2.0 * jcam - allow defaults from subcommands, error for missing .chef with bootstrap
-0.1.9 * jcam - add support for configuring options from the command line or config files 
+0.1.9 * jcam - add support for configuring options from the command line or config files
 
 0.1.8 * add Ian Delahorne's support for showing datastores with their available size and
         capacity, bug fixes
