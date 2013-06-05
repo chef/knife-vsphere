@@ -209,7 +209,7 @@ class Chef
                           if candidates.length > 0
                             vmdk_datastore = candidates[0]
                           else
-                            puts "Insufficient space on all LUNs currently assigned to #{vmname}. Please specify a new target."
+                            puts "Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target."
                             vmdk_datastore = nil
                           end
                           return vmdk_datastore

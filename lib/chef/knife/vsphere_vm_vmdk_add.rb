@@ -53,9 +53,11 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
     if target_lun.nil?
       vmdk_datastore = choose_datastore(vm.datastore,size)
+      exit -1 if vmdk_datastore.nil?
     else
         vmdk_datastores = find_datastores_regex(target_lun)
         vmdk_datastore = choose_datastore(vmdk_datastores,size)
+        exit -1 if vmdk_datastore.nil?
         vmdk_dir  = "[#{vmdk_datastore.name}] #{vmname}"
         # create the vm folder on the LUN or subsequent operations will fail.
         if not vmdk_datastore.exists? vmname
