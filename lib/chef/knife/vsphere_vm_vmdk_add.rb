@@ -52,36 +52,10 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vmdk_size_B  = size.to_i * 1024 * 1024 * 1024 
 
     if target_lun.nil?
-      candidates = []
-      vm.datastore.each  do |store|
-        avail = number_to_human_size(store.summary[:freeSpace])
-        cap = number_to_human_size(store.summary[:capacity])                     
-        puts "#{ui.color("Datastore", :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"     
-
-        # vm's can span multiple datastores, so instead of grabbing the first one
-        # let's find the first datastore with the available space on a LUN the vm 
-        # is already using, or use a specified LUN (if given)
-
-        if ( store.summary[:freeSpace] - vmdk_size_B ) > 0
-
-          # also let's not use more than 90% of total space to save room for snapshots.
-
-          cap_remains = 100 * ( (store.summary[:freeSpace].to_f - vmdk_size_B.to_f ) / store.summary[:capacity].to_f )
-          if(cap_remains.to_i > 10)
-            candidates.push(store)
-          end 
-        end
-      end
-      if candidates.length > 0
-        puts "looks like we can put #{size.to_i} in #{candidates.join(" or ")}, using #{candidates[0]}";
-        vmdk_datastore = candidates[0]
-
-      else
-        puts "Insufficient space on all LUNs currently assigned to #{vmname}. Please specify a new target."
-        return 0
-      end
+      vmdk_datastore = choose_datastore(vm.datastore,size)
     else
-        vmdk_datastore = find_datastore(target_lun)
+        vmdk_datastores = find_datastores_regex(target_lun)
+        vmdk_datastore = choose_datastore(vmdk_datastores,size)
         vmdk_dir  = "[#{vmdk_datastore.name}] #{vmname}"
         # create the vm folder on the LUN or subsequent operations will fail.
         if not vmdk_datastore.exists? vmname
@@ -89,6 +63,8 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
           dc._connection.serviceContent.fileManager.MakeDirectory :name => vmdk_dir, :datacenter => dc, :createParentDirectories => false
         end
     end
+
+    puts "Choosing: #{vmdk_datastore.name}"
 
     # now we need to inspect the files in this datastore to get our next file name
     next_vmdk = 1
@@ -161,9 +137,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     end
 
     if available_controllers.length > 0 
-
       use_controller = available_controllers[0]
-
       puts "using #{use_controller}"
     else
 
@@ -171,8 +145,8 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
         # Add a controller if none are available
         puts "no controllers available. Will attempt to create"
-        new_scsi_key       = scsi_tree.keys.sort[0] + 1
-        new_scsi_busNumber = scsi_tree[scsi_tree.keys.sort[0]]['device'].busNumber + 1
+        new_scsi_key       = scsi_tree.keys.sort[scsi_tree.length - 1] + 1
+        new_scsi_busNumber = scsi_tree[scsi_tree.keys.sort[scsi_tree.length - 1]]['device'].busNumber + 1
 
         controller_device = RbVmomi::VIM::VirtualLsiLogicController(
           :key       => new_scsi_key,

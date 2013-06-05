@@ -183,6 +183,53 @@ class Chef
         baseEntity
 			end
 
+                        def choose_datastore(dstores,size)
+                          vmdk_size_kb = size.to_i * 1024 * 1024
+                          vmdk_size_B = size.to_i * 1024 * 1024 * 1024
+             
+                          candidates = []
+                          dstores.each  do |store|
+                            avail = number_to_human_size(store.summary[:freeSpace])
+                            cap = number_to_human_size(store.summary[:capacity])                     
+                            puts "#{ui.color("Datastore", :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"     
+                      
+                            # vm's can span multiple datastores, so instead of grabbing the first one
+                            # let's find the first datastore with the available space on a LUN the vm 
+                            # is already using, or use a specified LUN (if given)
+                      
+                            
+                            if ( store.summary[:freeSpace] - vmdk_size_B ) > 0
+                              # also let's not use more than 90% of total space to save room for snapshots.
+                              cap_remains = 100 * ( (store.summary[:freeSpace].to_f - vmdk_size_B.to_f ) / store.summary[:capacity].to_f )
+                              if(cap_remains.to_i > 10)
+                                candidates.push(store)
+                              end 
+                            end
+                          end
+                          if candidates.length > 0
+                            vmdk_datastore = candidates[0]
+                          else
+                            puts "Insufficient space on all LUNs currently assigned to #{vmname}. Please specify a new target."
+                            vmdk_datastore = nil
+                          end
+                          return vmdk_datastore
+                        end
+
+
+			def find_datastores_regex(regex)
+                          stores = Array.new()
+                          puts "Looking for all datastores that match /#{regex}/"
+                          dcname = get_config(:vsphere_dc)
+                          dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+                          baseEntity = dc.datastore
+                          baseEntity.each do |ds|
+                            if ds.name.match /#{regex}/
+                              stores.push ds
+                            end
+                          end
+                          return stores
+                        end
+
 			def find_datastore(dsName)
 				dcname = get_config(:vsphere_dc)
 				dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
