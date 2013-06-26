@@ -33,7 +33,15 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
 	def print_vms_in_folder(folder)
 		vms = find_all_in_folder(folder, RbVmomi::VIM::VirtualMachine)
 		vms.each do |vm|
-			puts "#{ui.color("VM Name:", :cyan)} #{vm.name}\t#{ui.color("IP:", :magenta)} #{vm.guest.ipAddress}\t#{ui.color("RAM:", :magenta)} #{vm.summary.config.memorySizeMB}"
+                        state = case vm.runtime.powerState
+                                when PsOn
+                                        ui.color("on", :green)
+                                when PsOff
+                                        ui.color("off", :red)
+                                when PsSuspended
+                                        ui.color("suspended", :yellow)
+                                end
+			puts "#{ui.color("VM Name:", :cyan)} #{vm.name}\t#{ui.color("IP:", :magenta)} #{vm.guest.ipAddress}\t#{ui.color("RAM:", :magenta)} #{vm.summary.config.memorySizeMB}\t#{ui.color("State:", :cyan)} #{state}"
 		end
 	end
 
