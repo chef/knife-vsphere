@@ -178,7 +178,7 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           John Williams <john@37signals.com>
           Ian Delahorne <ian@scmventures.se>
           Bethany Erskine <bethany@paperlesspost.com>
-          Adrian Stanila
+          Adrian Stanila <adrian.stanila@sacx.net>
           Leeor Aharon
 
 Copyright:: Copyright (c) 2011-2013 Ezra Pagel
