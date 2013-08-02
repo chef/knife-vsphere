@@ -1,5 +1,9 @@
 knife-vsphere changelog
 ----------------------
+
+0.8.0 * Adrian Stanila added --annotation option (fixes #39)
+        Ian Delahorne - how VM state in vsphere vm list
+	Yvonne Lam - vm clone` does not accept --vmname option.
 0.7.0 * James White - added a ton of LUN selection support, corresponding automatic
 	LSILogic adapter creation
 0.6.0 * Greg Swallow - fixed a rake break.
