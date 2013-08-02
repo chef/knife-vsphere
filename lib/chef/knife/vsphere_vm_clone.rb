@@ -39,6 +39,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:description => "The source VM / Template to clone from",
 		:required => true
 
+	option :annotation,
+		:long => "--annotation TEXT",
+		:description => "Add TEXT in Notes field from annotation"
+
 	option :customization_spec,
 		:long => "--cspec CUST_SPEC",
 		:description => "The name of any customization specification to apply"
@@ -264,6 +268,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
 		clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
 
+		if get_config(:annotation)
+			clone_spec.config.annotation = get_config(:annotation)
+		end
+
 		if get_config(:customization_cpucount)
 			clone_spec.config.numCPUs = get_config(:customization_cpucount)
 		end
@@ -318,7 +326,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     unless get_config(:disable_customization)
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
-    end
 
 
 		if use_ident
@@ -346,6 +353,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		end
 
 		clone_spec.customization = cust_spec
+	end
 		clone_spec
 	end
 
