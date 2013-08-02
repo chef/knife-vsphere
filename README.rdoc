@@ -68,7 +68,7 @@ Enumerates the VM Templates registered in the target datacenter. Only name is cu
 
 Enumerates the customization specifications registered in the target datacenter. Only name is currently displayed.
 
-== knife vsphere vm clone --template <source template name> --vmname <new vm name> --cspec <customization_spec>
+== knife vsphere vm clone <new vm name> --template <source template name> --cspec <customization_spec>
 e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
      --cips 192.168.0.99/24,192.168.1.99/24 \
      --chostname NODENAME --cdomain NODEDOMAIN
