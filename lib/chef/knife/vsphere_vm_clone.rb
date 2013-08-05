@@ -185,6 +185,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:boolean => true,
 		:default => false
 
+  option :log_level,
+    :short => "-l LEVEL",
+    :long =>  "--log_level",
+    :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
+    :proc => lambda { |o| JSON.parse(o) }
+    
 	def run
 		$stdout.sync = true
 
@@ -444,6 +450,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		bootstrap.config[:template_file] = get_config(:template_file)
 		bootstrap.config[:environment] = get_config(:environment)
     bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)
+    bootstrap.config[:log_level] = get_config(:log_level)
 		# may be needed for vpc_mode
 		bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
 		bootstrap
