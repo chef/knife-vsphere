@@ -189,7 +189,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     :short => "-l LEVEL",
     :long =>  "--log_level",
     :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
-    :proc => lambda { |o| JSON.parse(o) }
+    :proc => lambda { |l| l.to_sym }
     
 	def run
 		$stdout.sync = true
