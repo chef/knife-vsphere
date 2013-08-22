@@ -161,11 +161,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:long => "--template-file TEMPLATE",
 		:description => "Full path to location of template to use"
 
-	option :run_list,
-		:short => "-r RUN_LIST",
-		:long => "--run-list RUN_LIST",
-		:description => "Comma separated list of roles/recipes to apply"
-	$default[:run_list] = ''
+  option :run_list,
+    :short => "-r RUN_LIST",
+    :long => "--run-list RUN_LIST",
+    :description => "Comma separated list of roles/recipes to apply"
+  $default[:run_list] = ''
+
+  option :secret_file,
+    :long => "--secret-file SECRET_FILE",
+    :description => "A file containing the secret key to use to encrypt data bag item values"
+  $default[:secret_file] = ''
 
 	option :no_host_key_verify,
 		:long => "--no-host-key-verify",
@@ -190,7 +195,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     :long =>  "--log_level",
     :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
     :proc => lambda { |l| l.to_sym }
-    
+
 	def run
 		$stdout.sync = true
 
@@ -438,7 +443,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		bootstrap = Chef::Knife::Bootstrap.new
 		bootstrap.name_args = [config[:fqdn]]
 		bootstrap.config[:run_list] = get_config(:run_list).split(/[\s,]+/)
-		bootstrap.config[:ssh_user] = get_config(:ssh_user)
+    bootstrap.config[:secret_file] = get_config(:secret_file)
+    bootstrap.config[:ssh_user] = get_config(:ssh_user)
 		bootstrap.config[:ssh_password] = get_config(:ssh_password)
 		bootstrap.config[:ssh_port] = get_config(:ssh_port)
 		bootstrap.config[:identity_file] = get_config(:identity_file)
