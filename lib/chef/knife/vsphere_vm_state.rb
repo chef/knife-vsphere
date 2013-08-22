@@ -35,8 +35,13 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
     :long => "--wait-port PORT",
     :description => "Wait for VM to be accessible on a port"
 
+  option :shutdown,
+    :short => "-g",
+    :long => "--shutdown",
+    :description => "Guest OS shutdown"
+
   def run
-  
+
     $stdout.sync = true
 
     vmname = @name_args[0]
@@ -45,7 +50,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
       ui.fatal("You must specify a virtual machine name")
       exit 1
     end
-   
+
     vim = get_vim_connection
 
     baseFolder = find_folder(get_config(:folder));
@@ -71,8 +76,18 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
         if state == PsOff
           puts "Virtual machine #{vmname} was already powered off"
         else
-          vm.PowerOffVM_Task.wait_for_completion
-          puts "Powered off virtual machine #{vmname}"
+          if get_config(:shutdown)
+            vm.ShutdownGuest
+            print "Waiting for virtual machine #{vmname} to shut down..."
+            until vm.runtime.powerState == PsOff do
+              sleep 2
+              print "."
+            end
+            puts "done"
+          else
+            vm.PowerOffVM_Task.wait_for_completion
+            puts "Powered off virtual machine #{vmname}"
+          end
         end
       when 'suspend'
         if state == PowerStates['suspended']
