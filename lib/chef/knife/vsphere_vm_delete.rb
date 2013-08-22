@@ -20,7 +20,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 		:short => "-P",
 		:long => "--purge",
 		:boolean => true,
-		:description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the EC2 node itself."
+		:description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the VM itself."
 
 	get_common_options
 
