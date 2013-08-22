@@ -269,7 +269,10 @@ class Chef
 
 			def tcp_test_port_vm(vm,port)
 			  ip = vm.guest.ipAddress
-			  return false if ip.nil?
+			  if ip.nil?
+			    sleep 2
+			    return false
+			  end
 			  tcp_test_port(ip, port)
 			end
 
