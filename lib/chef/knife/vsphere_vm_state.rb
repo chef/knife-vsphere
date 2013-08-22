@@ -88,7 +88,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
 
       if get_config(:wait_port)
         print "Waiting for port #{get_config(:wait_port)}..."
-        print "." until tcp_test_port(vmname,get_config(:wait_port))
+        print "." until tcp_test_port_vm(vmname,get_config(:wait_port))
         puts "done"
       end
     end
