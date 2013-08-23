@@ -130,9 +130,10 @@ class KnifeVspherePlugin
   end
 end
 
-== knife vsphere vm delete --vmname <vm name>
+== knife vsphere vm delete [--purge] --vmname <vm name>
 
-Unregisters an existing VM. Currently, it does not perform any datastore cleanup to remove VM files.
+Deletes an existing VM, removing it from vSphere inventory and deleting from disk, optionally deleting it from Chef as well.
+    --purge           - Delete the client and node from Chef as well
 
 == knife vsphere vm snapshot VMNAME (options)
     --list            - List the current tree of snapshots
