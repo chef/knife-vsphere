@@ -130,7 +130,7 @@ class KnifeVspherePlugin
   end
 end
 
-== knife vsphere vm delete [--purge] --vmname <vm name>
+== knife vsphere vm delete VMNAME> [--purge]
 
 Deletes an existing VM, removing it from vSphere inventory and deleting from disk, optionally deleting it from Chef as well.
     --purge           - Delete the client and node from Chef as well
