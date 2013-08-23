@@ -3,7 +3,7 @@
 # License:: Apache License, Version 2.0
 #
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 
 # Lists all known pools in the configured datacenter
 class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand

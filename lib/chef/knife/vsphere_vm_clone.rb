@@ -7,7 +7,7 @@
 #
 
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 

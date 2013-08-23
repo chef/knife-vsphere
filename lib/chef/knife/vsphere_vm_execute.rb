@@ -2,7 +2,7 @@
 # License:: Apache License, Version 2.0
 
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
