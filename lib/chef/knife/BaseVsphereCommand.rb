@@ -267,6 +267,15 @@ class Chef
 				exit 1
 			end
 
+			def tcp_test_port_vm(vm,port)
+			  ip = vm.guest.ipAddress
+			  if ip.nil?
+			    sleep 2
+			    return false
+			  end
+			  tcp_test_port(ip, port)
+			end
+
 			def tcp_test_port(hostname,port)
 			  tcp_socket = TCPSocket.new(hostname, port)
 			  readable = IO.select([tcp_socket], nil, nil, 5)
