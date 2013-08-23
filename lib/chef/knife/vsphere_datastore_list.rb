@@ -1,11 +1,11 @@
 # Copyright (C) 2012, SCM Ventures AB
 # Author: Ian Delahorne <ian@scmventures.se>
-# 
+#
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
 # above copyright notice and this permission notice appear in all
 # copies.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
 # WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE
 
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 
 def number_to_human_size(number)
   number = number.to_f

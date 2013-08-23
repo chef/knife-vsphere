@@ -4,7 +4,7 @@
 #
 
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 
 # These two are needed for the '--purge' deletion case

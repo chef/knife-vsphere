@@ -4,7 +4,7 @@
 #
 
 require 'chef/knife'
-require 'chef/knife/BaseVsphereCommand'
+require 'chef/knife/base_vsphere_command'
 
 # Lists all known VM templates in the configured datacenter
 class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
