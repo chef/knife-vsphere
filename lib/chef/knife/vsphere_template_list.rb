@@ -12,7 +12,7 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere template list"
 
   get_common_options
-  
+
   def run
 
     $stdout.sync = true
@@ -23,9 +23,9 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
     baseFolder = find_folder(get_config(:folder));
 
     vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine).
-      select {|v| !v.config.nil? && v.config.template == true }
-    
-    vms.each do |vm|          
+        select { |v| !v.config.nil? && v.config.template == true }
+
+    vms.each do |vm|
       puts "#{ui.color("Template Name", :cyan)}: #{vm.name}"
     end
   end

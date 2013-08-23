@@ -1,4 +1,3 @@
-
 # Author:: Ian Delahorne (<ian@delahorne.com>)
 # License:: Apache License, Version 2.0
 
@@ -33,7 +32,7 @@ class Chef::Knife::VsphereVmQuery < Chef::Knife::BaseVsphereCommand
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
     vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
-      abort "VM #{vmname} not found"
+        abort "VM #{vmname} not found"
 
     # split QUERY by dots, and walk the object model
     query = query_string.split '.'

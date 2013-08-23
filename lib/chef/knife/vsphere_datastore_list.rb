@@ -25,13 +25,13 @@ def number_to_human_size(number)
   if number.to_i < base
     unit = storage_units_fmt[0]
   else
-    max_exp  = storage_units_fmt.size - 1
+    max_exp = storage_units_fmt.size - 1
     exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
     exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-    number  /= base ** exponent
+    number /= base ** exponent
     unit = storage_units_fmt[exponent]
   end
-  
+
   return sprintf("%0.2f %s", number, unit)
 end
 
@@ -42,11 +42,12 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastore list"
 
   get_common_options
+
   def run
     $stdout.sync = true
-    
+
     vim = get_vim_connection
-		dcname = get_config(:vsphere_dc)
+    dcname = get_config(:vsphere_dc)
     dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
     dc.datastore.each do |store|
       avail = number_to_human_size(store.summary[:freeSpace])

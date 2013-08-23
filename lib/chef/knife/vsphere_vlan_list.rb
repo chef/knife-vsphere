@@ -23,11 +23,12 @@ class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vlan list"
 
   get_common_options
+
   def run
     $stdout.sync = true
-    
+
     vim = get_vim_connection
-		dcname = get_config(:vsphere_dc)
+    dcname = get_config(:vsphere_dc)
     dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
     dc.network.each do |network|
       puts "#{ui.color("VLAN", :cyan)}: #{network.name}"
