@@ -155,7 +155,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 		:short => "-d DISTRO",
 		:long => "--distro DISTRO",
 		:description => "Bootstrap a distro using a template"
-	$default[:distro] = "ubuntu10.04-gems"
 
 	option :template_file,
 		:long => "--template-file TEMPLATE",
