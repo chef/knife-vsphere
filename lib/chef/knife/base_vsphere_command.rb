@@ -167,7 +167,7 @@ class Chef
             if baseEntity.is_a? RbVmomi::VIM::Folder
               baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
-            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource
+            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource
               baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
             elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
@@ -245,7 +245,7 @@ class Chef
       end
 
       def find_all_in_folder(folder, type)
-        if folder.instance_of?(RbVmomi::VIM::ClusterComputeResource)
+        if folder.instance_of?(RbVmomi::VIM::ClusterComputeResource) or folder.instance_of?(RbVmomi::VIM::ComputeResource)
           folder = folder.resourcePool
         end
         if folder.instance_of?(RbVmomi::VIM::ResourcePool)
