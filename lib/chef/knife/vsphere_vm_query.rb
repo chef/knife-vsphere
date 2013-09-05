@@ -1,4 +1,4 @@
-# Author:: Ian Delahorne (<ian@delahorne.com>)
+# Author:: Brian Dupras (<bdupras@rallydev.com>)
 # License:: Apache License, Version 2.0
 
 require 'chef/knife'
