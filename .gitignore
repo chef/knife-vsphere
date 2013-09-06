@@ -1,0 +1,7 @@
+.index
+*.log
+.DS_Store
+*.swp
+.rvmrc
+.testrc
+.idea/

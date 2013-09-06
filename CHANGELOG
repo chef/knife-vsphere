@@ -1,5 +1,9 @@
 knife-vsphere changelog
 ----------------------
+0.9.5 * bdupras - added command vm config PROPERTY VALUE
+	mdkent -  handle parent class of ClusterComputeResource
+	alastair - update readme to reflect behavior of vm.destroy_task and --purge option
+
 0.9.0 * bdupras - adds optional --shutdown parameter for guest os
                 - added vm query VMNAME QUERY sub-command to query the named properties
                 - modified vm state --wait-port to use vm.guest.ipAddress
