@@ -68,6 +68,15 @@ class Chef
                :short => "-f FOLDER",
                :long => "--folder FOLDER",
                :description => "The folder to get VMs from"
+
+        option :proxy_host,
+               :long => '--proxyhost PROXY_HOSTNAME',
+               :description => 'Proxy hostname'
+
+        option :proxy_port,
+               :long => '--proxyport PROXY_PORT',
+               :description => 'Proxy port'
+
         $default[:folder] = ''
       end
 
@@ -87,7 +96,9 @@ class Chef
             :use_ssl => !get_config(:vsphere_nossl),
             :user => get_config(:vsphere_user),
             :password => get_config(:vsphere_pass),
-            :insecure => get_config(:vsphere_insecure)
+            :insecure => get_config(:vsphere_insecure),
+            :proxyHost => get_config(:proxy_host),
+            :proxyPort => get_config(:proxy_port)
         }
 
         # Grab the password from the command line
