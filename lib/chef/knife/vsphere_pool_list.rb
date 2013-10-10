@@ -23,8 +23,7 @@ class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand
   end
 
   def find_pool_folder(folderName)
-    dcname = get_config(:vsphere_dc)
-    dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    dc = get_datacenter
     baseEntity = dc.hostFolder
     entityArray = folderName.split('/')
     entityArray.each do |entityArrItem|

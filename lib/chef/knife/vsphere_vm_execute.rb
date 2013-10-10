@@ -45,8 +45,7 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    dcname = get_config(:vsphere_dc)
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    dc = get_datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
     vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
