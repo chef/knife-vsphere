@@ -69,6 +69,12 @@ class Chef
                :long => "--folder FOLDER",
                :description => "The folder to get VMs from"
         $default[:folder] = ''
+		
+        option :regex,
+               :short => "-r REGEX",
+               :long => "--regex REGEX",
+               :description => "Regex to match the datastore name"
+        $default[:regex] = ''
       end
 
       def get_config(key)
