@@ -18,7 +18,7 @@ require 'netaddr'
 #     --chostname NODENAME --cdomain NODEDOMAIN
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
-	banner "knife vsphere vm clone VMNAME (options)"
+	banner "knife vsphere vm clone --node-name VMNAME (options)"
 
 	get_common_options
 
@@ -176,7 +176,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 	def run
 		$stdout.sync = true
 
-		vmname = @name_args[0]
+		vmname = config[:chef_node_name]
 		if vmname.nil?
 			show_usage
 			fatal_exit("You must specify a virtual machine name")
