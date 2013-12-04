@@ -23,6 +23,12 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
 
   banner "knife vsphere datastore maxfree"
 
+  option :regex,
+         :short => "-r REGEX",
+         :long => "--regex REGEX",
+         :description => "Regex to match the datastore name"
+  $default[:regex] = ''
+
   get_common_options
 
   def run
