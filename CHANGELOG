@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+0.9.6 * mheidenr - added command to get the datastore with the most free space
+        mheidenr - moved REGEX parameter to maxfree command
+        bdupras - added command vm move
+        b-dean - change how the datacenter is found
+        dcondomitti - add proxy support
+
 0.9.5 * bdupras - added command vm config PROPERTY VALUE
 	mdkent -  handle parent class of ClusterComputeResource
 	alastair - update readme to reflect behavior of vm.destroy_task and --purge option
