@@ -47,8 +47,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
     $stdout.sync = true
 
     vim = get_vim_connection
-    dcname = get_config(:vsphere_dc)
-    dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    dc = get_datacenter
     dc.datastore.each do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])

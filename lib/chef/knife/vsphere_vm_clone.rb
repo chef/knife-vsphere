@@ -212,8 +212,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    dcname = get_config(:vsphere_dc)
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    dc = get_datacenter
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
 
@@ -261,8 +260,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     if get_config(:resource_pool)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(get_config(:resource_pool)))
     else
-      dcname = get_config(:vsphere_dc)
-      dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+      dc = get_datacenter
       hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
       rp = hosts.first.resourcePool
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)

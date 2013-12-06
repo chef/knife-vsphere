@@ -133,12 +133,12 @@ class Chef
       end
 
       def get_datacenter
-        dc = config[:vim].serviceInstance.find_datacenter(get_config(:vsphere_dc)) or abort "datacenter not found"
+        dcname = get_config(:vsphere_dc)
+        config[:vim].rootFolder.children.find { |child| child.name == dcname && child.class == RbVmomi::VIM::Datacenter } or abort "datacenter not found"
       end
 
       def find_folder(folderName)
-        dcname = get_config(:vsphere_dc)
-        dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+        dc = get_datacenter
         baseEntity = dc.vmFolder
         entityArray = folderName.split('/')
         entityArray.each do |entityArrItem|
@@ -151,15 +151,13 @@ class Chef
       end
 
       def find_network(networkName)
-        dcname = get_config(:vsphere_dc)
-        dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+        dc = get_datacenter
         baseEntity = dc.network
         baseEntity.find { |f| f.name == networkName } or abort "no such network #{networkName}"
       end
 
       def find_pool(poolName)
-        dcname = get_config(:vsphere_dc)
-        dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+        dc = get_datacenter
         baseEntity = dc.hostFolder
         entityArray = poolName.split('/')
         entityArray.each do |entityArrItem|
@@ -219,8 +217,7 @@ class Chef
       def find_datastores_regex(regex)
         stores = Array.new()
         puts "Looking for all datastores that match /#{regex}/"
-        dcname = get_config(:vsphere_dc)
-        dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+        dc = get_datacenter
         baseEntity = dc.datastore
         baseEntity.each do |ds|
           if ds.name.match /#{regex}/
@@ -231,8 +228,7 @@ class Chef
       end
 
       def find_datastore(dsName)
-        dcname = get_config(:vsphere_dc)
-        dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+        dc = get_datacenter
         baseEntity = dc.datastore
         baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
       end
