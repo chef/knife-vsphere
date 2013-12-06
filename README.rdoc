@@ -4,28 +4,28 @@
 
 This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently supports the following:
 Listings:
--VMs
--Folders
--Templates
--Datastores
--VLANs (currently requires distributed vswitch)
--Resource Pools and Clusters
--Customization Specifications
-VM Operations:
--Power on/off
--Clone (with optional chef bootstrap and run list)
--Delete
--VMDK addition
-Clone-specific customization options (for linux guests):
--Destination folder
--CPU core count
--Memory size
--DNS settings
--Hostname / Domain name
--IP addresses / default gateway
--vlan (currently requires distributed vswitch)
--datastore
--resource pool
+    -VMs
+    -Folders
+    -Templates
+    -Datastores
+    -VLANs (currently requires distributed vswitch)
+    -Resource Pools and Clusters
+    -Customization Specifications
+    VM Operations:
+    -Power on/off
+    -Clone (with optional chef bootstrap and run list)
+    -Delete
+    -VMDK addition
+    Clone-specific customization options (for linux guests):
+    -Destination folder
+    -CPU core count
+    -Memory size
+    -DNS settings
+    -Hostname / Domain name
+    -IP addresses / default gateway
+    -vlan (currently requires distributed vswitch)
+    -datastore
+    -resource pool
 
 = INSTALLATION:
 
@@ -148,6 +148,11 @@ Manages the snapshots for an existing VM, allowing for creation, removal, and re
 == knife vsphere datastore list
 
 Lists all known datastores with capacity and usage
+
+== knife vsphere datastore maxfree [--regex]
+
+Gets the datastore with the most free space
+    --regex           - Pattern to match the datastore name
 
 == knife vsphere vm execute VMNAME COMMAND [ARGUMENTS] --exec-user USER --exec-passwd PASSWD [ --exec-dir DIRECTORY ]
 
