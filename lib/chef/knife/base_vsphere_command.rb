@@ -143,9 +143,22 @@ class Chef
         return @vm
       end
 
+      def traverse_folders_for_dc(folder, dcname)
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::Datacenter && child.name == dcname
+            return child
+          elsif child.class == RbVmomi::VIM::Folder
+            dc = traverse_folders_for_dc(child, dcname)
+            if dc then return dc end
+          end
+        end
+        return false
+      end
+
       def get_datacenter
         dcname = get_config(:vsphere_dc)
-        config[:vim].rootFolder.children.find { |child| child.name == dcname && child.class == RbVmomi::VIM::Datacenter } or abort "datacenter not found"
+        traverse_folders_for_dc(config[:vim].rootFolder, dcname) or abort "datacenter not found"
       end
 
       def find_folder(folderName)
