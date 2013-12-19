@@ -18,7 +18,7 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
-# Gets the data store with the most free space in datacenter
+# Gets the data store cluster with the most free space in datacenter
 class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
 
   banner "knife vsphere datastorecluster maxfree"
