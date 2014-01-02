@@ -30,8 +30,7 @@ class Chef::Knife::VsphereVmQuery < Chef::Knife::BaseVsphereCommand
     dc = get_datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
-        abort "VM #{vmname} not found"
+    vm = traverse_folders_for_vm(folder, vmname) or abort "VM #{vmname} not found"
 
     # split QUERY by dots, and walk the object model
     query = query_string.split '.'
