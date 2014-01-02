@@ -126,21 +126,16 @@ class Chef
       end
 
       def traverse_folders_for_vm(folder, vmname)
-        # not sure why @vm is necessary, but it returns class Array
-        # instead of class VirtualMachine without it... ugh
-        @vm = nil
-        folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
-        folders.each do |child|
-          traverse_folders_for_vm(child, vmname)
-          vms = find_all_in_folder(folder, RbVmomi::VIM::VirtualMachine)
-          vms.each do |vm|
-            if vm.name == vmname
-              @vm = vm
-              return @vm
-            end
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
+              return child
+          elsif child.class == RbVmomi::VIM::Folder
+            vm = traverse_folders_for_vm(child, vmname)
+            if vm then return vm end
           end
         end
-        return @vm
+        return false
       end
 
       def traverse_folders_for_dc(folder, dcname)
