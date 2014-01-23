@@ -27,9 +27,9 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
          :short => "-r REGEX",
          :long => "--regex REGEX",
          :description => "Regex to match the datastore name"
-  $default[:regex] = ''
 
   get_common_options
+  $default[:regex] = ''
 
   def run
     $stdout.sync = true
