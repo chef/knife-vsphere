@@ -18,18 +18,18 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
-# Gets the data store with the most free space in datacenter
-class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
+# Gets the data store cluster with the most free space in datacenter
+class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
 
-  banner "knife vsphere datastore maxfree"
+  banner "knife vsphere datastorecluster maxfree"
 
   option :regex,
          :short => "-r REGEX",
          :long => "--regex REGEX",
-         :description => "Regex to match the datastore name"
+         :description => "Regex to match the datastore cluster name"
+  $default[:regex] = ''
 
   get_common_options
-  $default[:regex] = ''
 
   def run
     $stdout.sync = true
@@ -39,8 +39,8 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
 	regex = /#{Regexp.escape( get_config(:regex))}/
     dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
 	max = nil
-    dc.datastore.each do |store|
-	  if regex.match(store.name) and (max == nil or max.summary[:freeSpace] < store.summary[:freeSpace])
+    dc.datastoreFolder.childEntity.each do |store|
+	  if regex.match(store.name) and (store.class.to_s == "StoragePod") and (max == nil or max.summary[:freeSpace] < store.summary[:freeSpace])
 	    max = store
 	  end      
     end
