@@ -161,6 +161,15 @@ Lists all known datastores with capacity and usage
 Gets the datastore with the most free space
     --regex           - Pattern to match the datastore name
 
+== knife vsphere datastorecluster list
+
+Lists all known datastorecluster with capacity and usage
+
+== knife vsphere datastorecluster maxfree [--regex]
+
+Gets the datastorecluster with the most free space
+    --regex           - Pattern to match the datastore name
+
 == knife vsphere vm execute VMNAME COMMAND [ARGUMENTS] --exec-user USER --exec-passwd PASSWD [ --exec-dir DIRECTORY ]
 
 Executes a program on the guest. Requires vCenter 5.0 or higher. 
