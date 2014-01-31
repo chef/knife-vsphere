@@ -3,29 +3,35 @@
 = DESCRIPTION:
 
 This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently supports the following:
+
 Listings:
-    -VMs
-    -Folders
-    -Templates
-    -Datastores
-    -VLANs (currently requires distributed vswitch)
-    -Resource Pools and Clusters
-    -Customization Specifications
-    VM Operations:
-    -Power on/off
-    -Clone (with optional chef bootstrap and run list)
-    -Delete
-    -VMDK addition
-    Clone-specific customization options (for linux guests):
-    -Destination folder
-    -CPU core count
-    -Memory size
-    -DNS settings
-    -Hostname / Domain name
-    -IP addresses / default gateway
-    -vlan (currently requires distributed vswitch)
-    -datastore
-    -resource pool
+
+- VMs
+- Folders
+- Templates
+- Datastores
+- VLANs (currently requires distributed vswitch)
+- Resource Pools and Clusters
+- Customization Specifications
+
+VM Operations:
+
+- Power on/off
+- Clone (with optional chef bootstrap and run list)
+- Delete
+- VMDK addition
+
+Clone-specific customization options (for linux guests):
+
+- Destination folder
+- CPU core count
+- Memory size
+- DNS settings
+- Hostname / Domain name
+- IP addresses / default gateway
+- vlan (currently requires distributed vswitch)
+- datastore
+- resource pool
 
 = INSTALLATION:
 
@@ -69,9 +75,10 @@ Enumerates the VM Templates registered in the target datacenter. Only name is cu
 Enumerates the customization specifications registered in the target datacenter. Only name is currently displayed.
 
 == knife vsphere vm clone <new vm name> --template <source template name> --cspec <customization_spec>
-e.g. knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
-     --cips 192.168.0.99/24,192.168.1.99/24 \
-     --chostname NODENAME --cdomain NODEDOMAIN
+
+    knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+        --cips 192.168.0.99/24,192.168.1.99/24 \
+        --chostname NODENAME --cdomain NODEDOMAIN
 
    --dest-folder FOLDER - The folder into which to put the cloned VM
    --datastore STORE    - The datastore into which to put the cloned VM
@@ -113,22 +120,22 @@ Customization Plugin Example:
 
 # cplugin_example.rb
 
-class KnifeVspherePlugin
-  def data=(cplugin_data)
-    # Parse your cplugin_data from the format of your choosing.
-  end
-
-  # optional
-  def customize_clone_spec(src_config, clone_spec)
-    # Customize the clone spec as you see fit.
-    return customized_clone_spec
-  end
-
-  # optional
-  def reconfig_vm(target_vm)
-    # Do anything you want in here with the cloned VM.
-  end
-end
+    class KnifeVspherePlugin
+      def data=(cplugin_data)
+        # Parse your cplugin_data from the format of your choosing.
+      end
+    
+      # optional
+      def customize_clone_spec(src_config, clone_spec)
+        # Customize the clone spec as you see fit.
+        return customized_clone_spec
+      end
+    
+      # optional
+      def reconfig_vm(target_vm)
+        # Do anything you want in here with the cloned VM.
+      end
+    end
 
 == knife vsphere vm delete VMNAME [--purge]
 
