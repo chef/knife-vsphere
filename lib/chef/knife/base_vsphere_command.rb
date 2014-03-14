@@ -42,7 +42,7 @@ class Chef
                :description => "The vsphere host"
 
         option :vsphere_dc,
-               :short => "-d DATACENTER",
+               :short => "-D DATACENTER",
                :long => "--vsdc DATACENTER",
                :description => "The Datacenter for vsphere"
 
