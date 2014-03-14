@@ -39,6 +39,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "The source VM / Template to clone from",
          :required => true
 
+  option :linked_clone,
+         :long => "--linked-clone",
+         :description => "Indicates whether to use linked clones.",
+         :boolean => false
+
   option :annotation,
          :long => "--annotation TEXT",
          :description => "Add TEXT in Notes field from annotation"
@@ -219,6 +224,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
         abort "VM/Template not found"
 
+    if get_config(:linked_clone)
+      create_delta_disk(src_vm)  
+    end
+    
     clone_spec = generate_clone_spec(src_vm.config)
 
     cust_folder = config[:dest_folder] || get_config(:folder)
@@ -253,6 +262,30 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
   end
 
+  def create_delta_disk(src_vm)
+    disks = src_vm.config.hardware.device.grep(RbVmomi::VIM::VirtualDisk)
+    disks.select { |disk| disk.backing.parent == nil }.each do |disk|
+      spec = {
+          :deviceChange => [
+              {
+                  :operation => :remove,
+                  :device => disk
+              },
+              {
+                  :operation => :add,
+                  :fileOperation => :create,
+                  :device => disk.dup.tap { |new_disk|
+                    new_disk.backing = new_disk.backing.dup
+                    new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
+                    new_disk.backing.parent = disk.backing
+                  },
+              }
+          ]
+      }
+      src_vm.ReconfigVM_Task(:spec => spec).wait_for_completion
+      end
+  end
+
   # Builds a CloneSpec
   def generate_clone_spec (src_config)
 
@@ -264,6 +297,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
       rp = hosts.first.resourcePool
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+    end
+
+    if get_config(:linked_clone)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:diskMoveType => :moveChildMostDiskBacking)
     end
 
     if get_config(:datastore)
