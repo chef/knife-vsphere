@@ -327,7 +327,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if get_config(:customization_vlan)
       network = find_network(get_config(:customization_vlan))
-      card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or
+      card = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard).first or
           abort "Can't find source network card to customize"
       begin
         switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid, :portgroupKey => network.key)
