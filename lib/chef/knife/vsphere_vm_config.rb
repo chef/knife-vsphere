@@ -37,8 +37,7 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
     dc = get_datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
-        abort "VM #{vmname} not found"
+    vm = traverse_folders_for_vm(folder, vmname) or abort "VM #{vmname} not found"
 
     properties = {}
     properties[property_name] = property_value
