@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+0.9.9 * going to have to rev this!
+        andrewfraley - fixed vm config issue with not finding VMs in subfolders
+        terracor - use first network card instead of "Network Adapter 1"
+        tim95030 - moved datacenter param to capital D to avoid conflicts with distro
+        tim95030 - added option to allow linked clones
+
 0.9.8 * chenhaiq - fixed bug in datastore max free
 	andrewfraley - vsphere pool query command to query resource pools and host clusters
 	micolous - formatting fix
