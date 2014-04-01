@@ -124,7 +124,7 @@ class Chef
         retval = traverse_folders_for_vm(baseFolder, vmname)
         return retval
       end
-
+	  
       def traverse_folders_for_vm(folder, vmname)
         children = folder.children.find_all
         children.each do |child|
@@ -136,6 +136,26 @@ class Chef
           end
         end
         return false
+      end
+	  
+	  def get_vms(vmname)
+        vim = get_vim_connection
+        baseFolder = find_folder(get_config(:folder));
+        retval = traverse_folders_for_vms(baseFolder, vmname)
+        return retval
+      end
+	  
+	  def traverse_folders_for_vms(folder, vmname)
+	    retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
+              retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_vms(child, vmname))
+          end
+        end
+        return retval
       end
 
       def traverse_folders_for_dc(folder, dcname)
