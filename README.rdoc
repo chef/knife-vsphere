@@ -62,6 +62,14 @@ Enumerates the Virtual Machines registered in the target datacenter. Only name i
     -r, --recursive    - Recurse down through sub-folders to the specified folder
     --only-folders     - In combination with --recursive, print only folder names
 
+== knife vsphere vm state [-s STATE, --state STATE] [-w PORT, --wait-port PORT] [-g, --shutdown] [-r, --recursive]
+
+Manage power state of a virtual machine.
+	-s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended
+	-w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
+	-g, --shutdown             - Guest OS shutdown
+    -r, --recursive            - Recurse down through sub-folders to the specified folder
+
 == knife vsphere pool list
 
 Enumerates the Resource Pools and Clusters registered in the target datacenter.

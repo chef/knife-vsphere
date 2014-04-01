@@ -40,6 +40,11 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
          :long => "--shutdown",
          :description => "Guest OS shutdown"
 
+  option :recursive,
+         :short => "-r",
+         :long => "--recursive",
+         :description => "Search all folders"
+
   def run
 
     $stdout.sync = true
@@ -53,11 +58,22 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
 
     vim = get_vim_connection
 
-    baseFolder = find_folder(get_config(:folder));
+	if get_config(:recursive)
+	  vms = get_vms(vmname)
+      if vms.length > 1
+	    abort "More than one VM with name #{vmname} found"
+	  end
+	  if vms.length == 0
+	    abort "VM #{vmname} not found"
+	  end
+	  vm = vms[0]
+	else
+	  baseFolder = find_folder(get_config(:folder));
 
-    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+	  vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
         abort "VM #{vmname} not found"
-
+	end
+	
     state = vm.runtime.powerState
 
     if config[:state].nil?
