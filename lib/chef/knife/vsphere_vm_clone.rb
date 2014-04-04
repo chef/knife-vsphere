@@ -393,11 +393,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         cust_spec.identity = ident
       end
 
+      clone_spec.customization = cust_spec
+
       if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
         clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
       end
-
-      clone_spec.customization = cust_spec
     end
     clone_spec
   end
