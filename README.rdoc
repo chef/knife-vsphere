@@ -200,6 +200,10 @@ Optional arguments
 
   --vmdk-type TYPE - VMDK type, "thick" or "thin", defaults to "thin"
 
+== knife vsphere vm markastemplate VMNAME --folder FOLDER
+
+Marks a VM as template.
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
