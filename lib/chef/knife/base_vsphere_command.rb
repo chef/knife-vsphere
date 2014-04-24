@@ -138,6 +138,26 @@ class Chef
         return false
       end
 
+	  def get_vms(vmname)
+        vim = get_vim_connection
+        baseFolder = find_folder(get_config(:folder));
+        retval = traverse_folders_for_vms(baseFolder, vmname)
+        return retval
+      end
+
+	  def traverse_folders_for_vms(folder, vmname)
+	    retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
+              retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_vms(child, vmname))
+          end
+        end
+        return retval
+      end
+
       def traverse_folders_for_dc(folder, dcname)
         children = folder.children.find_all
         children.each do |child|
@@ -269,6 +289,19 @@ class Chef
           folder.childEntity.grep(type)
         else
           puts "Unknown type #{folder.class}, not enumerating"
+          nil
+        end
+      end
+
+      def get_path_to_object(object)
+        if object.is_a?(RbVmomi::VIM:: ManagedEntity)
+          if object.parent.is_a?(RbVmomi::VIM:: ManagedEntity)
+            return get_path_to_object(object.parent) + "/" + object.parent.name
+          else
+			return ""
+		  end
+        else
+          puts "Unknown type #{object.class}, not enumerating"
           nil
         end
       end
