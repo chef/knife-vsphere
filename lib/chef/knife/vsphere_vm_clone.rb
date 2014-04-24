@@ -30,6 +30,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :long => "--datastore STORE",
          :description => "The datastore into which to put the cloned VM"
 
+  option :datastorecluster,
+         :long => "--datastorecluster STORE",
+         :description => "The datastorecluster into which to put the cloned VM"
+
   option :resource_pool,
          :long => "--resource-pool POOL",
          :description => "The resource pool into which to put the cloned VM"
@@ -303,8 +307,22 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:diskMoveType => :moveChildMostDiskBacking)
     end
 
+    if get_config(:datastore) && get_config(:datastorecluster)
+      abort "Please select either datastore or datastorecluster"
+    end
+
     if get_config(:datastore)
       rspec.datastore = find_datastore(get_config(:datastore))
+    end
+
+    if get_config(:datastorecluster)
+      dsc = find_datastorecluster(get_config(:datastorecluster))
+
+      dsc.childEntity.each do |store|
+        if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
+          rspec.datastore = store
+        end
+      end
     end
 
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,

@@ -89,6 +89,7 @@ Enumerates the customization specifications registered in the target datacenter.
 
    --dest-folder FOLDER - The folder into which to put the cloned VM
    --datastore STORE    - The datastore into which to put the cloned VM
+   --datastorecluster STORE - The datastorecluster into which to put the cloned VM
    --resource-pool POOL - The resource pool into which to put the cloned VM
    --template TEMPLATE - The source VM / Template to clone from
    --cspec CUST_SPEC - The name of any customization specification to apply

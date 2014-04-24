@@ -138,14 +138,14 @@ class Chef
         return false
       end
 
-	  def get_vms(vmname)
+      def get_vms(vmname)
         vim = get_vim_connection
         baseFolder = find_folder(get_config(:folder));
         retval = traverse_folders_for_vms(baseFolder, vmname)
         return retval
       end
 
-	  def traverse_folders_for_vms(folder, vmname)
+      def traverse_folders_for_vms(folder, vmname)
 	    retval = []
         children = folder.children.find_all
         children.each do |child|
@@ -270,6 +270,12 @@ class Chef
         dc = get_datacenter
         baseEntity = dc.datastore
         baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
+      end
+
+      def find_datastorecluster(dsName)
+        dc = get_datacenter
+        baseEntity = dc.datastoreFolder.childEntity
+        baseEntity.find { |f| f.name == dsName and f.instance_of?(RbVmomi::VIM::StoragePod) } or abort "no such datastorecluster #{dsName}"
       end
 
       def find_device(vm, deviceName)
