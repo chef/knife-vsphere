@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+1.0-pre * 
+        mheidenr - added option to select a datatstorecluster in vm clone
+        mheidenr - function mark as template added
+        mheidenr - documented vm state command, added recursive option for vm state
+        valldeck - customization plugin call is called to early
+
 0.9.9 * going to have to rev this!
         andrewfraley - fixed vm config issue with not finding VMs in subfolders
         terracor - use first network card instead of "Network Adapter 1"
