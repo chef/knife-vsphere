@@ -40,8 +40,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :source_vm,
          :long => "--template TEMPLATE",
-         :description => "The source VM / Template to clone from",
-         :required => true
+         :description => "The source VM / Template to clone from"
 
   option :linked_clone,
          :long => "--linked-clone",
@@ -224,6 +223,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dc = get_datacenter
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
+
+    abort "--template or knife[:source_vm] must be specified" unless config[:source_vm]
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
         abort "VM/Template not found"
