@@ -216,7 +216,7 @@ Lists all hosts in given Pool
 Migrate VM to resource pool/datastore/host.
 Resource pool and datastore are mandatory.
 
-    --folder                    - folder in which to search for VM
+    --folder FOLDER                   - folder in which to search for VM
     --resource-pool POOL        - destination resource pool
     --dest-host HOST            - destination host (optional)
     --dest-datastore DATASTORE  - destination datastore, accesible to HOST
