@@ -212,11 +212,15 @@ Lists all hosts in given Pool
 
 
 == knife vsphere vm migrate VMNAME (options)
-    --folder   			- folder in which to search for VM
+
+Migrate VM to resource pool/datastore/host.
+Resource pool and datastore are mandatory.
+
+    --folder                    - folder in which to search for VM
     --resource-pool POOL        - destination resource pool
-    --dest-host HOST 		- destination host (optional)
+    --dest-host HOST            - destination host (optional)
     --dest-datastore DATASTORE  - destination datastore, accesible to HOST
-    --priority PRIORITY 	- migration priority (optional, default defaultPriority )
+    --priority PRIORITY         - migration priority (optional, default defaultPriority )
 
 
 
