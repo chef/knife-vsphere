@@ -42,8 +42,6 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
     hosts=pool.host
      unless hosts.nil?
       hosts.each do |hostc|
-      #puts "#{ui.color("#{hostc.class}, :cyan)}:"+"#{hostc.name}")"
-      #puts "#{ui.color(#{hostc.class}, :cyan)}"
       puts "#{ui.color("Host", :cyan)}: #{hostc.name}"
      end
    end
