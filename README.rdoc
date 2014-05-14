@@ -13,7 +13,7 @@ Listings:
 - VLANs (currently requires distributed vswitch)
 - Resource Pools and Clusters
 - Customization Specifications
-
+- Hosts in a Pool or Cluster
 VM Operations:
 
 - Power on/off
@@ -205,6 +205,10 @@ Optional arguments
 
 Marks a VM as template.
 
+== knife vsphere hosts list --pool POOL
+
+Lists all hosts in given Pool
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
@@ -213,6 +217,7 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           Ian Delahorne <ian@scmventures.se>
           Bethany Erskine <bethany@paperlesspost.com>
           Adrian Stanila <adrian.stanila@sacx.net>
+          Raducu Deaconu <rhadoo_io@yahoo.com>
           Leeor Aharon
 
 Copyright:: Copyright (c) 2011-2013 Ezra Pagel
