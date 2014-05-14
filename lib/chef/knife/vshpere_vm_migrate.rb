@@ -14,7 +14,6 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
 
   option :dest_host,
          :long => "--dest-host HOST",
-         :short => "-r",
          :description => "Destination host for the VM or template"
 
  option :dest_datastore,
