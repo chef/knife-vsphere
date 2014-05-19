@@ -111,6 +111,7 @@ Enumerates the customization specifications registered in the target datacenter.
    --ssh-port PORT - SSH port
    --identity-file IDENTITY_FILE - SSH identity file used for authentication
    --node-name NAME - The Chef node name for your new node
+   --hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
    --prerelease - Install the pre-release chef gems
    --bootstrap-version VERSION - The version of Chef to install
    --bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
