@@ -21,6 +21,7 @@ VM Operations:
 - Delete
 - VMDK addition
 - Migrate
+- Connect/disconnect network
 
 Clone-specific customization options (for linux guests):
 
@@ -221,6 +222,13 @@ Resource pool and datastore are mandatory.
     --dest-host HOST            - destination host (optional)
     --dest-datastore DATASTORE  - destination datastore, accesible to HOST
     --priority PRIORITY         - migration priority (optional, default defaultPriority )
+
+
+
+== knife vsphere vm net STATE VMNAME
+
+Set networking state for VMNAME by connecting/disconnecting network interfaces.
+Posible states are up/down.
 
 
 
