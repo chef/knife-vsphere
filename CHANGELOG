@@ -3,6 +3,7 @@ knife-vsphere changelog
 1.0.0.pre.2 *
         bdupras - added property subcommand
         bdupras - fixed prerelease naming -pre to .pre
+        bdupras - tidy up Rakefile
 
 1.0-pre *
         mheidenr - added option to select a datatstorecluster in vm clone
