@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "knife-vsphere"
-  s.version = "1.0-pre"
+  s.version = "1.0.0.pre.2"
   s.summary = "vSphere Support for Knife"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=

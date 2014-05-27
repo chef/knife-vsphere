@@ -1,6 +1,10 @@
 knife-vsphere changelog
 ----------------------
-1.0-pre * 
+1.0.0.pre.2 *
+        bdupras - added property subcommand
+        bdupras - fixed prerelease naming -pre to .pre
+
+1.0-pre *
         mheidenr - added option to select a datatstorecluster in vm clone
         mheidenr - function mark as template added
         mheidenr - documented vm state command, added recursive option for vm state
@@ -17,7 +21,7 @@ knife-vsphere changelog
 	micolous - formatting fix
 	andrewfraley - Added support for VMs in subfolders when doing vm query
 	mheidenr - datastore cluster max free space commands
-	
+
 0.9.6 * mheidenr - added command to get the datastore with the most free space
         mheidenr - moved REGEX parameter to maxfree command
         bdupras - added command vm move
