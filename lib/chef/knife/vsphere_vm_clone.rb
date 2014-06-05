@@ -180,6 +180,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "A file containing the secret key to use to encrypt data bag item values"
   $default[:secret_file] = ''
 
+  option :hint,
+         :long => "--hint HINT_NAME[=HINT_FILE]",
+         :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
+         :proc => Proc.new { |h|
+           Chef::Config[:knife][:hints] ||= Hash.new
+           name, path = h.split("=")
+           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+  $default[:hint] = ''
+
   option :no_host_key_verify,
          :long => "--no-host-key-verify",
          :description => "Disable host key verification",
@@ -229,9 +238,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         abort "VM/Template not found"
 
     if get_config(:linked_clone)
-      create_delta_disk(src_vm)  
+      create_delta_disk(src_vm)
     end
-    
+
     clone_spec = generate_clone_spec(src_vm.config)
 
     cust_folder = config[:dest_folder] || get_config(:folder)
@@ -496,6 +505,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.name_args = [config[:fqdn]]
     bootstrap.config[:run_list] = get_config(:run_list).split(/[\s,]+/)
     bootstrap.config[:secret_file] = get_config(:secret_file)
+    bootstrap.config[:hint] = get_config(:hint)
     bootstrap.config[:ssh_user] = get_config(:ssh_user)
     bootstrap.config[:ssh_password] = get_config(:ssh_password)
     bootstrap.config[:ssh_port] = get_config(:ssh_port)
