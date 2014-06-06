@@ -13,13 +13,15 @@ Listings:
 - VLANs (currently requires distributed vswitch)
 - Resource Pools and Clusters
 - Customization Specifications
-
+- Hosts in a Pool or Cluster
 VM Operations:
 
 - Power on/off
 - Clone (with optional chef bootstrap and run list)
 - Delete
 - VMDK addition
+- Migrate
+- Connect/disconnect network
 
 Clone-specific customization options (for linux guests):
 
@@ -206,6 +208,31 @@ Optional arguments
 
 Marks a VM as template.
 
+== knife vsphere hosts list --pool POOL
+
+Lists all hosts in given Pool
+
+
+== knife vsphere vm migrate VMNAME (options)
+
+Migrate VM to resource pool/datastore/host.
+Resource pool and datastore are mandatory.
+
+    --folder FOLDER                   - folder in which to search for VM
+    --resource-pool POOL        - destination resource pool
+    --dest-host HOST            - destination host (optional)
+    --dest-datastore DATASTORE  - destination datastore, accesible to HOST
+    --priority PRIORITY         - migration priority (optional, default defaultPriority )
+
+
+
+== knife vsphere vm net STATE VMNAME
+
+Set networking state for VMNAME by connecting/disconnecting network interfaces.
+Posible states are up/down.
+
+
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
@@ -214,6 +241,7 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           Ian Delahorne <ian@scmventures.se>
           Bethany Erskine <bethany@paperlesspost.com>
           Adrian Stanila <adrian.stanila@sacx.net>
+          Raducu Deaconu <rhadoo_io@yahoo.com>
           Leeor Aharon
 
 Copyright:: Copyright (c) 2011-2013 Ezra Pagel
