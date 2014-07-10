@@ -371,9 +371,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       csi = find_customization(get_config(:customization_spec)) or
           fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
 
-      if csi.info.type != "Linux"
-        fatal_exit("Only Linux customization specifications are currently supported")
-      end
       cust_spec = csi.spec
     else
       global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
