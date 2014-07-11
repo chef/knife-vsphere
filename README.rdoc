@@ -149,6 +149,7 @@ Customization Plugin Example:
     end
 
 # cplugin_example.rb for cloning a Windows template to VM
+```ruby
 require 'rbvmomi'
 
 class KnifeVspherePlugin
@@ -210,8 +211,10 @@ class KnifeVspherePlugin
     puts "In reconfig_vm method.  No actions implemented.."
   end
 end
+```ruby
 
 # json data file
+```json
 {
     "fullName": "Your Company Inc.",
     "orgName": "Your Company Inc.",
@@ -219,6 +222,7 @@ end
     "host_name": "foo_host",
     "timeZone": "100"
 }
+```
 
 == knife vsphere vm delete VMNAME [--purge]
 
