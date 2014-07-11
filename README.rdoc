@@ -149,80 +149,80 @@ Customization Plugin Example:
     end
 
 # cplugin_example.rb for cloning a Windows template to VM
-```ruby
-require 'rbvmomi'
 
-class KnifeVspherePlugin
-  attr_accessor :data
+    require 'rbvmomi'
 
-  def customize_clone_spec(src_config, clone_spec)
+    class KnifeVspherePlugin
+      attr_accessor :data
 
-    if File.exists? data
-      customization_data = JSON.parse(IO.read(data))
-    else
-      abort "Customization plugin data file #{data} not accessible"
+      def customize_clone_spec(src_config, clone_spec)
+
+        if File.exists? data
+          customization_data = JSON.parse(IO.read(data))
+        else
+          abort "Customization plugin data file #{data} not accessible"
+        end
+
+        cust_guiUnattended = RbVmomi::VIM.CustomizationGuiUnattended(
+          :autoLogon => false,
+          :autoLogonCount => 1,
+          :password => nil,
+          :timeZone => customization_data['timeZone']
+        )
+        cust_identification = RbVmomi::VIM.CustomizationIdentification(
+          :domainAdmin => nil,
+          :domainAdminPassword => nil,
+          :joinDomain => nil
+        )
+        cust_name = RbVmomi::VIM.CustomizationFixedName(
+          :name => customization_data['host_name']
+        )
+        cust_user_data = RbVmomi::VIM.CustomizationUserData(
+          :computerName => cust_name,
+          :fullName => customization_data['fullName'],
+          :orgName => customization_data['orgName'],
+          :productId => customization_data['windows_key']
+        )
+        cust_sysprep = RbVmomi::VIM.CustomizationSysprep(
+          :guiUnattended => cust_guiUnattended,
+          :identification => cust_identification,
+          :userData => cust_user_data
+        )
+        dhcp_ip = RbVmomi::VIM.CustomizationDhcpIpGenerator
+        cust_ip = RbVmomi::VIM.CustomizationIPSettings(
+          :ip => dhcp_ip
+        )
+        cust_adapter_mapping = RbVmomi::VIM.CustomizationAdapterMapping(
+          :adapter => cust_ip
+        )
+        cust_adapter_mapping_list = [cust_adapter_mapping]
+        global_ip = RbVmomi::VIM.CustomizationGlobalIPSettings
+        customization_spec = RbVmomi::VIM.CustomizationSpec(
+          :identity => cust_sysprep,
+          :globalIPSettings => global_ip,
+          :nicSettingMap => cust_adapter_mapping_list
+        )
+        clone_spec.customization = customization_spec
+        puts "New clone_spec object :\n #{YAML::dump(clone_spec)}"
+        clone_spec
+      end
+
+      def reconfig_vm (target_vm)
+        puts "In reconfig_vm method.  No actions implemented.."
+      end
     end
 
-    cust_guiUnattended = RbVmomi::VIM.CustomizationGuiUnattended(
-      :autoLogon => false,
-      :autoLogonCount => 1,
-      :password => nil,
-      :timeZone => customization_data['timeZone']
-    )
-    cust_identification = RbVmomi::VIM.CustomizationIdentification(
-      :domainAdmin => nil,
-      :domainAdminPassword => nil,
-      :joinDomain => nil
-    )
-    cust_name = RbVmomi::VIM.CustomizationFixedName(
-      :name => customization_data['host_name']
-    )
-    cust_user_data = RbVmomi::VIM.CustomizationUserData(
-      :computerName => cust_name,
-      :fullName => customization_data['fullName'],
-      :orgName => customization_data['orgName'],
-      :productId => customization_data['windows_key']
-    )
-    cust_sysprep = RbVmomi::VIM.CustomizationSysprep(
-      :guiUnattended => cust_guiUnattended,
-      :identification => cust_identification,
-      :userData => cust_user_data
-    )
-    dhcp_ip = RbVmomi::VIM.CustomizationDhcpIpGenerator
-    cust_ip = RbVmomi::VIM.CustomizationIPSettings(
-      :ip => dhcp_ip
-    )
-    cust_adapter_mapping = RbVmomi::VIM.CustomizationAdapterMapping(
-      :adapter => cust_ip
-    )
-    cust_adapter_mapping_list = [cust_adapter_mapping]
-    global_ip = RbVmomi::VIM.CustomizationGlobalIPSettings
-    customization_spec = RbVmomi::VIM.CustomizationSpec(
-      :identity => cust_sysprep,
-      :globalIPSettings => global_ip,
-      :nicSettingMap => cust_adapter_mapping_list
-    )
-    clone_spec.customization = customization_spec
-    puts "New clone_spec object :\n #{YAML::dump(clone_spec)}"
-    clone_spec
-  end
-
-  def reconfig_vm (target_vm)
-    puts "In reconfig_vm method.  No actions implemented.."
-  end
-end
-```ruby
 
 # json data file
-```json
-{
-    "fullName": "Your Company Inc.",
-    "orgName": "Your Company Inc.",
-    "windows_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
-    "host_name": "foo_host",
-    "timeZone": "100"
-}
-```
+
+    {
+        "fullName": "Your Company Inc.",
+        "orgName": "Your Company Inc.",
+        "windows_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+        "host_name": "foo_host",
+        "timeZone": "100"
+    }
+
 
 == knife vsphere vm delete VMNAME [--purge]
 
