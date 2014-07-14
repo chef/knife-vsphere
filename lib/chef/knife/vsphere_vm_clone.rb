@@ -396,25 +396,32 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     unless get_config(:disable_customization)
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
 
-
       if use_ident
-        # TODO - verify that we're deploying a linux spec, at least warn
-        ident = RbVmomi::VIM.CustomizationLinuxPrep
-
-        ident.hostName = RbVmomi::VIM.CustomizationFixedName
-        if config[:customization_hostname]
-          ident.hostName.name = config[:customization_hostname]
+        hostname = if config[:customization_hostname]
+          config[:customization_hostname]
         else
-          ident.hostName.name = config[:vmname]
+          config[:vmname]
         end
 
-        if get_config(:customization_domain)
-          ident.domain = get_config(:customization_domain)
-        else
-          ident.domain = ''
-        end
+        if src_config.guestId.downcase.include?("linux")
+          ident = RbVmomi::VIM.CustomizationLinuxPrep
 
-        cust_spec.identity = ident
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+
+          if get_config(:customization_domain)
+            ident.domain = get_config(:customization_domain)
+          else
+            ident.domain = ''
+          end
+
+          cust_spec.identity = ident
+        elsif src_config.guestId.downcase.include?("windows")
+          if cust_spec.identity.nil?
+            fatal_exit("Please provide Windows Guest Customization")
+          else
+            cust_spec.identity.userData.computerName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+          end
+        end
       end
 
       clone_spec.customization = cust_spec
