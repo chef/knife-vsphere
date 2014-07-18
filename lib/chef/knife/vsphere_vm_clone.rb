@@ -40,8 +40,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :source_vm,
          :long => "--template TEMPLATE",
-         :description => "The source VM / Template to clone from",
-         :required => true
+         :description => "The source VM / Template to clone from"
 
   option :linked_clone,
          :long => "--linked-clone",
@@ -180,6 +179,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "A file containing the secret key to use to encrypt data bag item values"
   $default[:secret_file] = ''
 
+  option :hint,
+         :long => "--hint HINT_NAME[=HINT_FILE]",
+         :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
+         :proc => Proc.new { |h|
+           Chef::Config[:knife][:hints] ||= Hash.new
+           name, path = h.split("=")
+           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+  $default[:hint] = ''
+
   option :no_host_key_verify,
          :long => "--no-host-key-verify",
          :description => "Disable host key verification",
@@ -204,6 +212,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
          :proc => lambda { |l| l.to_sym }
 
+  option :mark_as_template,
+         :long => "--mark_as_template",
+         :description => "Indicates whether to mark the new vm as a template",
+         :boolean => false
+
   def run
     $stdout.sync = true
 
@@ -225,13 +238,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
 
+    abort "--template or knife[:source_vm] must be specified" unless config[:source_vm]
+
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
         abort "VM/Template not found"
 
     if get_config(:linked_clone)
-      create_delta_disk(src_vm)  
+      create_delta_disk(src_vm)
     end
-    
+
     clone_spec = generate_clone_spec(src_vm.config)
 
     cust_folder = config[:dest_folder] || get_config(:folder)
@@ -248,21 +263,24 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       customization_plugin.reconfig_vm(target_vm)
     end
 
-    if get_config(:power) || get_config(:bootstrap)
-      vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
-          fatal_exit("VM #{vmname} not found")
-      vm.PowerOnVM_Task.wait_for_completion
-      puts "Powered on virtual machine #{vmname}"
-    end
+    if !get_config(:mark_as_template)
+      if get_config(:power) || get_config(:bootstrap)
+        vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
+            fatal_exit("VM #{vmname} not found")
+        vm.PowerOnVM_Task.wait_for_completion
+        puts "Powered on virtual machine #{vmname}"
+      end
 
-    if get_config(:bootstrap)
-      sleep 2 until vm.guest.ipAddress
-      config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
-      print "Waiting for sshd..."
-      print "." until tcp_test_ssh(config[:fqdn])
-      puts "done"
 
-      bootstrap_for_node.run
+      if get_config(:bootstrap)
+        sleep 2 until vm.guest.ipAddress
+        config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
+        print "Waiting for sshd..."
+        print "." until tcp_test_ssh(config[:fqdn])
+        puts "done"
+
+        bootstrap_for_node.run
+      end
     end
   end
 
@@ -325,10 +343,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
-                                                      :powerOn => false,
-                                                      :template => false)
-
+    if get_config(:mark_as_template)
+      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
+                                                        :powerOn => false,
+                                                        :template => true)
+    else
+      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
+                                                        :powerOn => false,
+                                                        :template => false)      
+    end
     clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
 
     if get_config(:annotation)
@@ -362,9 +385,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       csi = find_customization(get_config(:customization_spec)) or
           fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
 
-      if csi.info.type != "Linux"
-        fatal_exit("Only Linux customization specifications are currently supported")
-      end
       cust_spec = csi.spec
     else
       global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
@@ -390,25 +410,32 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     unless get_config(:disable_customization)
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
 
-
       if use_ident
-        # TODO - verify that we're deploying a linux spec, at least warn
-        ident = RbVmomi::VIM.CustomizationLinuxPrep
-
-        ident.hostName = RbVmomi::VIM.CustomizationFixedName
-        if config[:customization_hostname]
-          ident.hostName.name = config[:customization_hostname]
+        hostname = if config[:customization_hostname]
+          config[:customization_hostname]
         else
-          ident.hostName.name = config[:vmname]
+          config[:vmname]
         end
 
-        if get_config(:customization_domain)
-          ident.domain = get_config(:customization_domain)
-        else
-          ident.domain = ''
-        end
+        if src_config.guestId.downcase.include?("linux")
+          ident = RbVmomi::VIM.CustomizationLinuxPrep
 
-        cust_spec.identity = ident
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+
+          if get_config(:customization_domain)
+            ident.domain = get_config(:customization_domain)
+          else
+            ident.domain = ''
+          end
+
+          cust_spec.identity = ident
+        elsif src_config.guestId.downcase.include?("windows")
+          if cust_spec.identity.nil?
+            fatal_exit("Please provide Windows Guest Customization")
+          else
+            cust_spec.identity.userData.computerName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+          end
+        end
       end
 
       clone_spec.customization = cust_spec
@@ -496,6 +523,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.name_args = [config[:fqdn]]
     bootstrap.config[:run_list] = get_config(:run_list).split(/[\s,]+/)
     bootstrap.config[:secret_file] = get_config(:secret_file)
+    bootstrap.config[:hint] = get_config(:hint)
     bootstrap.config[:ssh_user] = get_config(:ssh_user)
     bootstrap.config[:ssh_password] = get_config(:ssh_password)
     bootstrap.config[:ssh_port] = get_config(:ssh_port)

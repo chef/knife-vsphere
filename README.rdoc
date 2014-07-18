@@ -13,13 +13,15 @@ Listings:
 - VLANs (currently requires distributed vswitch)
 - Resource Pools and Clusters
 - Customization Specifications
-
+- Hosts in a Pool or Cluster
 VM Operations:
 
 - Power on/off
 - Clone (with optional chef bootstrap and run list)
 - Delete
 - VMDK addition
+- Migrate
+- Connect/disconnect network
 
 Clone-specific customization options (for linux guests):
 
@@ -111,6 +113,7 @@ Enumerates the customization specifications registered in the target datacenter.
    --ssh-port PORT - SSH port
    --identity-file IDENTITY_FILE - SSH identity file used for authentication
    --node-name NAME - The Chef node name for your new node
+   --hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
    --prerelease - Install the pre-release chef gems
    --bootstrap-version VERSION - The version of Chef to install
    --bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
@@ -144,6 +147,82 @@ Customization Plugin Example:
         # Do anything you want in here with the cloned VM.
       end
     end
+
+# cplugin_example.rb for cloning a Windows template to VM
+
+    require 'rbvmomi'
+
+    class KnifeVspherePlugin
+      attr_accessor :data
+
+      def customize_clone_spec(src_config, clone_spec)
+
+        if File.exists? data
+          customization_data = JSON.parse(IO.read(data))
+        else
+          abort "Customization plugin data file #{data} not accessible"
+        end
+
+        cust_guiUnattended = RbVmomi::VIM.CustomizationGuiUnattended(
+          :autoLogon => false,
+          :autoLogonCount => 1,
+          :password => nil,
+          :timeZone => customization_data['timeZone']
+        )
+        cust_identification = RbVmomi::VIM.CustomizationIdentification(
+          :domainAdmin => nil,
+          :domainAdminPassword => nil,
+          :joinDomain => nil
+        )
+        cust_name = RbVmomi::VIM.CustomizationFixedName(
+          :name => customization_data['host_name']
+        )
+        cust_user_data = RbVmomi::VIM.CustomizationUserData(
+          :computerName => cust_name,
+          :fullName => customization_data['fullName'],
+          :orgName => customization_data['orgName'],
+          :productId => customization_data['windows_key']
+        )
+        cust_sysprep = RbVmomi::VIM.CustomizationSysprep(
+          :guiUnattended => cust_guiUnattended,
+          :identification => cust_identification,
+          :userData => cust_user_data
+        )
+        dhcp_ip = RbVmomi::VIM.CustomizationDhcpIpGenerator
+        cust_ip = RbVmomi::VIM.CustomizationIPSettings(
+          :ip => dhcp_ip
+        )
+        cust_adapter_mapping = RbVmomi::VIM.CustomizationAdapterMapping(
+          :adapter => cust_ip
+        )
+        cust_adapter_mapping_list = [cust_adapter_mapping]
+        global_ip = RbVmomi::VIM.CustomizationGlobalIPSettings
+        customization_spec = RbVmomi::VIM.CustomizationSpec(
+          :identity => cust_sysprep,
+          :globalIPSettings => global_ip,
+          :nicSettingMap => cust_adapter_mapping_list
+        )
+        clone_spec.customization = customization_spec
+        puts "New clone_spec object :\n #{YAML::dump(clone_spec)}"
+        clone_spec
+      end
+
+      def reconfig_vm (target_vm)
+        puts "In reconfig_vm method.  No actions implemented.."
+      end
+    end
+
+
+# json data file
+
+    {
+        "fullName": "Your Company Inc.",
+        "orgName": "Your Company Inc.",
+        "windows_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+        "host_name": "foo_host",
+        "timeZone": "100"
+    }
+
 
 == knife vsphere vm delete VMNAME [--purge]
 
@@ -205,6 +284,31 @@ Optional arguments
 
 Marks a VM as template.
 
+== knife vsphere hosts list --pool POOL
+
+Lists all hosts in given Pool
+
+
+== knife vsphere vm migrate VMNAME (options)
+
+Migrate VM to resource pool/datastore/host.
+Resource pool and datastore are mandatory.
+
+    --folder FOLDER                   - folder in which to search for VM
+    --resource-pool POOL        - destination resource pool
+    --dest-host HOST            - destination host (optional)
+    --dest-datastore DATASTORE  - destination datastore, accesible to HOST
+    --priority PRIORITY         - migration priority (optional, default defaultPriority )
+
+
+
+== knife vsphere vm net STATE VMNAME
+
+Set networking state for VMNAME by connecting/disconnecting network interfaces.
+Posible states are up/down.
+
+
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
@@ -213,6 +317,7 @@ Authors:: Ezra Pagel <ezra@cpan.org>
           Ian Delahorne <ian@scmventures.se>
           Bethany Erskine <bethany@paperlesspost.com>
           Adrian Stanila <adrian.stanila@sacx.net>
+          Raducu Deaconu <rhadoo_io@yahoo.com>
           Leeor Aharon
 
 Copyright:: Copyright (c) 2011-2013 Ezra Pagel

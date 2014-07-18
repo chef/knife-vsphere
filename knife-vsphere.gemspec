@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = "knife-vsphere"
-  s.version = "1.0-pre"
+  s.version = "1.0.0.pre.3"
   s.summary = "vSphere Support for Knife"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
-  s.author = "Ezra Pagel"
+  s.authors = "Ezra Pagel"
   s.description = "VMware vSphere Support for Chef's Knife Command"
   s.email = "ezra@cpan.org"
   s.files = Dir["lib/**/*"]
