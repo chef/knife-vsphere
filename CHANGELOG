@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+1.0-pre2
+	jrosen - added ability to clone into template
+	bellpeterm - allow :source_vm to be set in knife.rb
+	jeremymv2 - cplugin example in readme
+	mheidenr - vm clone can now clone and customize windows vms
+	chenhaiq - fix undef method when cloning
 1.0-pre * 
         mheidenr - added option to select a datatstorecluster in vm clone
         mheidenr - function mark as template added
