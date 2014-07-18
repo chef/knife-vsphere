@@ -213,6 +213,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
          :proc => lambda { |l| l.to_sym }
 
+  option :mark_as_template,
+         :long => "--mark_as_template",
+         :description => "Indicates whether to mark the new vm as a template",
+         :boolean => false
+
   def run
     $stdout.sync = true
 
@@ -257,21 +262,24 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       customization_plugin.reconfig_vm(target_vm)
     end
 
-    if get_config(:power) || get_config(:bootstrap)
-      vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
-          fatal_exit("VM #{vmname} not found")
-      vm.PowerOnVM_Task.wait_for_completion
-      puts "Powered on virtual machine #{vmname}"
-    end
+    if !get_config(:mark_as_template)
+      if get_config(:power) || get_config(:bootstrap)
+        vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
+            fatal_exit("VM #{vmname} not found")
+        vm.PowerOnVM_Task.wait_for_completion
+        puts "Powered on virtual machine #{vmname}"
+      end
 
-    if get_config(:bootstrap)
-      sleep 2 until vm.guest.ipAddress
-      config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
-      print "Waiting for sshd..."
-      print "." until tcp_test_ssh(config[:fqdn])
-      puts "done"
 
-      bootstrap_for_node.run
+      if get_config(:bootstrap)
+        sleep 2 until vm.guest.ipAddress
+        config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
+        print "Waiting for sshd..."
+        print "." until tcp_test_ssh(config[:fqdn])
+        puts "done"
+
+        bootstrap_for_node.run
+      end
     end
   end
 
@@ -334,10 +342,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
-                                                      :powerOn => false,
-                                                      :template => false)
-
+    if get_config(:mark_as_template)
+      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
+                                                        :powerOn => false,
+                                                        :template => true)
+    else
+      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
+                                                        :powerOn => false,
+                                                        :template => false)      
+    end
     clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
 
     if get_config(:annotation)
