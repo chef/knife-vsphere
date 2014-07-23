@@ -42,7 +42,7 @@ class Chef
                :description => "The vsphere host"
 
         option :vsphere_dc,
-               :short => "-d DATACENTER",
+               :short => "-D DATACENTER",
                :long => "--vsdc DATACENTER",
                :description => "The Datacenter for vsphere"
 
@@ -138,6 +138,26 @@ class Chef
         return false
       end
 
+      def get_vms(vmname)
+        vim = get_vim_connection
+        baseFolder = find_folder(get_config(:folder));
+        retval = traverse_folders_for_vms(baseFolder, vmname)
+        return retval
+      end
+
+      def traverse_folders_for_vms(folder, vmname)
+	    retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
+              retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_vms(child, vmname))
+          end
+        end
+        return retval
+      end
+
       def traverse_folders_for_dc(folder, dcname)
         children = folder.children.find_all
         children.each do |child|
@@ -184,7 +204,7 @@ class Chef
             if baseEntity.is_a? RbVmomi::VIM::Folder
               baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
-            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource
+            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource 
               baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
             elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
@@ -252,6 +272,12 @@ class Chef
         baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
       end
 
+      def find_datastorecluster(dsName)
+        dc = get_datacenter
+        baseEntity = dc.datastoreFolder.childEntity
+        baseEntity.find { |f| f.name == dsName and f.instance_of?(RbVmomi::VIM::StoragePod) } or abort "no such datastorecluster #{dsName}"
+      end
+
       def find_device(vm, deviceName)
         vm.config.hardware.device.each do |device|
           return device if device.deviceInfo.label == deviceName
@@ -269,6 +295,19 @@ class Chef
           folder.childEntity.grep(type)
         else
           puts "Unknown type #{folder.class}, not enumerating"
+          nil
+        end
+      end
+
+      def get_path_to_object(object)
+        if object.is_a?(RbVmomi::VIM:: ManagedEntity)
+          if object.parent.is_a?(RbVmomi::VIM:: ManagedEntity)
+            return get_path_to_object(object.parent) + "/" + object.parent.name
+          else
+			return ""
+		  end
+        else
+          puts "Unknown type #{object.class}, not enumerating"
           nil
         end
       end

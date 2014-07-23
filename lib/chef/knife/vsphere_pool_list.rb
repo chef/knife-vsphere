@@ -13,11 +13,13 @@ class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand
   get_common_options
 
   def traverse_folders(folder)
-    puts "#{ui.color("#{folder.class}", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/')
-    folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
-    unless folders.nil?
-      folders.each do |child|
-        traverse_folders(child)
+    if "#{folder.class}" != 'VirtualApp'
+      puts "#{ui.color("#{folder.class}", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/')
+      folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
+      unless folders.nil?
+        folders.each do |child|
+          traverse_folders(child)
+        end
       end
     end
   end

@@ -30,6 +30,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :long => "--datastore STORE",
          :description => "The datastore into which to put the cloned VM"
 
+  option :datastorecluster,
+         :long => "--datastorecluster STORE",
+         :description => "The datastorecluster into which to put the cloned VM"
+
   option :resource_pool,
          :long => "--resource-pool POOL",
          :description => "The resource pool into which to put the cloned VM"
@@ -38,6 +42,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :long => "--template TEMPLATE",
          :description => "The source VM / Template to clone from",
          :required => true
+
+  option :linked_clone,
+         :long => "--linked-clone",
+         :description => "Indicates whether to use linked clones.",
+         :boolean => false
+
+  option :thin_provision,
+         :long => "--thin-provision",
+         :description => "Indicates whether disk should be thin provisioned.",
+         :boolean => true
 
   option :annotation,
          :long => "--annotation TEXT",
@@ -211,6 +225,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     vim = get_vim_connection
+    vdm = vim.serviceContent.virtualDiskManager
 
     dc = get_datacenter
 
@@ -218,6 +233,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
         abort "VM/Template not found"
+
+    if get_config(:linked_clone)
+      create_delta_disk(src_vm)  
+    end
 
     clone_spec = generate_clone_spec(src_vm.config)
 
@@ -253,6 +272,30 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
   end
 
+  def create_delta_disk(src_vm)
+    disks = src_vm.config.hardware.device.grep(RbVmomi::VIM::VirtualDisk)
+    disks.select { |disk| disk.backing.parent == nil }.each do |disk|
+      spec = {
+          :deviceChange => [
+              {
+                  :operation => :remove,
+                  :device => disk
+              },
+              {
+                  :operation => :add,
+                  :fileOperation => :create,
+                  :device => disk.dup.tap { |new_disk|
+                    new_disk.backing = new_disk.backing.dup
+                    new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
+                    new_disk.backing.parent = disk.backing
+                  },
+              }
+          ]
+      }
+      src_vm.ReconfigVM_Task(:spec => spec).wait_for_completion
+      end
+  end
+
   # Builds a CloneSpec
   def generate_clone_spec (src_config)
 
@@ -266,8 +309,30 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
     end
 
+    if get_config(:linked_clone)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:diskMoveType => :moveChildMostDiskBacking)
+    end
+
+    if get_config(:datastore) && get_config(:datastorecluster)
+      abort "Please select either datastore or datastorecluster"
+    end
+
     if get_config(:datastore)
       rspec.datastore = find_datastore(get_config(:datastore))
+    end
+
+    if get_config(:datastorecluster)
+      dsc = find_datastorecluster(get_config(:datastorecluster))
+
+      dsc.childEntity.each do |store|
+        if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
+          rspec.datastore = store
+        end
+      end
+    end
+
+    if get_config(:thin_provision)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:transform => :sparse, :pool => find_pool(get_config(:resource_pool)))
     end
 
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
@@ -290,7 +355,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if get_config(:customization_vlan)
       network = find_network(get_config(:customization_vlan))
-      card = src_config.hardware.device.find { |d| d.deviceInfo.label == "Network adapter 1" } or
+      card = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard).first or
           abort "Can't find source network card to customize"
       begin
         switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid, :portgroupKey => network.key)
@@ -356,11 +421,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         cust_spec.identity = ident
       end
 
+      clone_spec.customization = cust_spec
+
       if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
         clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
       end
-
-      clone_spec.customization = cust_spec
     end
     clone_spec
   end
