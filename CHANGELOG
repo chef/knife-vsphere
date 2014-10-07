@@ -1,11 +1,36 @@
 knife-vsphere changelog
 ----------------------
+
+1.0.0.pre.3 *
+	jrosen - added ability to clone into template
+	bellpeterm - allow :source_vm to be set in knife.rb
+	jeremymv2 - cplugin example in readme
+	mheidenr - vm clone can now clone and customize windows vms
+	chenhaiq - fix undef method when cloning
+
+1.0.0.pre.2 *
+        bdupras - added property subcommand
+        bdupras - fixed prerelease naming -pre to .pre
+        bdupras - tidy up Rakefile
+
+1.0-pre *
+        mheidenr - added option to select a datatstorecluster in vm clone
+        mheidenr - function mark as template added
+        mheidenr - documented vm state command, added recursive option for vm state
+        valldeck - customization plugin call is called to early
+
+0.9.9 * going to have to rev this!
+        andrewfraley - fixed vm config issue with not finding VMs in subfolders
+        terracor - use first network card instead of "Network Adapter 1"
+        tim95030 - moved datacenter param to capital D to avoid conflicts with distro
+        tim95030 - added option to allow linked clones
+
 0.9.8 * chenhaiq - fixed bug in datastore max free
 	andrewfraley - vsphere pool query command to query resource pools and host clusters
 	micolous - formatting fix
 	andrewfraley - Added support for VMs in subfolders when doing vm query
 	mheidenr - datastore cluster max free space commands
-	
+
 0.9.6 * mheidenr - added command to get the datastore with the most free space
         mheidenr - moved REGEX parameter to maxfree command
         bdupras - added command vm move

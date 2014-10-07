@@ -5,3 +5,5 @@
 .rvmrc
 .testrc
 .idea/
+pkg/
+*~

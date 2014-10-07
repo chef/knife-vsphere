@@ -27,9 +27,8 @@ class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereComm
          :short => "-r REGEX",
          :long => "--regex REGEX",
          :description => "Regex to match the datastore cluster name"
-  $default[:regex] = ''
-
   get_common_options
+  $default[:regex] = ''
 
   def run
     $stdout.sync = true

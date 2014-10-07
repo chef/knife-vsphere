@@ -43,6 +43,12 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
 
   get_common_options
 
+  option :list,
+	 :long => "--list",
+	 :short => "-L",
+	 :description => "Indicates whether to list VM's in datastore",
+	 :boolean => true
+
   def run
     $stdout.sync = true
 
@@ -52,6 +58,14 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
       puts "#{ui.color("Datastore", :cyan)}: #{store.name} (#{avail} / #{cap})"
+      if get_config(:list)
+        store.vm.each do |vms|
+	  hostName = vms.guest[:hostName]
+	  guestFullName = vms.guest[:guestFullName]
+	  guestState = vms.guest[:guestState]
+	  puts "#{ui.color("VM Name:", :green)} #{hostName} #{ui.color("OS:", :magenta)} #{guestFullName} #{ui.color("State:", :cyan)} #{guestState}"
+        end
+      end
     end
   end
 end

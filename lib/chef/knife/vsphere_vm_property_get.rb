@@ -6,8 +6,8 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
-  banner "knife vsphere vm config VMNAME PROPERTY VALUE.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.vm.ConfigSpec.html\" for allowed ATTRIBUTE values (any property of type xs:string is supported)."
+class Chef::Knife::VsphereVmPropertyGet < Chef::Knife::BaseVsphereCommand
+  banner "knife vsphere vm property get VMNAME PROPERTY.  Gets a vApp Property on VMNAME."
 
   get_common_options
 
@@ -26,21 +26,21 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
     end
     property_name = property_name.to_sym
 
-    property_value = @name_args[2]
-    if property_value.nil?
-      show_usage
-      fatal_exit("You must specify a PROPERTY value")
-    end
-
     vim = get_vim_connection
 
     dc = get_datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = traverse_folders_for_vm(folder, vmname) or abort "VM #{vmname} not found"
+    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
+        abort "VM #{vmname} not found"
 
-    properties = {}
-    properties[property_name] = property_value
-    vm.ReconfigVM_Task(:spec => RbVmomi::VIM.VirtualMachineConfigSpec(properties)).wait_for_completion
+    existing_property = vm.config.vAppConfig.property.find { |p| p.props[:id] == property_name.to_s  }
+
+    if existing_property
+      puts existing_property.props[:value]
+    else
+      fatal_exit("PROPERTY [#{property_name.to_s}] not found")
+    end
+
   end
 end
