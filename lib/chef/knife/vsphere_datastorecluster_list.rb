@@ -35,6 +35,24 @@ def number_to_human_size(number)
   return sprintf("%0.2f %s", number, unit)
 end
 
+def traverse_folders_for_dsclusters(folder)
+  print_dsclusters_in_folder(folder)
+  folder.childEntity.each do |child|
+    if child.class.to_s == 'Folder'
+     traverse_folders_for_dsclusters(child)
+    end
+  end
+end
+
+def print_dsclusters_in_folder (folder)
+  folder.childEntity.each do |child|
+    if child.class.to_s == "StoragePod"
+      avail = number_to_human_size(child.summary[:freeSpace])
+      cap = number_to_human_size(child.summary[:capacity])
+      puts "#{ui.color("DatastoreCluster", :cyan)}: #{child.name} (#{avail} / #{cap})"
+    end
+  end
+end
 
 # Lists all known data store cluster in datacenter with sizes
 class Chef::Knife::VsphereDatastoreclusterList < Chef::Knife::BaseVsphereCommand
@@ -45,16 +63,9 @@ class Chef::Knife::VsphereDatastoreclusterList < Chef::Knife::BaseVsphereCommand
 
   def run
     $stdout.sync = true
-
     vim = get_vim_connection
     dc = get_datacenter
-    dc.datastoreFolder.childEntity.each do |store|
-	  if store.class.to_s == "StoragePod"
-		avail = number_to_human_size(store.summary[:freeSpace])
-		cap = number_to_human_size(store.summary[:capacity])
-		puts "#{ui.color("DatastoreCluster", :cyan)}: #{store.name} (#{avail} / #{cap})"
-	  end
-    end
+    traverse_folders_for_dsclusters(dc.datastoreFolder)
   end
 end
 
