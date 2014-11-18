@@ -417,24 +417,21 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           config[:vmname]
         end
 
-        if src_config.guestId.downcase.include?("linux")
-          ident = RbVmomi::VIM.CustomizationLinuxPrep
-
-          ident.hostName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
-
-          if get_config(:customization_domain)
-            ident.domain = get_config(:customization_domain)
-          else
-            ident.domain = ''
-          end
-
-          cust_spec.identity = ident
-        elsif src_config.guestId.downcase.include?("windows")
+        if src_config.guestId.downcase.include?("windows")
           if cust_spec.identity.nil?
             fatal_exit("Please provide Windows Guest Customization")
           else
             cust_spec.identity.userData.computerName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
           end
+        else
+          ident = RbVmomi::VIM.CustomizationLinuxPrep
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+          if get_config(:customization_domain)
+            ident.domain = get_config(:customization_domain)
+          else
+            ident.domain = ''
+          end
+          cust_spec.identity = ident
         end
       end
 
