@@ -49,7 +49,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
     baseFolder = find_folder(get_config(:folder));
 
-    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
+    vm = traverse_folders_for_vm(baseFolder, vmname) or
         fatal_exit("VM #{vmname} not found")
 
     vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
