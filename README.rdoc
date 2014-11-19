@@ -307,7 +307,20 @@ Resource pool and datastore are mandatory.
 Set networking state for VMNAME by connecting/disconnecting network interfaces.
 Posible states are up/down.
 
+== knife vsphere cpu ratio [CLUSTER] [HOST]
 
+Lists the ratio between assigned virtual CPUs and physical CPUs on all hosts.
+
+    knife vsphere cpu ratio
+    Output:
+    ### Cluster Cluster1 ###
+    host1.domain.com: 1.8125
+    host2.domain.com: 2.40625
+    host3.domain.com: 1.8125
+
+    ### Cluster Cluster2 ###
+    host4.domain.com: 1.8125
+    host5.domain.com: 2.40625
 
 = LICENSE:
 
