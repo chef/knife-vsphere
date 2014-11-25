@@ -106,6 +106,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     tree.each do |node|
       if node.name == name
         snapshot = node.snapshot
+        break
       elsif !node.childSnapshotList.empty?
         snapshot = find_node(node.childSnapshotList, name)
       end
