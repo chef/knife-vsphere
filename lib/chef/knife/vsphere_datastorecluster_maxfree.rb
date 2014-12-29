@@ -18,6 +18,36 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
+def is_max_dscluster(dscluster, max_dscluster)
+  if ! max_dscluster 
+    return true
+  end
+
+  if dscluster.summary[:freeSpace] > max_dscluster.summary[:freeSpace]
+    return true
+  end
+
+  return false
+end
+
+def find_max_dscluster(folder, max_dscluster, regex)
+  folder.childEntity.each do |child|
+    if child.class.to_s == 'Folder'
+      sub_max = find_max_dscluster(child, max_dscluster, regex)
+      if is_max_dscluster(sub_max, max_dscluster)
+        max_dscluster = sub_max
+      end
+    elsif child.class.to_s == 'StoragePod'
+      
+      if is_max_dscluster(child, max_dscluster) && regex.match(child.name)
+        max_dscluster = child
+      end
+    end
+  end
+
+  return max_dscluster
+end
+
 # Gets the data store cluster with the most free space in datacenter
 class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
 
@@ -35,14 +65,20 @@ class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereComm
 
     vim = get_vim_connection
     dcname = get_config(:vsphere_dc)
-	regex = /#{Regexp.escape( get_config(:regex))}/
-    dc = config[:vim].serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
-	max = nil
-    dc.datastoreFolder.childEntity.each do |store|
-	  if regex.match(store.name) and (store.class.to_s == "StoragePod") and (max == nil or max.summary[:freeSpace] < store.summary[:freeSpace])
-	    max = store
-	  end      
+    regex = /#{Regexp.escape( get_config(:regex))}/
+    max_dscluster = nil
+    
+    vim = get_vim_connection
+    dc = get_datacenter
+
+    max_dscluster = find_max_dscluster(dc.datastoreFolder, max_dscluster, regex)
+  
+    if max_dscluster 
+      puts max_dscluster.name
+    else
+      puts "No datastore clusters found"
+      exit 1
     end
-	puts max ? max.name : ""
+
   end
 end

@@ -146,7 +146,7 @@ class Chef
       end
 
       def traverse_folders_for_vms(folder, vmname)
-	    retval = []
+      retval = []
         children = folder.children.find_all
         children.each do |child|
           if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
@@ -272,10 +272,20 @@ class Chef
         baseEntity.find { |f| f.info.name == dsName } or abort "no such datastore #{dsName}"
       end
 
-      def find_datastorecluster(dsName)
-        dc = get_datacenter
-        baseEntity = dc.datastoreFolder.childEntity
-        baseEntity.find { |f| f.name == dsName and f.instance_of?(RbVmomi::VIM::StoragePod) } or abort "no such datastorecluster #{dsName}"
+      def find_datastorecluster(dsName, folder = nil)
+        if ! folder 
+          dc = get_datacenter
+          folder = dc.datastoreFolder
+        end
+        folder.childEntity.each do |child|
+          if child.class.to_s == 'Folder'
+            ds = find_datastorecluster(dsName, child)
+            if ds then return ds end
+          elsif child.class.to_s == 'StoragePod' && child.name == dsName
+            return child
+          end
+        end
+        return nil
       end
 
       def find_device(vm, deviceName)
@@ -304,8 +314,8 @@ class Chef
           if object.parent.is_a?(RbVmomi::VIM:: ManagedEntity)
             return get_path_to_object(object.parent) + "/" + object.parent.name
           else
-			return ""
-		  end
+      return ""
+      end
         else
           puts "Unknown type #{object.class}, not enumerating"
           nil
