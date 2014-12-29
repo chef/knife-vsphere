@@ -259,11 +259,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         abort "VM/Template not found"
 
     if get_config(:linked_clone)
-<<<<<<< HEAD
-      create_delta_disk(src_vm)  
-=======
       create_delta_disk(src_vm)
->>>>>>> upstream/master
     end
 
     clone_spec = generate_clone_spec(src_vm.config)
@@ -354,7 +350,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if get_config(:datastorecluster)
       dsc = find_datastorecluster(get_config(:datastorecluster))
-<<<<<<< HEAD
 
       dsc.childEntity.each do |store|
         if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
@@ -362,33 +357,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         end
       end
     end
+
 
     if get_config(:thin_provision)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:transform => :sparse, :pool => find_pool(get_config(:resource_pool)))
     end
 
-    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
-                                                      :powerOn => false,
-                                                      :template => false)
-=======
->>>>>>> upstream/master
+    is_template = get_config(:mark_as_template)
+    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec, :powerOn => false,:template => is_template)
 
-      dsc.childEntity.each do |store|
-        if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
-          rspec.datastore = store
-        end
-      end
-    end
-
-    if get_config(:mark_as_template)
-      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
-                                                        :powerOn => false,
-                                                        :template => true)
-    else
-      clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
-                                                        :powerOn => false,
-                                                        :template => false)      
-    end
     clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
 
     if get_config(:annotation)
