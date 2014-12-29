@@ -15,52 +15,47 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   option :recursive,
          :long => "--recursive",
          :short => "-r",
-         :description => "Recurse down through sub-folders"
+         :description => "Recurse into sub-folders"
 
-  option :only_folders,
-         :long => "--only-folders",
-         :description => "Print only sub-folders"
+  def traverse_folders(folder, is_top = false, recurse = false)
 
-  def traverse_folders(folder)
-    puts "#{ui.color("Folder", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/')
-    print_vms_in_folder(folder) unless get_config(:only_folders)
-    folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
-    folders.each do |child|
-      traverse_folders(child)
+    vms = find_all_in_folder(folder, RbVmomi::VIM::VirtualMachine).select {|v| v.config && !v.config.template }
+    if vms.any?
+      puts "#{ui.color("Folder", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/')
+      vms.each { |v|  print_vm(v) }
+    elsif is_top
+      puts "#{ui.color("No VMs", :cyan)}"
     end
+
+    if (recurse)
+      folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
+      folders.each do |child|
+        traverse_folders(child, false, recurse)
+      end
+    end
+
   end
 
-  def print_vms_in_folder(folder)
-    vms = find_all_in_folder(folder, RbVmomi::VIM::VirtualMachine)
-    vms.each do |vm|
-      state = case vm.runtime.powerState
-                when PsOn
-                  ui.color("on", :green)
-                when PsOff
-                  ui.color("off", :red)
-                when PsSuspended
-                  ui.color("suspended", :yellow)
-              end
-      puts "#{ui.color("VM Name:", :cyan)} #{vm.name}\t#{ui.color("IP:", :magenta)} #{vm.guest.ipAddress}\t#{ui.color("RAM:", :magenta)} #{vm.summary.config.memorySizeMB}\t#{ui.color("State:", :cyan)} #{state}"
-    end
-  end
-
-  def print_subfolders(folder)
-    folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
-    folders.each do |subfolder|
-      puts "#{ui.color("Folder Name", :cyan)}: #{subfolder.name}"
-    end
+  def print_vm(vm)
+    state = case vm.runtime.powerState
+            when PsOn
+              ui.color("on", :green)
+            when PsOff
+              ui.color("off", :red)
+            when PsSuspended
+              ui.color("suspended", :yellow)
+            end
+    puts "\t#{ui.color("VM Name:", :cyan)} #{vm.name}"
+         "\t\t#{ui.color("IP:", :magenta)} #{vm.guest.ipAddress}"
+         "\t\t#{ui.color("RAM:", :magenta)} #{vm.summary.config.memorySizeMB}"
+         "\t\t#{ui.color("State:", :cyan)} #{state}"
   end
 
   def run
-    $stdout.sync = true
     vim = get_vim_connection
     baseFolder = find_folder(get_config(:folder));
-    if get_config(:recursive)
-      traverse_folders(baseFolder)
-    else
-      print_subfolders(baseFolder)
-      print_vms_in_folder(baseFolder)
-    end
+    recurse =  get_config(:recursive)
+    is_top = true
+    traverse_folders(baseFolder, is_top, recurse)
   end
 end
