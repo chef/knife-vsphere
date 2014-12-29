@@ -123,6 +123,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "Indicates whether to bootstrap the VM",
          :boolean => false
 
+  option :environment,
+         :long => "--environment ENVIRONMENT",
+         :description => "Environment to add the node to for bootstrapping"
+
   option :fqdn,
          :long => "--fqdn SERVER_FQDN",
          :description => "Fully qualified hostname for bootstrapping"
