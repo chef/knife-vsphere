@@ -47,6 +47,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "Indicates whether to use linked clones.",
          :boolean => false
 
+  option :linked_clone,
+         :long => "--linked-clone",
+         :description => "Indicates whether to use linked clones.",
+         :boolean => false
+
+  option :thin_provision,
+         :long => "--thin-provision",
+         :description => "Indicates whether disk should be thin provisioned.",
+         :boolean => true
+
   option :annotation,
          :long => "--annotation TEXT",
          :description => "Add TEXT in Notes field from annotation"
@@ -233,6 +243,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     vim = get_vim_connection
+    vdm = vim.serviceContent.virtualDiskManager
 
     dc = get_datacenter
 
@@ -244,7 +255,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         abort "VM/Template not found"
 
     if get_config(:linked_clone)
+<<<<<<< HEAD
+      create_delta_disk(src_vm)  
+=======
       create_delta_disk(src_vm)
+>>>>>>> upstream/master
     end
 
     clone_spec = generate_clone_spec(src_vm.config)
@@ -335,6 +350,24 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if get_config(:datastorecluster)
       dsc = find_datastorecluster(get_config(:datastorecluster))
+<<<<<<< HEAD
+
+      dsc.childEntity.each do |store|
+        if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
+          rspec.datastore = store
+        end
+      end
+    end
+
+    if get_config(:thin_provision)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:transform => :sparse, :pool => find_pool(get_config(:resource_pool)))
+    end
+
+    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec,
+                                                      :powerOn => false,
+                                                      :template => false)
+=======
+>>>>>>> upstream/master
 
       dsc.childEntity.each do |store|
         if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])

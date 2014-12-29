@@ -204,7 +204,7 @@ class Chef
             if baseEntity.is_a? RbVmomi::VIM::Folder
               baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
-            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource
+            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource 
               baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
             elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
