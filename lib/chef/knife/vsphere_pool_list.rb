@@ -13,15 +13,16 @@ class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand
   get_common_options
 
   def traverse_folders(folder)
-    if "#{folder.class}" != 'VirtualApp'
-      puts "#{ui.color("#{folder.class}", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/')
-      folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
-      unless folders.nil?
-        folders.each do |child|
-          traverse_folders(child)
-        end
-      end
+    return if folder.is_a? RbVmomi::VIM::VirtualApp
+
+    puts "#{ui.color("Pool", :cyan)}: "+(folder.path[3..-1].map { |x| x[1] }.* '/') if
+      folder.is_a? RbVmomi::VIM::ResourcePool
+
+    folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject) || []
+    folders.each do |child|
+      traverse_folders(child)
     end
+
   end
 
   def find_pool_folder(folderName)
@@ -38,7 +39,6 @@ class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand
   end
 
   def run
-    $stdout.sync = true
     vim = get_vim_connection
     baseFolder = find_pool_folder(get_config(:folder));
     traverse_folders(baseFolder)
