@@ -408,7 +408,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         card.backing.port = switch_port
       rescue
         # not connected to a distibuted switch?
-        card.backing.deviceName = network.name
+        card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(:network => network, :deviceName => network.name)
       end
       dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
       clone_spec.config.deviceChange.push dev_spec
