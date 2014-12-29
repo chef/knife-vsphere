@@ -223,6 +223,15 @@ Customization Plugin Example:
         "timeZone": "100"
     }
 
+== knife vsphere vm toolsconfig PROPERTY VALUE [--empty]
+    --empty           - allows clearing string properties
+
+Sets properties in tools property.
+See \"https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.ToolsConfigInfo.html\" for available properties and types.
+
+Examples:
+    knife vsphere vm toolsconfig myvirtualmachine syncTimeWithHost false
+    knife vsphere vm toolsconfig myvirtualmachine pendingCustomization -e
 
 == knife vsphere vm delete VMNAME [--purge]
 
