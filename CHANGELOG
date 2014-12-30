@@ -1,8 +1,23 @@
 knife-vsphere changelog
 ----------------------
 
+1.0
+        ezrapagel - by default, show hosts from all pools
+        ezrapagel - report back resource pools during pool list
+        ezrapagel - include new folder list command
+        ezrapagel - refactored vm list to not display templates, folders are separate command
+        andrewfraley - fix - vm clone finds VMs in subfolders
+        cmeil - fix -snapshot could not be found if a sibling snapshot contains child snapshots
+        andrewfraley -  fix - datastorecluster works with subfolders
+        andrewfraley -  vm clone cspec works with all Linux distros
+        thorduri - environment option for vm clone
+        coremedia - allows modifying properties in vm.
+        keymon - fix - create VirtualEthernetCardNetworkBackingInfo is created when attaching to standard switch
+        tcicone -Added thin provisioning to the clone and move option
+        mheidenr - list ratio between assigned virtual CPUs and physical CPUs on all hosts
+
 1.0.0.pre.3 *
-	jrosen - added ability to clone into template
+        jrosen - added ability to clone into template
 	bellpeterm - allow :source_vm to be set in knife.rb
 	jeremymv2 - cplugin example in readme
 	mheidenr - vm clone can now clone and customize windows vms
