@@ -325,7 +325,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   # Builds a CloneSpec
   def generate_clone_spec (src_config)
-
     rspec = nil
     if get_config(:resource_pool)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(get_config(:resource_pool)))
@@ -358,12 +357,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-
     if get_config(:thin_provision)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:transform => :sparse, :pool => find_pool(get_config(:resource_pool)))
     end
 
-    is_template = get_config(:mark_as_template)
+    is_template = !get_config(:mark_as_template).nil?
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec, :powerOn => false,:template => is_template)
 
     clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
