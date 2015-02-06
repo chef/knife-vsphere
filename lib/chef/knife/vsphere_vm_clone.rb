@@ -74,8 +74,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          :description => "String of data to pass to the plugin.  Use any format you wish."
 
   option :customization_vlan,
-         :long => "--cvlan CUST_VLAN",
-         :description => "VLAN name for network adapter to join"
+         :long => "--cvlan CUST_VLANS",
+         :description => "Comma-delimited list of VLAN names for network adapters to join"
 
   option :customization_ips,
          :long => "--cips CUST_IPS",
@@ -379,18 +379,23 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:customization_vlan)
-      network = find_network(get_config(:customization_vlan))
-      card = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard).first or
-          abort "Can't find source network card to customize"
-      begin
-        switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid, :portgroupKey => network.key)
-        card.backing.port = switch_port
-      rescue
-        # not connected to a distibuted switch?
-        card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(:network => network, :deviceName => network.name)
+      vlan_list = get_config(:customization_vlan).split(',')
+      networks = vlan_list.map { |vlan| find_network(vlan) }
+
+      cards = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
+
+      networks.each_with_index do |network, index|
+        card = cards[index] or abort "Can't find source network card to customize for vlan #{vlan_list[index]}"
+        begin
+          switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid, :portgroupKey => network.key)
+          card.backing.port = switch_port
+        rescue
+          # not connected to a distibuted switch?
+          card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(:network => network, :deviceName => network.name)
+        end
+        dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
+        clone_spec.config.deviceChange.push dev_spec
       end
-      dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
-      clone_spec.config.deviceChange.push dev_spec
     end
 
     if get_config(:customization_spec)
