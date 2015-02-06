@@ -98,7 +98,7 @@ Enumerates the customization specifications registered in the target datacenter.
    --cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
    --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
    --cvlan CUST_VLAN - VLAN name for network adapter to join
-   --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization
+   --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
    --cgw CUST_GW - CIDR IP of gateway for customization
    --chostname CUST_HOSTNAME - Unqualified hostname for customization
    --cdomain CUST_DOMAIN - Domain name for customization
