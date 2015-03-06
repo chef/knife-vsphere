@@ -48,6 +48,10 @@ For initial development, the plugin targets all communication at a vCenter insta
     knife[:vsphere_pass] = "your password"
     knife[:vsphere_dc] = "your-datacenter"
 
+The vSphere password can also be stored in a base64 encoded version (to visually obfuscate it) by prepending 'base64:' to your encoded password. For example:
+
+    knife[:vsphere_pass] = "base64:VGhhbmtzRXpyYSE=\n"
+
 If you get the following error, you may need to disable SSL certificate checking:
 ERROR: OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
     knife[:vsphere_insecure] = true

@@ -6,6 +6,7 @@
 
 require 'chef/knife'
 require 'rbvmomi'
+require 'base64'
 
 # Base class for vsphere knife commands
 class Chef
@@ -101,10 +102,12 @@ class Chef
             :proxyPort => get_config(:proxy_port)
         }
 
-        # Grab the password from the command line
-        # if tt is not in the config file
-        if not conn_opts[:password]
+        if !conn_opts[:password]
+          # Password is not in the config file - grab it
+          # from the command line
           conn_opts[:password] = get_password
+        elsif conn_opts[:password].start_with?('base64:')
+          conn_opts[:password] = Base64.decode64(conn_opts[:password][7..-1])
         end
 
         #    opt :debug, "Log SOAP messages", :short => 'd', :default => (ENV['RBVMOMI_DEBUG'] || false)
