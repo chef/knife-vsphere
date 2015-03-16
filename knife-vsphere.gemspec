@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "knife-vsphere"
-  s.version = "1.0.0"
+  s.version = "1.0.1"
   s.summary = "vSphere Support for Knife"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.6.2"
   s.homepage = 'http://github.com/ezrapagel/knife-vsphere'
   s.license = 'Apache'
-  s.add_dependency('netaddr', ["~> 1.5.0"])
-  s.add_dependency('chef', [">= 0.10.0"])
-  s.add_dependency('rbvmomi', ["~> 1.5.1"])
+  s.add_dependency('netaddr', ['~> 1.5'])
+  s.add_dependency('chef', ['>= 0.10.0'])
+  s.add_dependency('rbvmomi', ['~> 1.8'])
 end

@@ -124,6 +124,7 @@ Enumerates the customization specifications registered in the target datacenter.
    --distro DISTRO - Bootstrap a distro using a template
    --template-file TEMPLATE - Full path to location of template to use
    --run-list RUN_LIST - Comma separated list of roles/recipes to apply
+   --secret-file SECRET_FILE - A file containing the secret key to use to encrypt data bag item values
    --no-host-key-verify - Disable host key verification
    --json-attributes - A JSON string to be added to the first run of chef-client
    --disable-customization - Disable default customization
@@ -139,13 +140,13 @@ Customization Plugin Example:
       def data=(cplugin_data)
         # Parse your cplugin_data from the format of your choosing.
       end
-    
+
       # optional
       def customize_clone_spec(src_config, clone_spec)
         # Customize the clone spec as you see fit.
         return customized_clone_spec
       end
-    
+
       # optional
       def reconfig_vm(target_vm)
         # Do anything you want in here with the cloned VM.
@@ -272,7 +273,7 @@ Gets the datastorecluster with the most free space
 
 == knife vsphere vm execute VMNAME COMMAND [ARGUMENTS] --exec-user USER --exec-passwd PASSWD [ --exec-dir DIRECTORY ]
 
-Executes a program on the guest. Requires vCenter 5.0 or higher. 
+Executes a program on the guest. Requires vCenter 5.0 or higher.
 
 Command path must be absolute. For Linux guest operating systems,
 /bin/bash is used to start the program. For Solaris guest operating
