@@ -107,7 +107,7 @@ class Chef
           # from the command line
           conn_opts[:password] = get_password
         elsif conn_opts[:password].start_with?('base64:')
-          conn_opts[:password] = Base64.decode64(conn_opts[:password][7..-1])
+          conn_opts[:password] = Base64.decode64(conn_opts[:password][7..-1]).chomp
         end
 
         #    opt :debug, "Log SOAP messages", :short => 'd', :default => (ENV['RBVMOMI_DEBUG'] || false)
@@ -207,7 +207,7 @@ class Chef
             if baseEntity.is_a? RbVmomi::VIM::Folder
               baseEntity = baseEntity.childEntity.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
-            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource 
+            elsif baseEntity.is_a? RbVmomi::VIM::ClusterComputeResource or baseEntity.is_a? RbVmomi::VIM::ComputeResource
               baseEntity = baseEntity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } or
                   abort "no such pool #{poolName} while looking for #{entityArrItem}"
             elsif baseEntity.is_a? RbVmomi::VIM::ResourcePool
@@ -276,7 +276,7 @@ class Chef
       end
 
       def find_datastorecluster(dsName, folder = nil)
-        if ! folder 
+        if ! folder
           dc = get_datacenter
           folder = dc.datastoreFolder
         end
