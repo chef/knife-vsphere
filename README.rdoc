@@ -336,6 +336,18 @@ Lists the ratio between assigned virtual CPUs and physical CPUs on all hosts.
     host4.domain.com: 1.8125
     host5.domain.com: 2.40625
 
+= Developing, or using the latest code
+
+The master version of this code may be ahead of the gem itself. If it's in master you
+can generally consider it ready to use. To use master instead of what's published on
+Ruby gems:
+
+  gem uninstall knife-vsphere
+  git clone git@github.com:ezrapagel/knife-vsphere.git # or your fork
+  cd knife-vsphere
+  rake build                                           # Take note of the version
+  gem install pkg/knife-vsphere-1.0.1.gem              # Use the version above
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
