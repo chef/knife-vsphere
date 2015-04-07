@@ -17,219 +17,221 @@ require 'netaddr'
 #     --cips 192.168.0.99/24,192.168.1.99/24 \
 #     --chostname NODENAME --cdomain NODEDOMAIN
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere vm clone VMNAME (options)'
 
-  banner "knife vsphere vm clone VMNAME (options)"
-
-  get_common_options
+  common_options
 
   option :dest_folder,
-         :long => "--dest-folder FOLDER",
-         :description => "The folder into which to put the cloned VM"
+         long: '--dest-folder FOLDER',
+         description: 'The folder into which to put the cloned VM'
 
   option :datastore,
-         :long => "--datastore STORE",
-         :description => "The datastore into which to put the cloned VM"
+         long: '--datastore STORE',
+         description: 'The datastore into which to put the cloned VM'
 
   option :datastorecluster,
-         :long => "--datastorecluster STORE",
-         :description => "The datastorecluster into which to put the cloned VM"
+         long: '--datastorecluster STORE',
+         description: 'The datastorecluster into which to put the cloned VM'
 
   option :resource_pool,
-         :long => "--resource-pool POOL",
-         :description => "The resource pool into which to put the cloned VM"
+         long: '--resource-pool POOL',
+         description: 'The resource pool into which to put the cloned VM'
 
   option :source_vm,
-         :long => "--template TEMPLATE",
-         :description => "The source VM / Template to clone from"
+         long: '--template TEMPLATE',
+         description: 'The source VM / Template to clone from'
 
   option :linked_clone,
-         :long => "--linked-clone",
-         :description => "Indicates whether to use linked clones.",
-         :boolean => false
+         long: '--linked-clone',
+         description: 'Indicates whether to use linked clones.',
+         boolean: false
 
   option :linked_clone,
-         :long => "--linked-clone",
-         :description => "Indicates whether to use linked clones.",
-         :boolean => false
+         long: '--linked-clone',
+         description: 'Indicates whether to use linked clones.',
+         boolean: false
 
   option :thin_provision,
-         :long => "--thin-provision",
-         :description => "Indicates whether disk should be thin provisioned.",
-         :boolean => true
+         long: '--thin-provision',
+         description: 'Indicates whether disk should be thin provisioned.',
+         boolean: true
 
   option :annotation,
-         :long => "--annotation TEXT",
-         :description => "Add TEXT in Notes field from annotation"
+         long: '--annotation TEXT',
+         description: 'Add TEXT in Notes field from annotation'
 
   option :customization_spec,
-         :long => "--cspec CUST_SPEC",
-         :description => "The name of any customization specification to apply"
+         long: '--cspec CUST_SPEC',
+         description: 'The name of any customization specification to apply'
 
   option :customization_plugin,
-         :long => "--cplugin CUST_PLUGIN_PATH",
-         :description => "Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm"
+         long: '--cplugin CUST_PLUGIN_PATH',
+         description: 'Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm'
 
   option :customization_plugin_data,
-         :long => "--cplugin-data CUST_PLUGIN_DATA",
-         :description => "String of data to pass to the plugin.  Use any format you wish."
+         long: '--cplugin-data CUST_PLUGIN_DATA',
+         description: 'String of data to pass to the plugin.  Use any format you wish.'
 
   option :customization_vlan,
-         :long => "--cvlan CUST_VLANS",
-         :description => "Comma-delimited list of VLAN names for network adapters to join"
+         long: '--cvlan CUST_VLANS',
+         description: 'Comma-delimited list of VLAN names for network adapters to join'
 
   option :customization_ips,
-         :long => "--cips CUST_IPS",
-         :description => "Comma-delimited list of CIDR IPs for customization"
+         long: '--cips CUST_IPS',
+         description: 'Comma-delimited list of CIDR IPs for customization'
 
   option :customization_dns_ips,
-         :long => "--cdnsips CUST_DNS_IPS",
-         :description => "Comma-delimited list of DNS IP addresses"
+         long: '--cdnsips CUST_DNS_IPS',
+         description: 'Comma-delimited list of DNS IP addresses'
 
   option :customization_dns_suffixes,
-         :long => "--cdnssuffix CUST_DNS_SUFFIXES",
-         :description => "Comma-delimited list of DNS search suffixes"
+         long: '--cdnssuffix CUST_DNS_SUFFIXES',
+         description: 'Comma-delimited list of DNS search suffixes'
 
   option :customization_gw,
-         :long => "--cgw CUST_GW",
-         :description => "CIDR IP of gateway for customization"
+         long: '--cgw CUST_GW',
+         description: 'CIDR IP of gateway for customization'
 
   option :customization_hostname,
-         :long => "--chostname CUST_HOSTNAME",
-         :description => "Unqualified hostname for customization"
+         long: '--chostname CUST_HOSTNAME',
+         description: 'Unqualified hostname for customization'
 
   option :customization_domain,
-         :long => "--cdomain CUST_DOMAIN",
-         :description => "Domain name for customization"
+         long: '--cdomain CUST_DOMAIN',
+         description: 'Domain name for customization'
 
   option :customization_tz,
-         :long => "--ctz CUST_TIMEZONE",
-         :description => "Timezone invalid 'Area/Location' format"
+         long: '--ctz CUST_TIMEZONE',
+         description: "Timezone invalid 'Area/Location' format"
 
   option :customization_cpucount,
-         :long => "--ccpu CUST_CPU_COUNT",
-         :description => "Number of CPUs"
+         long: '--ccpu CUST_CPU_COUNT',
+         description: 'Number of CPUs'
 
   option :customization_memory,
-         :long => "--cram CUST_MEMORY_GB",
-         :description => "Gigabytes of RAM"
+         long: '--cram CUST_MEMORY_GB',
+         description: 'Gigabytes of RAM'
 
   option :power,
-         :long => "--start",
-         :description => "Indicates whether to start the VM after a successful clone",
-         :boolean => false
+         long: '--start',
+         description: 'Indicates whether to start the VM after a successful clone',
+         boolean: false
 
   option :bootstrap,
-         :long => "--bootstrap",
-         :description => "Indicates whether to bootstrap the VM",
-         :boolean => false
+         long: '--bootstrap',
+         description: 'Indicates whether to bootstrap the VM',
+         boolean: false
 
   option :environment,
-         :long => "--environment ENVIRONMENT",
-         :description => "Environment to add the node to for bootstrapping"
+         long: '--environment ENVIRONMENT',
+         description: 'Environment to add the node to for bootstrapping'
 
   option :fqdn,
-         :long => "--fqdn SERVER_FQDN",
-         :description => "Fully qualified hostname for bootstrapping"
+         long: '--fqdn SERVER_FQDN',
+         description: 'Fully qualified hostname for bootstrapping'
 
   option :ssh_user,
-         :short => "-x USERNAME",
-         :long => "--ssh-user USERNAME",
-         :description => "The ssh username"
-  $default[:ssh_user] = "root"
+         short: '-x USERNAME',
+         long: '--ssh-user USERNAME',
+         description: 'The ssh username',
+         default: 'root'
 
   option :ssh_password,
-         :short => "-P PASSWORD",
-         :long => "--ssh-password PASSWORD",
-         :description => "The ssh password"
+         short: '-P PASSWORD',
+         long: '--ssh-password PASSWORD',
+         description: 'The ssh password'
 
   option :ssh_port,
-         :short => "-p PORT",
-         :long => "--ssh-port PORT",
-         :description => "The ssh port"
-  $default[:ssh_port] = 22
+         short: '-p PORT',
+         long: '--ssh-port PORT',
+         description: 'The ssh port',
+         default: '22'
 
   option :identity_file,
-         :short => "-i IDENTITY_FILE",
-         :long => "--identity-file IDENTITY_FILE",
-         :description => "The SSH identity file used for authentication"
+         short: '-i IDENTITY_FILE',
+         long: '--identity-file IDENTITY_FILE',
+         description: 'The SSH identity file used for authentication'
 
   option :chef_node_name,
-         :short => "-N NAME",
-         :long => "--node-name NAME",
-         :description => "The Chef node name for your new node"
+         short: '-N NAME',
+         long: '--node-name NAME',
+         description: 'The Chef node name for your new node'
 
   option :prerelease,
-         :long => "--prerelease",
-         :description => "Install the pre-release chef gems",
-         :boolean => false
+         long: '--prerelease',
+         description: 'Install the pre-release chef gems',
+         boolean: false
 
   option :bootstrap_version,
-         :long => "--bootstrap-version VERSION",
-         :description => "The version of Chef to install",
-         :proc => Proc.new { |v| Chef::Config[:knife][:bootstrap_version] = v }
+         long: '--bootstrap-version VERSION',
+         description: 'The version of Chef to install',
+         proc: proc { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
   option :bootstrap_proxy,
-         :long => "--bootstrap-proxy PROXY_URL",
-         :description => "The proxy server for the node being bootstrapped",
-         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+         long: '--bootstrap-proxy PROXY_URL',
+         description: 'The proxy server for the node being bootstrapped',
+         proc: proc { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
   option :distro,
-         :short => "-d DISTRO",
-         :long => "--distro DISTRO",
-         :description => "Bootstrap a distro using a template"
+         short: '-d DISTRO',
+         long: '--distro DISTRO',
+         description: 'Bootstrap a distro using a template'
 
   option :template_file,
-         :long => "--template-file TEMPLATE",
-         :description => "Full path to location of template to use"
+         long: '--template-file TEMPLATE',
+         description: 'Full path to location of template to use'
 
   option :run_list,
-         :short => "-r RUN_LIST",
-         :long => "--run-list RUN_LIST",
-         :description => "Comma separated list of roles/recipes to apply"
-  $default[:run_list] = ''
+         short: '-r RUN_LIST',
+         long: '--run-list RUN_LIST',
+         description: 'Comma separated list of roles/recipes to apply',
+         default: ''
 
   option :secret_file,
-         :long => "--secret-file SECRET_FILE",
-         :description => "A file containing the secret key to use to encrypt data bag item values",
-         :proc => lambda { |secret_file| Chef::Config[:knife][:secret_file] = secret_file }
+         long: '--secret-file SECRET_FILE',
+         description: 'A file containing the secret key to use to encrypt data bag item values',
+         proc: ->(secret_file) { Chef::Config[:knife][:secret_file] = secret_file }
 
+  # rubocop:disable Style/Blocks
   option :hint,
-         :long => "--hint HINT_NAME[=HINT_FILE]",
-         :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
-         :proc => Proc.new { |h|
-           Chef::Config[:knife][:hints] ||= Hash.new
-           name, path = h.split("=")
-           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
-  $default[:hint] = ''
+         long: '--hint HINT_NAME[=HINT_FILE]',
+         description: 'Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.',
+         proc: proc { |h|
+           Chef::Config[:knife][:hints] ||= {}
+           name, path = h.split('=')
+           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : {}
+         },
+         default: ''
+  # rubocop:enable Style/Blocks
 
   option :no_host_key_verify,
-         :long => "--no-host-key-verify",
-         :description => "Disable host key verification",
-         :boolean => true
+         long: '--no-host-key-verify',
+         description: 'Disable host key verification',
+         boolean: true
 
   option :first_boot_attributes,
-         :short => "-j JSON_ATTRIBS",
-         :long => "--json-attributes",
-         :description => "A JSON string to be added to the first run of chef-client",
-         :proc => lambda { |o| JSON.parse(o) },
-         :default => {}
+         short: '-j JSON_ATTRIBS',
+         long: '--json-attributes',
+         description: 'A JSON string to be added to the first run of chef-client',
+         proc: ->(o) { JSON.parse(o) },
+         default: {}
 
   option :disable_customization,
-         :long => "--disable-customization",
-         :description => "Disable default customization",
-         :boolean => true,
-         :default => false
+         long: '--disable-customization',
+         description: 'Disable default customization',
+         boolean: true,
+         default: false
 
   option :log_level,
-         :short => "-l LEVEL",
-         :long => "--log_level",
-         :description => "Set the log level (debug, info, warn, error, fatal) for chef-client",
-         :proc => lambda { |l| l.to_sym }
+         short: '-l LEVEL',
+         long: '--log_level',
+         description: 'Set the log level (debug, info, warn, error, fatal) for chef-client',
+         proc: ->(l) { l.to_sym }
 
   option :mark_as_template,
-         :long => "--mark_as_template",
-         :description => "Indicates whether to mark the new vm as a template",
-         :boolean => false
+         long: '--mark_as_template',
+         description: 'Indicates whether to mark the new vm as a template',
+         boolean: false
 
   def run
     $stdout.sync = true
@@ -237,7 +239,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit("You must specify a virtual machine name")
+      fatal_exit('You must specify a virtual machine name')
     end
     config[:chef_node_name] = vmname unless config[:chef_node_name]
     config[:vmname] = vmname
@@ -246,21 +248,19 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fatal_exit("Can't find .chef for bootstrap files. chdir to a location with a .chef directory and try again")
     end
 
-    vim = get_vim_connection
-    vdm = vim.serviceContent.virtualDiskManager
+    vim = vim_connection
+    vim.serviceContent.virtualDiskManager
 
-    dc = get_datacenter
+    dc = datacenter
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    abort "--template or knife[:source_vm] must be specified" unless config[:source_vm]
+    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
 
-    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) or
-        abort "VM/Template not found"
+    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) ||
+             abort('VM/Template not found')
 
-    if get_config(:linked_clone)
-      create_delta_disk(src_vm)
-    end
+    create_delta_disk(src_vm) if get_config(:linked_clone)
 
     clone_spec = generate_clone_spec(src_vm.config)
 
@@ -268,79 +268,76 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     dest_folder = cust_folder.nil? ? src_vm.vmFolder : find_folder(cust_folder)
 
-    task = src_vm.CloneVM_Task(:folder => dest_folder, :name => vmname, :spec => clone_spec)
+    task = src_vm.CloneVM_Task(folder: dest_folder, name: vmname, spec: clone_spec)
     puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
     task.wait_for_completion
     puts "Finished creating virtual machine #{vmname}"
 
     if customization_plugin && customization_plugin.respond_to?(:reconfig_vm)
-      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or abort "VM could not be found in #{dest_folder}"
+      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{dest_folder}")
       customization_plugin.reconfig_vm(target_vm)
     end
 
-    if !get_config(:mark_as_template)
-      if get_config(:power) || get_config(:bootstrap)
-        vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) or
-            fatal_exit("VM #{vmname} not found")
-        vm.PowerOnVM_Task.wait_for_completion
-        puts "Powered on virtual machine #{vmname}"
-      end
-
-
-      if get_config(:bootstrap)
-        sleep 2 until vm.guest.ipAddress
-        config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
-        print "Waiting for sshd..."
-        print "." until tcp_test_ssh(config[:fqdn])
-        puts "done"
-
-        bootstrap_for_node.run
-      end
+    return if get_config(:mark_as_template)
+    if get_config(:power) || get_config(:bootstrap)
+      vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) ||
+           fatal_exit("VM #{vmname} not found")
+      vm.PowerOnVM_Task.wait_for_completion
+      puts "Powered on virtual machine #{vmname}"
     end
+
+    return unless get_config(:bootstrap)
+    sleep 2 until vm.guest.ipAddress
+    config[:fqdn] = vm.guest.ipAddress unless config[:fqdn]
+    print 'Waiting for sshd...'
+    print '.' until tcp_test_ssh(config[:fqdn])
+    puts 'done'
+
+    bootstrap_for_node.run
   end
 
   def create_delta_disk(src_vm)
     disks = src_vm.config.hardware.device.grep(RbVmomi::VIM::VirtualDisk)
-    disks.select { |disk| disk.backing.parent == nil }.each do |disk|
+    disks.select { |disk| disk.backing.parent.nil? }.each do |disk|
       spec = {
-          :deviceChange => [
-              {
-                  :operation => :remove,
-                  :device => disk
-              },
-              {
-                  :operation => :add,
-                  :fileOperation => :create,
-                  :device => disk.dup.tap { |new_disk|
-                    new_disk.backing = new_disk.backing.dup
-                    new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
-                    new_disk.backing.parent = disk.backing
-                  },
-              }
-          ]
+        deviceChange: [
+          {
+            operation: :remove,
+            device: disk
+          },
+          {
+            operation: :add,
+            fileOperation: :create,
+            device: disk.dup.tap do |new_disk|
+              new_disk.backing = new_disk.backing.dup
+              new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
+              new_disk.backing.parent = disk.backing
+            end
+          }
+        ]
       }
-      src_vm.ReconfigVM_Task(:spec => spec).wait_for_completion
-      end
+      src_vm.ReconfigVM_Task(spec: spec).wait_for_completion
+    end
   end
 
   # Builds a CloneSpec
-  def generate_clone_spec (src_config)
+  def generate_clone_spec(src_config)
     rspec = nil
     if get_config(:resource_pool)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => find_pool(get_config(:resource_pool)))
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: find_pool(get_config(:resource_pool)))
     else
       dc = get_datacenter
       hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
       rp = hosts.first.resourcePool
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
     end
 
     if get_config(:linked_clone)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:diskMoveType => :moveChildMostDiskBacking)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(diskMoveType: :moveChildMostDiskBacking)
     end
 
     if get_config(:datastore) && get_config(:datastorecluster)
-      abort "Please select either datastore or datastorecluster"
+      abort 'Please select either datastore or datastorecluster'
     end
 
     if get_config(:datastore)
@@ -351,20 +348,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       dsc = find_datastorecluster(get_config(:datastorecluster))
 
       dsc.childEntity.each do |store|
-        if (rspec.datastore == nil or rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace])
+        if rspec.datastore.nil? || rspec.datastore.summary[:freeSpace] < store.summary[:freeSpace]
           rspec.datastore = store
         end
       end
     end
 
     if get_config(:thin_provision)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:transform => :sparse, :pool => find_pool(get_config(:resource_pool)))
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(transform: :sparse, pool: find_pool(get_config(:resource_pool)))
     end
 
     is_template = !get_config(:mark_as_template).nil?
-    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => rspec, :powerOn => false,:template => is_template)
+    clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(location: rspec, powerOn: false, template: is_template)
 
-    clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(:deviceChange => Array.new)
+    clone_spec.config = RbVmomi::VIM.VirtualMachineConfigSpec(deviceChange: [])
 
     if get_config(:annotation)
       clone_spec.config.annotation = get_config(:annotation)
@@ -385,27 +382,27 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       cards = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
 
       networks.each_with_index do |network, index|
-        card = cards[index] or abort "Can't find source network card to customize for vlan #{vlan_list[index]}"
+        card = cards[index] || abort("Can't find source network card to customize for vlan #{vlan_list[index]}")
         begin
-          switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(:switchUuid => network.config.distributedVirtualSwitch.uuid, :portgroupKey => network.key)
+          switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key)
           card.backing.port = switch_port
         rescue
           # not connected to a distibuted switch?
-          card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(:network => network, :deviceName => network.name)
+          card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
-        dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(:device => card, :operation => "edit")
+        dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
         clone_spec.config.deviceChange.push dev_spec
       end
     end
 
     if get_config(:customization_spec)
-      csi = find_customization(get_config(:customization_spec)) or
-          fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
+      csi = find_customization(get_config(:customization_spec)) ||
+            fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
 
       cust_spec = csi.spec
     else
       global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
-      cust_spec = RbVmomi::VIM.CustomizationSpec(:globalIPSettings => global_ipset)
+      cust_spec = RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset)
     end
 
     if get_config(:customization_dns_ips)
@@ -429,20 +426,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
       if use_ident
         hostname = if config[:customization_hostname]
-          config[:customization_hostname]
-        else
-          config[:vmname]
-        end
+                     config[:customization_hostname]
+                   else
+                     config[:vmname]
+                   end
 
-        if src_config.guestId.downcase.include?("windows")
+        if src_config.guestId.downcase.include?('windows')
           if cust_spec.identity.nil?
-            fatal_exit("Please provide Windows Guest Customization")
+            fatal_exit('Please provide Windows Guest Customization')
           else
-            cust_spec.identity.userData.computerName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+            cust_spec.identity.userData.computerName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
           end
         else
           ident = RbVmomi::VIM.CustomizationLinuxPrep
-          ident.hostName = RbVmomi::VIM.CustomizationFixedName(:name => hostname)
+          ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
           if get_config(:customization_domain)
             ident.domain = get_config(:customization_domain)
           else
@@ -465,8 +462,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # @return [KnifeVspherePlugin] the loaded and initialized plugin or nil
   def customization_plugin
     if @customization_plugin.nil?
-      if cplugin_path = get_config(:customization_plugin)
-        if File.exists? cplugin_path
+      cplugin_path = get_config(:customization_plugin)
+      if cplugin_path
+        if File.exist? cplugin_path
           require cplugin_path
         else
           abort "Customization plugin could not be found at #{cplugin_path}"
@@ -474,11 +472,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
         if Object.const_defined? 'KnifeVspherePlugin'
           @customization_plugin = Object.const_get('KnifeVspherePlugin').new
-          if cplugin_data = get_config(:customization_plugin_data)
+          cplugin_data = get_config(:customization_plugin_data)
+          if cplugin_data
             if @customization_plugin.respond_to?(:data=)
               @customization_plugin.data = cplugin_data
             else
-              abort "Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither."
+              abort 'Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither.'
             end
           end
         else
@@ -496,29 +495,28 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # @return [RbVmomi::VIM::CustomizationSpecItem]
   def find_customization(name)
     csm = config[:vim].serviceContent.customizationSpecManager
-    csm.GetCustomizationSpec(:name => name)
+    csm.GetCustomizationSpec(name: name)
   end
 
   # Generates a CustomizationAdapterMapping (currently only single IPv4 address) object
   # @param ip [String] Any static IP address to use, or "dhcp" for DHCP
   # @param gw [String] If static, the gateway for the interface, otherwise network address + 1 will be used
   # @return [RbVmomi::VIM::CustomizationIPSettings]
-  def generate_adapter_map (ip=nil, gw=nil, dns1=nil, dns2=nil, domain=nil)
-
+  def generate_adapter_map(ip = nil, gw = nil)
     settings = RbVmomi::VIM.CustomizationIPSettings
 
-    if ip.nil? || ip.downcase == "dhcp"
+    if ip.nil? || ip.downcase == 'dhcp'
       settings.ip = RbVmomi::VIM::CustomizationDhcpIpGenerator.new
     else
       cidr_ip = NetAddr::CIDR.create(ip)
-      settings.ip = RbVmomi::VIM::CustomizationFixedIp(:ipAddress => cidr_ip.ip)
+      settings.ip = RbVmomi::VIM::CustomizationFixedIp(ipAddress: cidr_ip.ip)
       settings.subnetMask = cidr_ip.netmask_ext
 
-      # TODO - want to confirm gw/ip are in same subnet?
+      # TODO: want to confirm gw/ip are in same subnet?
       # Only set gateway on first IP.
       if config[:customization_ips].split(',').first == ip
         if gw.nil?
-          settings.gateway = [cidr_ip.network(:Objectify => true).next_ip]
+          settings.gateway = [cidr_ip.network(Objectify: true).next_ip]
         else
           gw_cidr = NetAddr::CIDR.create(gw)
           settings.gateway = [gw_cidr.ip]
@@ -531,7 +529,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     adapter_map
   end
 
-  def bootstrap_for_node()
+  def bootstrap_for_node
     Chef::Knife::Bootstrap.load_deps
     bootstrap = Chef::Knife::Bootstrap.new
     bootstrap.name_args = [config[:fqdn]]

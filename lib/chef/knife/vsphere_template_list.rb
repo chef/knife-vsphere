@@ -8,25 +8,23 @@ require 'chef/knife/base_vsphere_command'
 
 # Lists all known VM templates in the configured datacenter
 class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere template list'
 
-  banner "knife vsphere template list"
-
-  get_common_options
+  common_options
 
   def run
-
     $stdout.sync = true
     $stderr.sync = true
 
-    vim = get_vim_connection
+    vim_connection
 
-    baseFolder = find_folder(get_config(:folder));
+    base_folder = find_folder(get_config(:folder))
 
-    vms = find_all_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine).
-        select { |v| !v.config.nil? && v.config.template == true }
+    vms = find_all_in_folder(base_folder, RbVmomi::VIM::VirtualMachine)
+          .select { |v| !v.config.nil? && v.config.template == true }
 
     vms.each do |vm|
-      puts "#{ui.color("Template Name", :cyan)}: #{vm.name}"
+      puts "#{ui.color('Template Name', :cyan)}: #{vm.name}"
     end
   end
 end

@@ -20,7 +20,7 @@ require 'chef/knife/base_vsphere_command'
 
 def number_to_human_size(number)
   number = number.to_f
-  storage_units_fmt = ["byte", "kB", "MB", "GB", "TB"]
+  storage_units_fmt = %w(byte kB MB GB TB)
   base = 1024
   if number.to_i < base
     unit = storage_units_fmt[0]
@@ -28,44 +28,39 @@ def number_to_human_size(number)
     max_exp = storage_units_fmt.size - 1
     exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
     exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-    number /= base ** exponent
+    number /= base**exponent
     unit = storage_units_fmt[exponent]
   end
 
-  return sprintf("%0.2f %s", number, unit)
+  format('%0.2f %s', number, unit)
 end
 
 def traverse_folders_for_dsclusters(folder)
   print_dsclusters_in_folder(folder)
   folder.childEntity.each do |child|
-    if child.class.to_s == 'Folder'
-     traverse_folders_for_dsclusters(child)
-    end
+    traverse_folders_for_dsclusters(child) if child.class.to_s == 'Folder'
   end
 end
 
-def print_dsclusters_in_folder (folder)
+def print_dsclusters_in_folder(folder)
   folder.childEntity.each do |child|
-    if child.class.to_s == "StoragePod"
-      avail = number_to_human_size(child.summary[:freeSpace])
-      cap = number_to_human_size(child.summary[:capacity])
-      puts "#{ui.color("DatastoreCluster", :cyan)}: #{child.name} (#{avail} / #{cap})"
-    end
+    next unless child.class.to_s == 'StoragePod'
+    avail = number_to_human_size(child.summary[:freeSpace])
+    cap = number_to_human_size(child.summary[:capacity])
+    puts "#{ui.color('DatastoreCluster', :cyan)}: #{child.name} (#{avail} / #{cap})"
   end
 end
 
 # Lists all known data store cluster in datacenter with sizes
 class Chef::Knife::VsphereDatastoreclusterList < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere datastorecluster list'
 
-  banner "knife vsphere datastorecluster list"
-
-  get_common_options
+  common_options
 
   def run
     $stdout.sync = true
-    vim = get_vim_connection
-    dc = get_datacenter
+    vim_connection
+    dc = datacenter
     traverse_folders_for_dsclusters(dc.datastoreFolder)
   end
 end
-

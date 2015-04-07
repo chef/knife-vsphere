@@ -18,67 +18,58 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
-def is_max_dscluster(dscluster, max_dscluster)
-  if ! max_dscluster 
-    return true
-  end
+def max_dscluster(dscluster, max_dscluster)
+  return true unless max_dscluster
 
   if dscluster.summary[:freeSpace] > max_dscluster.summary[:freeSpace]
     return true
   end
 
-  return false
+  false
 end
 
 def find_max_dscluster(folder, max_dscluster, regex)
   folder.childEntity.each do |child|
     if child.class.to_s == 'Folder'
       sub_max = find_max_dscluster(child, max_dscluster, regex)
-      if is_max_dscluster(sub_max, max_dscluster)
-        max_dscluster = sub_max
-      end
+      max_dscluster = sub_max if max_dscluster(sub_max, max_dscluster)
     elsif child.class.to_s == 'StoragePod'
-      
-      if is_max_dscluster(child, max_dscluster) && regex.match(child.name)
+      if max_dscluster(child, max_dscluster) && regex.match(child.name)
         max_dscluster = child
       end
     end
   end
 
-  return max_dscluster
+  max_dscluster
 end
 
 # Gets the data store cluster with the most free space in datacenter
 class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
-
-  banner "knife vsphere datastorecluster maxfree"
+  banner 'knife vsphere datastorecluster maxfree'
 
   option :regex,
-         :short => "-r REGEX",
-         :long => "--regex REGEX",
-         :description => "Regex to match the datastore cluster name"
-  get_common_options
-  $default[:regex] = ''
+         short: '-r REGEX',
+         long: '--regex REGEX',
+         description: 'Regex to match the datastore cluster name',
+         default: ''
+  common_options
 
   def run
     $stdout.sync = true
 
-    vim = get_vim_connection
-    dcname = get_config(:vsphere_dc)
-    regex = /#{Regexp.escape( get_config(:regex))}/
+    regex = /#{Regexp.escape(get_config(:regex))}/
     max_dscluster = nil
-    
-    vim = get_vim_connection
-    dc = get_datacenter
+
+    vim_connection
+    dc = datacenter
 
     max_dscluster = find_max_dscluster(dc.datastoreFolder, max_dscluster, regex)
-  
-    if max_dscluster 
+
+    if max_dscluster
       puts max_dscluster.name
     else
-      puts "No datastore clusters found"
+      puts 'No datastore clusters found'
       exit 1
     end
-
   end
 end

@@ -9,28 +9,28 @@ require 'netaddr'
 class Chef::Knife::VsphereVmQuery < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm query VMNAME QUERY.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html\" for allowed QUERY values."
 
-  get_common_options
+  common_options
 
   def run
     $stdout.sync = true
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit("You must specify a virtual machine name")
+      fatal_exit('You must specify a virtual machine name')
     end
 
     query_string = @name_args[1]
     if query_string.nil?
       show_usage
-      fatal_exit("You must specify a QUERY value (e.g. guest.ipAddress or network[0].name)")
+      fatal_exit('You must specify a QUERY value (e.g. guest.ipAddress or network[0].name)')
     end
 
-    vim = get_vim_connection
+    vim_connection
 
-    dc = get_datacenter
+    dc = datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = traverse_folders_for_vm(folder, vmname) or abort "VM #{vmname} not found"
+    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
 
     # split QUERY by dots, and walk the object model
     query = query_string.split '.'
