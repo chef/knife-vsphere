@@ -7,53 +7,51 @@ require 'chef/knife/base_vsphere_command'
 
 # Lists all known virtual machines in the configured datacenter
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere vm move'
 
-  banner "knife vsphere vm move"
-
-  get_common_options
+  common_options
 
   option :dest_name,
-         :long => "--dest-name NAME",
-         :short => "-r",
-         :description => "Destination name of the VM or template"
+         long: '--dest-name NAME',
+         short: '-r',
+         description: 'Destination name of the VM or template'
 
   option :dest_folder,
-         :long => "--dest-folder FOLDER",
-         :description => "The destination folder into which the VM or template should be moved"
+         long: '--dest-folder FOLDER',
+         description: 'The destination folder into which the VM or template should be moved'
 
   option :datastore,
-         :long => "--datastore STORE",
-         :description => "The datastore into which to put the cloned VM"
+         long: '--datastore STORE',
+         description: 'The datastore into which to put the cloned VM'
 
   option :thin_provision,
-         :long => "--thin-provision",
-         :description => "Indicates whether disk should be thin provisioned.",
-         :boolean => true
+         long: '--thin-provision',
+         description: 'Indicates whether disk should be thin provisioned.',
+         boolean: true
 
   option :thick_provision,
-         :long => "--thick-provision",
-         :description => "Indicates whether disk should be thick provisioned.",
-         :boolean => true
+         long: '--thick-provision',
+         description: 'Indicates whether disk should be thick provisioned.',
+         boolean: true
 
   # Convert VM
   def convert_vm(vm)
-    rspec = nil
-    dc = get_datacenter
+    dc = datacenter
     hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
     rp = hosts.first.resourcePool
-    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:pool => rp)
+    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
 
     if get_config(:thin_provision)
       puts "Thin provsisioning #{vm.name}"
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => find_datastore(get_config(:datastore)), :transform => :sparse)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: find_datastore(get_config(:datastore)), transform: :sparse)
     end
 
     if get_config(:thick_provision)
       puts "Thick provsisioning #{vm.name}"
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => find_datastore(get_config(:datastore)), :transform => :flat)
+      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: find_datastore(get_config(:datastore)), transform: :flat)
     end
 
-    task = vm.RelocateVM_Task(:spec => rspec)
+    task = vm.RelocateVM_Task(spec: rspec)
     task.wait_for_completion
   end
 
@@ -62,8 +60,8 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     dest_name = config[:dest_name] || vmname
     dest_folder = config[:dest_folder].nil? ? (vm.parent) : (find_folder(get_config(:dest_folder)))
 
-    vm.Rename_Task(:newName => dest_name).wait_for_completion unless vmname == dest_name
-    dest_folder.MoveIntoFolder_Task(:list => [vm]).wait_for_completion unless folder == dest_folder
+    vm.Rename_Task(newName: dest_name).wait_for_completion unless vmname == dest_name
+    dest_folder.MoveIntoFolder_Task(list: [vm]).wait_for_completion unless folder == dest_folder
   end
 
   def run
@@ -71,16 +69,15 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit("You must specify a virtual machine name")
+      fatal_exit('You must specify a virtual machine name')
     end
 
-    vim = get_vim_connection
+    vim = vim_connection
     dcname = get_config(:vsphere_dc)
-    dc = vim.serviceInstance.find_datacenter(dcname) or abort "datacenter not found"
+    dc = vim.serviceInstance.find_datacenter(dcname) || abort('datacenter not found')
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
-        abort "VM #{vmname} not found"
+    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
 
     if get_config(:thin_provision) || get_config(:thick_provision)
       convert_vm(vm)
@@ -89,4 +86,3 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     end
   end
 end
-

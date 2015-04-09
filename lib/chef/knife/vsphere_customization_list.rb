@@ -7,23 +7,18 @@ require 'chef/knife/base_vsphere_command'
 
 # Lists all customization specifications in the configured datacenter
 class Chef::Knife::VsphereCustomizationList < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere customization list'
 
-  banner "knife vsphere customization list"
-
-  get_common_options
+  common_options
 
   def run
-
     $stdout.sync = true
 
-    vim = get_vim_connection
+    vim = vim_connection
 
     csm = vim.serviceContent.customizationSpecManager
     csm.info.each do |c|
-      puts "#{ui.color("Customization Name", :cyan)}: #{c.name}"
-
+      puts "#{ui.color('Customization Name', :cyan)}: #{c.name}"
     end
-
   end
 end
-
