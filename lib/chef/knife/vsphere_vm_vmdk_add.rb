@@ -5,9 +5,9 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
-# Lists all known virtual machines in the configured datacenter
+# Add a new disk to a virtual machine
 class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vm vmdk add'
+  banner 'knife vsphere vm vmdk add VMNAME DISK_GB'
 
   common_options
 
