@@ -121,6 +121,9 @@ Enumerates the customization specifications registered in the target datacenter.
    --prerelease - Install the pre-release chef gems
    --bootstrap-version VERSION - The version of Chef to install
    --bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
+   --bootstrap-vault-file VAULT_FILE - A JSON file with a list of vault(s) and item(s) to be updated
+   --bootstrap-vault-json VAULT_JSON - A JSON string with the vault(s) and item(s) to be updated
+   --bootstrap-vault-item VAULT_ITEM - A single vault and item to update as "vault:item"
    --distro DISTRO - Bootstrap a distro using a template
    --template-file TEMPLATE - Full path to location of template to use
    --run-list RUN_LIST - Comma separated list of roles/recipes to apply
@@ -227,6 +230,18 @@ Customization Plugin Example:
         "host_name": "foo_host",
         "timeZone": "100"
     }
+
+
+The <tt>--bootstrap-vault-*</tt> options can be used to send <tt>chef-vault</tt> items to be updated during the hand-off to <tt>knife bootstrap</tt>.
+
+Example using <tt>--bootstrap-vault-json</tt>:
+
+    knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+        --cips 192.168.0.99/24,192.168.1.99/24 \
+        --chostname NODENAME --cdomain NODEDOMAIN \
+        --start true --bootstrap true \
+        --bootstrap-vault-json '{"passwords":"default","appvault":"credentials"}'
+
 
 == knife vsphere vm toolsconfig PROPERTY VALUE [--empty]
     --empty           - allows clearing string properties

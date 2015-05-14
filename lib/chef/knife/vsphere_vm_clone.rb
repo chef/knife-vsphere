@@ -172,6 +172,25 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'The proxy server for the node being bootstrapped',
          proc: proc { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
+  option :bootstrap_vault_file,
+         long: '--bootstrap-vault-file VAULT_FILE',
+         description: 'A JSON file with a list of vault(s) and item(s) to be updated'
+
+  option :bootstrap_vault_json,
+         long: '--bootstrap-vault-json VAULT_JSON',
+         description: 'A JSON string with the vault(s) and item(s) to be updated'
+
+  option :bootstrap_vault_item,
+         long: '--bootstrap-vault-item VAULT_ITEM',
+         description: 'A single vault and item to update as "vault:item"',
+         proc: Proc.new { |i|
+           (vault, item) = i.split(/:/)
+           Chef::Config[:knife][:bootstrap_vault_item] ||= {}
+           Chef::Config[:knife][:bootstrap_vault_item][vault] ||= []
+           Chef::Config[:knife][:bootstrap_vault_item][vault].push(item)
+           Chef::Config[:knife][:bootstrap_vault_item]
+         }
+
   option :distro,
          short: '-d DISTRO',
          long: '--distro DISTRO',
@@ -550,6 +569,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.config[:environment] = get_config(:environment)
     bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)
     bootstrap.config[:log_level] = get_config(:log_level)
+    bootstrap.config[:bootstrap_vault_file] = get_config(:bootstrap_vault_file)
+    bootstrap.config[:bootstrap_vault_json] = get_config(:bootstrap_vault_json)
+    bootstrap.config[:bootstrap_vault_item] = get_config(:bootstrap_vault_item)
     # may be needed for vpc_mode
     bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
     bootstrap
