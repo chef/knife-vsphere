@@ -14,6 +14,7 @@ Listings:
 - Resource Pools and Clusters
 - Customization Specifications
 - Hosts in a Pool or Cluster
+
 VM Operations:
 
 - Power on/off
@@ -93,6 +94,8 @@ Enumerates the customization specifications registered in the target datacenter.
         --cips 192.168.0.99/24,192.168.1.99/24 \
         --chostname NODENAME --cdomain NODEDOMAIN
 
+   --random-vmname - Creates a random VMNAME starts with vm-XXXXXXXX
+   --random-vmname-prefix - Change the VMNAME prefix
    --dest-folder FOLDER - The folder into which to put the cloned VM
    --datastore STORE    - The datastore into which to put the cloned VM
    --datastorecluster STORE - The datastorecluster into which to put the cloned VM
@@ -346,7 +349,7 @@ Ruby gems:
   git clone git@github.com:ezrapagel/knife-vsphere.git # or your fork
   cd knife-vsphere
   rake build                                           # Take note of the version
-  gem install pkg/knife-vsphere-1.0.1.gem              # Use the version above
+  gem install pkg/knife-vsphere-1.1.1.gem              # Use the version above
 
 = LICENSE:
 
