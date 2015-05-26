@@ -2,6 +2,7 @@ knife-vsphere changelog
 ----------------------
 
 1.1.1   DennisBP - Possibility to generate random VMNAMEs
+        swalberg - Fix some arguments that used vshere
 
 1.0.1
         swalberg - Support cloning VM with a DHCP address

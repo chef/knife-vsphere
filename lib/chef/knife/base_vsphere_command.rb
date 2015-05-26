@@ -52,7 +52,7 @@ class Chef
                description: 'The VI SDK port number to use',
                default: '443'
 
-        option :vshere_nossl,
+        option :vsphere_nossl,
                long: '--vsnossl',
                description: 'Disable SSL connectivity'
 
@@ -85,7 +85,7 @@ class Chef
       def vim_connection
         conn_opts = {
           host: get_config(:vsphere_host),
-          path: get_config(:vshere_path),
+          path: get_config(:vsphere_path),
           port: get_config(:vsphere_port),
           use_ssl: !get_config(:vsphere_nossl),
           user: get_config(:vsphere_user),
