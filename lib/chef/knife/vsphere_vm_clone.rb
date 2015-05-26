@@ -10,6 +10,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
+require 'securerandom'
 
 # Clone an existing template into a new VM, optionally applying a customization specification.
 # usage:
@@ -252,14 +253,24 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Indicates whether to mark the new vm as a template',
          boolean: false
 
+  option :random_vmname,
+         long: '--random-vmname',
+         description: 'Creates a random VMNAME starts with vm-XXXXXXXX',
+         boolean: false
+
+  option :random_vmname_prefix,
+         long: '--random-vmname-prefix PREFIX',
+         description: 'Change the VMNAME prefix',
+         default: 'vm-'
+
   def run
     $stdout.sync = true
 
-    vmname = @name_args[0]
-    if vmname.nil?
+    unless using_supplied_hostname? ^ using_random_hostname?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit('You must specify a virtual machine name OR use --random-vmname')
     end
+
     config[:chef_node_name] = vmname unless config[:chef_node_name]
     config[:vmname] = vmname
 
@@ -598,5 +609,27 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     false
   ensure
     tcp_socket && tcp_socket.close
+  end
+
+  private
+
+  def vmname
+    supplied_hostname || random_hostname
+  end
+
+  def using_random_hostname?
+    config[:random_vmname]
+  end
+
+  def using_supplied_hostname?
+    !supplied_hostname.nil?
+  end
+
+  def supplied_hostname
+    @name_args[0]
+  end
+
+  def random_hostname
+    @random_hostname ||= config[:random_vmname_prefix] + SecureRandom.hex(4)
   end
 end

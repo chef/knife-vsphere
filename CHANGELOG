@@ -1,6 +1,23 @@
 knife-vsphere changelog
 ----------------------
 
+1.1.1   DennisBP - Possibility to generate random VMNAMEs
+
+1.0.1
+        swalberg - Support cloning VM with a DHCP address
+                 - Allow the admin to configure multiple VLANs
+                 - Add instructions on how to use the master branch
+        troyready - Add obfuscated password storage
+        DennisBP - Fix for base64 encoded password
+                 - Fix for chef secret-file option
+                 - Fix for "pool list" output
+                 - Updated gemspec file
+                 - Optimized some code snippets
+                 - Rubocop support
+                 - New "cluster list" command to get a list of available clusters from the vcenter
+        vancluever - add vault options for bootstrapping
+
+
 1.0
         ezrapagel - by default, show hosts from all pools
         ezrapagel - report back resource pools during pool list
