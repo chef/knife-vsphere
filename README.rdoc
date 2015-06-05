@@ -366,6 +366,13 @@ Ruby gems:
   rake build                                           # Take note of the version
   gem install pkg/knife-vsphere-1.1.1.gem              # Use the version above
 
+If you are doing development, then you can run the plugin out of a checked out copy of
+the source:
+
+  bundle install # only needs to be done once
+
+  bundle exec knife vsphere ...
+
 = LICENSE:
 
 Authors:: Ezra Pagel <ezra@cpan.org>
