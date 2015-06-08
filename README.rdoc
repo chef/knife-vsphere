@@ -354,6 +354,16 @@ Lists the ratio between assigned virtual CPUs and physical CPUs on all hosts.
     host4.domain.com: 1.8125
     host5.domain.com: 2.40625
 
+== knife vsphere vlan list
+
+Lists all the VLANs in the datacenter
+
+== knife vsphere vlan create NAME VLAN_ID [--switch DSSWITCH]
+
+Creates a vlan (port group on a distributed virtual switch) with the given name and
+VLAN ID. If you have multiple distributed switches then use the <tt>--switch</tt>
+option to set the switch
+
 = Developing, or using the latest code
 
 The master version of this code may be ahead of the gem itself. If it's in master you
