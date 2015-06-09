@@ -348,5 +348,9 @@ class Chef
         tcp_socket && tcp_socket.close
       end
     end
+
+    def log_verbose?(level = 1)
+      config[:verbosity] >= level
+    end
   end
 end
