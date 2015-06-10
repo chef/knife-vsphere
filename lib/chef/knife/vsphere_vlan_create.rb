@@ -1,5 +1,4 @@
 require 'chef/knife'
-require 'byebug'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known data stores in datacenter with sizes
