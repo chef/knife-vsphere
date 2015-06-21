@@ -1,6 +1,8 @@
 knife-vsphere changelog
 ----------------------
 
+1.1.2   Learath  - Improve the way we find a host to clone to
+
 1.1.1   DennisBP - Possibility to generate random VMNAMEs
         swalberg - Fix some arguments that used vshere
                  - Add a Gemfile to the repository
