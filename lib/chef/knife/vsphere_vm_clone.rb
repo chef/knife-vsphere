@@ -357,8 +357,30 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: find_pool(get_config(:resource_pool)))
     else
       dc = datacenter
-      hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
+      hosts = traverse_folders_for_computeresources(dc.hostFolder)
       fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
+      hosts.reject!(&:nil?)
+      hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
+      fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
+
+      if get_config(:datastore)
+        hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
+      end
+
+      fatal_exit "No hosts have the requested Datastore available! #{get_config(:datastore)}" if hosts.empty?
+
+      if get_config(:datastorecluster)
+        hosts.reject! { |host| !host.datastore.include?(find_datastorecluster(get_config(:datastorecluster))) }
+      end
+
+      fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
+
+      if get_config(:customization_vlan)
+        hosts.reject! { |host| !host.network.include?(find_network(get_config(:customization_vlan))) }
+      end
+
+      fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
+
       rp = hosts.first.resourcePool
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
     end

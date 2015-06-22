@@ -139,6 +139,19 @@ class Chef
         false
       end
 
+      def traverse_folders_for_computeresources(folder)
+        retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource
+            retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_computeresources(child))
+          end
+        end
+        retval
+      end
+
       def traverse_folders_for_vms(folder, vmname)
         retval = []
         children = folder.children.find_all
