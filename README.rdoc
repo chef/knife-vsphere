@@ -134,6 +134,7 @@ Enumerates the customization specifications registered in the target datacenter.
    --no-host-key-verify - Disable host key verification
    --json-attributes - A JSON string to be added to the first run of chef-client
    --disable-customization - Disable default customization
+   --sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
 
 
 Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.
@@ -338,6 +339,13 @@ Resource pool and datastore are mandatory.
 
 Set networking state for VMNAME by connecting/disconnecting network interfaces.
 Posible states are up/down.
+
+== knife vsphere vm wait sysprep VMNAME
+
+Wait for vm finishing Sysprep
+
+    --sleep SLEEP      - The time in seconds to wait between queries for CustomizationSucceeded event. Default: 60 seconds
+    --timeout TIMEOUT  - The timeout in seconds before aborting. Default: 300 seconds
 
 == knife vsphere cpu ratio [CLUSTER] [HOST]
 
