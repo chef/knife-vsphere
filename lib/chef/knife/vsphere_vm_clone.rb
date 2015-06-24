@@ -193,13 +193,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :bootstrap_vault_item,
          long: '--bootstrap-vault-item VAULT_ITEM',
          description: 'A single vault and item to update as "vault:item"',
-         proc: proc do |i|
+         proc: proc { |i|
            (vault, item) = i.split(/:/)
            Chef::Config[:knife][:bootstrap_vault_item] ||= {}
            Chef::Config[:knife][:bootstrap_vault_item][vault] ||= []
            Chef::Config[:knife][:bootstrap_vault_item][vault].push(item)
            Chef::Config[:knife][:bootstrap_vault_item]
-         end
+         }
 
   option :distro,
          short: '-d DISTRO',
@@ -331,7 +331,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     Chef::Log.debug("Connect Host for Bootstrap: #{connect_host}")
     connect_port = get_config(:ssh_port)
     protocol = get_config(:bootstrap_protocol)
-    if is_windows?(src_vm.config)
+    if windows?(src_vm.config)
       protocol ||= 'winrm'
       # Set distro to windows-chef-client-msi
       config[:distro] = 'windows-chef-client-msi' if config[:distro].nil? || config[:distro] == 'chef-full'
