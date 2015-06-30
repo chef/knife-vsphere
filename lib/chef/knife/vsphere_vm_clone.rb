@@ -22,6 +22,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm clone VMNAME (options)'
 
   include Chef::Knife::WinrmBase
+  include CustomizationHelper
   deps do
     require 'chef/json_compat'
     require 'chef/knife/bootstrap'
@@ -275,6 +276,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Change the VMNAME prefix',
          default: 'vm-'
 
+  option :sysprep_timeout,
+         long: '--sysprep_timeout TIMEOUT',
+         description: 'Wait TIMEOUT seconds for sysprep event before continuing with bootstrap',
+         default: 600
+
   def run
     $stdout.sync = true
 
@@ -342,7 +348,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         #       even longer. For now I am simply sleeping, but if anyone knows how to do this
         #       better fix it.
         puts 'Waiting for customization to complete...'
-        sleep 600
+        CustomizationHelper.wait_for_sysprep(vm, vim, get_config(:sysprep_timeout), 10)
         puts 'Customization Complete'
         sleep 2 until vm.guest.ipAddress
         connect_host = config[:fqdn] = config[:fqdn] ? get_config(:fqdn) : vm.guest.ipAddress
