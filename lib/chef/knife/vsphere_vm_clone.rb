@@ -12,6 +12,7 @@ require 'rbvmomi'
 require 'netaddr'
 require 'securerandom'
 require 'chef/knife/winrm_base'
+require 'chef/knife/customization_helper'
 
 # Clone an existing template into a new VM, optionally applying a customization specification.
 # usage:
