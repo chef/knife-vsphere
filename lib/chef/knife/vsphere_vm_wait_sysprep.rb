@@ -7,6 +7,7 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
+require 'chef/knife/customization_helper'
 
 # Wait for vm finishing Sysprep.
 # usage:
