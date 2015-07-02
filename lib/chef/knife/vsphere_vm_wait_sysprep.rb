@@ -44,8 +44,8 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
     sleep_time = get_config(:sleep).to_i
     sleep_timeout = get_config(:timeout).to_i
 
-    vim = get_vim_connection
-    dc = get_datacenter
+    vim = vim_connection
+    dc = datacenter
 
     folder = find_folder(get_config(:folder)) || dc.vmFolder
     vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{folder}")
