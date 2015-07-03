@@ -28,6 +28,10 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
          description: 'Regex to match the datastore name',
          default: ''
 
+  option :vlan,
+         long: '--vlan VLAN',
+         description: 'Require listed vlan available to datastore\'s parent'
+
   common_options
 
   def run
@@ -38,8 +42,14 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
     regex = /#{Regexp.escape(get_config(:regex))}/
     dc = config[:vim].serviceInstance.find_datacenter(dcname) || abort('datacenter not found')
     max = nil
-    dc.datastore.each do |store|
-      if regex.match(store.name) && (max.nil? || max.summary[:freeSpace] < store.summary[:freeSpace])
+    datastores = if get_config(:vlan)
+                   find_network(get_config(:vlan)).host.map(&:datastore).flatten
+                 else
+                   dc.datastore
+                 end
+    datastores.each do |store|
+      if regex.match(store.name) &&
+         (max.nil? || max.summary[:freeSpace] < store.summary[:freeSpace])
         max = store
       end
     end
