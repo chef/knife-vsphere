@@ -1,6 +1,11 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.2   nbrisebois - Filter max free datastore by vlan
+        mheidenr   - Another fix from 1.2.0
+
+1.2.1   dzabel   - Hotfix for 1.2.0
+
 1.2.0   tim95030 - Bootstrap Windows nodes with winrm
         mheidenr - Monitor VSphere events to know when sysprep is done
 

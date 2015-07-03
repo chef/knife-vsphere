@@ -1,8 +1,11 @@
 # -*- encoding: utf-8 -*-
 
+$:.unshift(File.dirname(__FILE__) + '/lib')
+require 'knife-vsphere/version'
+
 Gem::Specification.new do |s|
   s.name = 'knife-vsphere'
-  s.version = '1.2.1'
+  s.version = KnifeVsphere::VERSION
   s.summary = 'vSphere Support for Knife'
 
   s.required_rubygems_version = Gem::Requirement.new('>= 0') if s.respond_to? :required_rubygems_version=
