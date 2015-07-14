@@ -19,6 +19,10 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          :long => "--list",
          :description => "The current tree of snapshots"
 
+  option :find,
+         :long => "--find",
+         :description => "Find snapshots for VM name"
+
   option :create_new_snapshot,
          :long => "--create SNAPSHOT",
          :description => "Create a new snapshot off of the current snapshot."
@@ -41,23 +45,50 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          :description => "Indicates whether to start the VM after a successful revert",
          :boolean => false
 
-  def run
+  option :memory,
+	 :long => "--memory",
+	 :description => "Indicates whether to dump the internal memory state in the snapshot",
+	 :boolean => false
 
-    $stdout.sync = true
-
-    vmname = @name_args[0]
-    if vmname.nil?
-      show_usage
-      ui.fatal("You must specify a virtual machine name")
-      exit 1
+  def find_vm_in_folder(folder, vmname)
+    path = (folder.path[3..-1].map { |x| x[1] }.* '/')
+    children = folder.children.find_all
+    children.each do |child|
+      if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
+	puts "Found #{child.name} in #{folder.name}"
+        return folder
+      elsif child.class == RbVmomi::VIM::Folder
+        vm = find_vm_in_folder(child, vmname)
+        if vm then return vm end
+      end
     end
+    return false
+  end
+
+
+  def run
+    $stdout.sync = true
 
     vim = get_vim_connection
 
-    baseFolder = find_folder(get_config(:folder));
+    vmname = @name_args[0]
+
+    if vmname.nil?
+      show_usage
+      ui.fatal("You must specify a virtual machine name")
+      abort
+    end
+
+    if (get_config(:find))
+      puts "No folder enterered, searching for #{vmname}"
+      srcFolder = find_folder(get_config(:folder));
+      baseFolder = find_vm_in_folder(srcFolder, vmname)
+    else
+      baseFolder = find_folder(get_config(:folder));
+    end
 
     vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
-        abort "VM #{vmname} not found"
+      abort "VM #{vmname} not found"
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList
@@ -71,7 +102,11 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if config[:create_new_snapshot]
-      vm.CreateSnapshot_Task(:name => config[:create_new_snapshot], :description => "", :memory => false, :quiesce => false)
+      if get_config(:memory)
+      	vm.CreateSnapshot_Task(:name => config[:create_new_snapshot], :description => "", :memory => true, :quiesce => false)
+      else
+      	vm.CreateSnapshot_Task(:name => config[:create_new_snapshot], :description => "", :memory => false, :quiesce => false)
+      end
     end
 
     if config[:remove_named_snapshot]
