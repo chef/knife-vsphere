@@ -514,7 +514,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       cust_spec = csi.spec
     else
       global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
-      cust_spec = RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset)
+      identity_settings = RbVmomi::VIM.CustomizationIdentitySettings
+      cust_spec = RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset, identity: identity_settings)
     end
 
     if get_config(:customization_dns_ips)
