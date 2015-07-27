@@ -90,7 +90,7 @@ Enumerates the customization specifications registered in the target datacenter.
 
 == knife vsphere vm clone <new vm name> --template <source template name> --cspec <customization_spec>
 
-    knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+    knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
         --cips 192.168.0.99/24,192.168.1.99/24 \
         --chostname NODENAME --cdomain NODEDOMAIN
 
