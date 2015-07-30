@@ -283,6 +283,12 @@ Gets the datastore with the most free space
 
 == knife vsphere datastorecluster list
 
+== knife vsphere datastore file DATASTORE (options)
+    --upload-file       - Upload specified local file to remote
+    --download-file     - Download specified remote file to local
+    --remote-file FILE  - Remote file name and path
+    --local-file FILE   - Local file name and path
+
 Lists all known datastorecluster with capacity and usage
 
 == knife vsphere datastorecluster maxfree [--regex]
