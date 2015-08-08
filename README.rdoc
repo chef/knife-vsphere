@@ -272,6 +272,15 @@ Deletes an existing VM, removing it from vSphere inventory and deleting from dis
 
 Manages the snapshots for an existing VM, allowing for creation, removal, and reverting of snapshots.
 
+== knife vsphere vm cdrom VMNAME (options)
+    --datastore DATASTORE - Datastore the image is stored in
+    --iso                 - Path and filename of the ISO
+    --attach              - Attach the iso immediately
+    --disconnect          - Disconnect any iso currently attached
+    --recursive           - Search for the VM recursivly
+    --folder              - Search for the VM in the specified folder
+    --on_boot BOOL        - Set the Attach On Boot Boolean
+
 == knife vsphere datastore list
 
 Lists all known datastores with capacity and usage
