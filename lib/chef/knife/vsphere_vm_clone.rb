@@ -368,15 +368,17 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def wait_for_access(connect_host, connect_port, protocol)
     if protocol == 'winrm'
       load_winrm_deps
+      if get_config(:winrm_transport) == 'ssl' && get_config(:winrm_port) == '5985'
+        config[:winrm_port] = '5986'
+      end
       connect_port = get_config(:winrm_port)
-      print "\n#{ui.color('Waiting for winrm access to become available', :magenta)}"
+      print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}",:magenta)}"
       print('.') until tcp_test_winrm(connect_host, connect_port) do
         sleep 10
         puts('done')
       end
     else
-      print "\n#{ui.color('Waiting for sshd access to become available', :magenta)}"
-      # If FreeSSHd, winsshd etc are available
+      print "\n#{ui.color("Waiting for sshd access to become available on #{connect_host}:#{connect_port}", :magenta)}"
       print('.') until tcp_test_ssh(connect_host, connect_port) do
         sleep 10
         puts('done')
