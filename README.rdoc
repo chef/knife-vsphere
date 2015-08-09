@@ -290,13 +290,15 @@ Lists all known datastores with capacity and usage
 Gets the datastore with the most free space
     --regex           - Pattern to match the datastore name
 
-== knife vsphere datastorecluster list
-
 == knife vsphere datastore file DATASTORE (options)
+
+Uploads files to a datastore and downloads files from a datastore
     --upload-file       - Upload specified local file to remote
     --download-file     - Download specified remote file to local
     --remote-file FILE  - Remote file name and path
     --local-file FILE   - Local file name and path
+
+== knife vsphere datastorecluster list
 
 Lists all known datastorecluster with capacity and usage
 
