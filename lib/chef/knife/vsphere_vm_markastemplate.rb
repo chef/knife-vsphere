@@ -20,7 +20,9 @@ class Chef::Knife::VsphereVmMarkastemplate < Chef::Knife::BaseVsphereCommand
 
   option :folder,
          long: '--folder FOLDER',
-         description: 'The folder which contains the VM'
+         description: 'The folder which contains the VM',
+         default: ''
+
 
   def run
     $stdout.sync = true
