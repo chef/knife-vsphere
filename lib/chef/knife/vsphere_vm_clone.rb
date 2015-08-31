@@ -536,7 +536,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    unless get_config(:disable_customization)
+    if get_config(:disable_customization)
+      clone_spec.customization = cust_spec    
+    else
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
 
       if use_ident
