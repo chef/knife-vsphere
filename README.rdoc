@@ -334,8 +334,8 @@ Optional arguments
 
 == knife vsphere vm markastemplate VMNAME --folder FOLDER
 
-Marks a VM as template.
-
+Will traverse the folder tree looking for the VM by name.  By default the folder inspected with be the root folder.  <tt>--folder</tt> should be specified if traversing should be in some other folder than the root.  Once found the VM will be converted into a template.  This means the VM will become a template and no longer be available as a Virtual Machine.  The name given to the template will be the name of VM from which it was created.
+ 
 == knife vsphere hosts list --pool POOL
 
 Lists all hosts in given Pool
