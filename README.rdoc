@@ -113,8 +113,8 @@ Enumerates the customization specifications registered in the target datacenter.
    --ctz CUST_TIMEZONE - Timezone invalid 'Area/Location' format
    --ccpu CUST_CPU_COUNT - Number of CPUs
    --cram CUST_MEMORY_GB - Gigabytes of RAM
-   --start STARTVM - Indicates whether to start the VM after a successful clone
-   --bootstrap FALSE - Indicates whether to bootstrap the VM
+   --start - Start the VM after cloning.
+   --bootstrap - Bootstrap the VM after cloning. Implies --start
    --fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
    --ssh-user USERNAME - SSH username
    --ssh-password PASSWORD - SSH password
