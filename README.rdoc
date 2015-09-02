@@ -67,7 +67,7 @@ This plugin provides the following Knife subcommands.  Specific command options 
 
 Enumerates the Virtual Machines registered in the target datacenter. Only name is currently displayed.
     -r, --recursive    - Recurse down through sub-folders to the specified folder
-    --only-folders     - In combination with --recursive, print only folder names
+    --only-folders     - Print only folder names. Implies recursive
 
 == knife vsphere vm state [-s STATE, --state STATE] [-w PORT, --wait-port PORT] [-g, --shutdown] [-r, --recursive]
 
