@@ -1,6 +1,14 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.4   swalberg - Fix dependencies h/t adamedx
+        kbrowns  - Add --folders-only for vm list
+				           markastemplate fix to not require a folder
+									 customization fixes
+        nbrisebois mount CDRoms
+				           datastore file up/download
+			  tim95030 - correct default port for winrm
+
 1.2.3   mheidenr - Set identity in spec when not using --cspec
 
 1.2.2   nbrisebois - Filter max free datastore by vlan
