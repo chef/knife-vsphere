@@ -551,9 +551,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           identification = RbVmomi::VIM.CustomizationIdentification(
             joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
           )
-          license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
-            autoMode: cust_spec.identity.licenseFilePrintData.autoMode
-          )
+          license_file_print_data = cust_spec.identity.licenseFilePrintData.nil? ? nil :
+            RbVmomi::VIM.CustomizationLicenseFilePrintData(
+              autoMode: cust_spec.identity.licenseFilePrintData.autoMode
+            )
 
           user_data = RbVmomi::VIM.CustomizationUserData(
             fullName: cust_spec.identity.userData.fullName,
