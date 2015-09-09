@@ -7,43 +7,41 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-
 # Manage snapshots of a virtual machine
 class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere vm snapshot VMNAME (options)'
 
-  banner "knife vsphere vm snapshot VMNAME (options)"
-
-  get_common_options
+  common_options
 
   option :list,
-         :long => "--list",
-         :description => "The current tree of snapshots"
+         long: '--list',
+         description: 'The current tree of snapshots'
 
   option :find,
          :long => "--find",
          :description => "Find snapshots for VM name"
 
   option :create_new_snapshot,
-         :long => "--create SNAPSHOT",
-         :description => "Create a new snapshot off of the current snapshot."
+         long: '--create SNAPSHOT',
+         description: 'Create a new snapshot off of the current snapshot.'
 
   option :remove_named_snapshot,
-         :long => "--remove SNAPSHOT",
-         :description => "Remove a named snapshot."
+         long: '--remove SNAPSHOT',
+         description: 'Remove a named snapshot.'
 
   option :revert_snapshot,
-         :long => "--revert SNAPSHOT",
-         :description => "Revert to a named snapshot."
+         long: '--revert SNAPSHOT',
+         description: 'Revert to a named snapshot.'
 
   option :revert_current_snapshot,
-         :long => "--revert-current",
-         :description => "Revert to current snapshot.",
-         :boolean => false
+         long: '--revert-current',
+         description: 'Revert to current snapshot.',
+         boolean: false
 
   option :power,
-         :long => "--start",
-         :description => "Indicates whether to start the VM after a successful revert",
-         :boolean => false
+         long: '--start',
+         description: 'Indicates whether to start the VM after a successful revert',
+         boolean: false
 
   option :memory,
 	 :long => "--memory",
@@ -69,14 +67,14 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   def run
     $stdout.sync = true
 
-    vim = get_vim_connection
+    vim_connection
 
     vmname = @name_args[0]
 
     if vmname.nil?
       show_usage
       ui.fatal("You must specify a virtual machine name")
-      abort
+      exit 1
     end
 
     if (get_config(:find))
@@ -87,8 +85,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       baseFolder = find_folder(get_config(:folder));
     end
 
-    vm = find_in_folder(baseFolder, RbVmomi::VIM::VirtualMachine, vmname) or
-      abort "VM #{vmname} not found"
+    vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList
@@ -96,7 +93,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if config[:list] && vm.snapshot
-      puts "Current snapshot tree: "
+      puts 'Current snapshot tree: '
       puts "#{vmname}"
       snapshot_list.each { |i| puts display_node(i, current_snapshot) }
     end
@@ -113,27 +110,25 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       ss_name = config[:remove_named_snapshot]
       snapshot = find_node(snapshot_list, ss_name)
       puts "Found snapshot #{ss_name} removing."
-      snapshot.RemoveSnapshot_Task(:removeChildren => false)
+      snapshot.RemoveSnapshot_Task(removeChildren: false)
     end
 
     if config[:revert_current_snapshot]
-      puts "Reverting to Current Snapshot"
-      vm.RevertToCurrentSnapshot_Task(:suppressPowerOn => false).wait_for_completion
+      puts 'Reverting to Current Snapshot'
+      vm.RevertToCurrentSnapshot_Task(suppressPowerOn: false).wait_for_completion
       if get_config(:power)
         vm.PowerOnVM_Task.wait_for_completion
         puts "Powered on virtual machine #{vmname}"
       end
     end
 
-    if config[:revert_snapshot]
-      ss_name = config[:revert_snapshot]
-      snapshot = find_node(snapshot_list, ss_name)
-      snapshot.RevertToSnapshot_Task(:suppressPowerOn => false).wait_for_completion
-      if get_config(:power)
-        vm.PowerOnVM_Task.wait_for_completion
-        puts "Powered on virtual machine #{vmname}"
-      end
-    end
+    return unless config[:revert_snapshot]
+    ss_name = config[:revert_snapshot]
+    snapshot = find_node(snapshot_list, ss_name)
+    snapshot.RevertToSnapshot_Task(suppressPowerOn: false).wait_for_completion
+    return unless get_config(:power)
+    vm.PowerOnVM_Task.wait_for_completion
+    puts "Powered on virtual machine #{vmname}"
   end
 
   def find_node(tree, name)
@@ -141,23 +136,24 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     tree.each do |node|
       if node.name == name
         snapshot = node.snapshot
+        break
       elsif !node.childSnapshotList.empty?
         snapshot = find_node(node.childSnapshotList, name)
       end
     end
-    return snapshot
+    snapshot
   end
 
-  def display_node(node, current, shift=1)
-    out = ""
-    out << "+--"*shift
+  def display_node(node, current, shift = 1)
+    out = ''
+    out << '+--' * shift
     if node.snapshot == current
       out << "#{ui.color(node.name, :cyan)}" << "\n"
     else
       out << "#{node.name}" << "\n"
     end
-    if !node.childSnapshotList.empty?
-      node.childSnapshotList.each { |item| out << display_node(item, current, shift+1) }
+    unless node.childSnapshotList.empty?
+      node.childSnapshotList.each { |item| out << display_node(item, current, shift + 1) }
     end
     out
   end

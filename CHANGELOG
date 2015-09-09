@@ -1,8 +1,63 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.4   swalberg - Fix dependencies h/t adamedx
+        kbrowns  - Add --folders-only for vm list
+				           markastemplate fix to not require a folder
+									 customization fixes
+        nbrisebois mount CDRoms
+				           datastore file up/download
+			  tim95030 - correct default port for winrm
+
+1.2.3   mheidenr - Set identity in spec when not using --cspec
+
+1.2.2   nbrisebois - Filter max free datastore by vlan
+        mheidenr   - Another fix from 1.2.0
+
+1.2.1   dzabel   - Hotfix for 1.2.0
+
+1.2.0   tim95030 - Bootstrap Windows nodes with winrm
+        mheidenr - Monitor VSphere events to know when sysprep is done
+
+1.1.2   Learath  - Improve the way we find a host to clone to
+
+1.1.1   DennisBP - Possibility to generate random VMNAMEs
+        swalberg - Fix some arguments that used vshere
+                 - Add a Gemfile to the repository
+                 - Added create vlan command
+
+1.0.1
+        swalberg - Support cloning VM with a DHCP address
+                 - Allow the admin to configure multiple VLANs
+                 - Add instructions on how to use the master branch
+        troyready - Add obfuscated password storage
+        DennisBP - Fix for base64 encoded password
+                 - Fix for chef secret-file option
+                 - Fix for "pool list" output
+                 - Updated gemspec file
+                 - Optimized some code snippets
+                 - Rubocop support
+                 - New "cluster list" command to get a list of available clusters from the vcenter
+        vancluever - add vault options for bootstrapping
+
+
+1.0
+        ezrapagel - by default, show hosts from all pools
+        ezrapagel - report back resource pools during pool list
+        ezrapagel - include new folder list command
+        ezrapagel - refactored vm list to not display templates, folders are separate command
+        andrewfraley - fix - vm clone finds VMs in subfolders
+        cmeil - fix -snapshot could not be found if a sibling snapshot contains child snapshots
+        andrewfraley -  fix - datastorecluster works with subfolders
+        andrewfraley -  vm clone cspec works with all Linux distros
+        thorduri - environment option for vm clone
+        coremedia - allows modifying properties in vm.
+        keymon - fix - create VirtualEthernetCardNetworkBackingInfo is created when attaching to standard switch
+        tcicone -Added thin provisioning to the clone and move option
+        mheidenr - list ratio between assigned virtual CPUs and physical CPUs on all hosts
+
 1.0.0.pre.3 *
-	jrosen - added ability to clone into template
+        jrosen - added ability to clone into template
 	bellpeterm - allow :source_vm to be set in knife.rb
 	jeremymv2 - cplugin example in readme
 	mheidenr - vm clone can now clone and customize windows vms

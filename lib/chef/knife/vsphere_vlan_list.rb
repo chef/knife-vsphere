@@ -19,19 +19,17 @@ require 'chef/knife/base_vsphere_command'
 
 # Lists all known data stores in datacenter with sizes
 class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere vlan list'
 
-  banner "knife vsphere vlan list"
-
-  get_common_options
+  common_options
 
   def run
     $stdout.sync = true
 
-    vim = get_vim_connection
-    dc = get_datacenter
+    vim_connection
+    dc = datacenter
     dc.network.each do |network|
-      puts "#{ui.color("VLAN", :cyan)}: #{network.name}"
+      puts "#{ui.color('VLAN', :cyan)}: #{network.name}"
     end
   end
 end
-

@@ -20,7 +20,7 @@ require 'chef/knife/base_vsphere_command'
 
 def number_to_human_size(number)
   number = number.to_f
-  storage_units_fmt = ["byte", "kB", "MB", "GB", "TB"]
+  storage_units_fmt = %w(byte kB MB GB TB)
   base = 1024
   if number.to_i < base
     unit = storage_units_fmt[0]
@@ -28,45 +28,41 @@ def number_to_human_size(number)
     max_exp = storage_units_fmt.size - 1
     exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
     exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-    number /= base ** exponent
+    number /= base**exponent
     unit = storage_units_fmt[exponent]
   end
 
-  return sprintf("%0.2f %s", number, unit)
+  format('%0.2f %s', number, unit)
 end
-
 
 # Lists all known data stores in datacenter with sizes
 class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere datastore list'
 
-  banner "knife vsphere datastore list"
-
-  get_common_options
+  common_options
 
   option :list,
-	 :long => "--list",
-	 :short => "-L",
-	 :description => "Indicates whether to list VM's in datastore",
-	 :boolean => true
+         long: '--list',
+         short: '-L',
+         description: "Indicates whether to list VM's in datastore",
+         boolean: true
 
   def run
     $stdout.sync = true
 
-    vim = get_vim_connection
-    dc = get_datacenter
+    vim_connection
+    dc = datacenter
     dc.datastore.each do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
-      puts "#{ui.color("Datastore", :cyan)}: #{store.name} (#{avail} / #{cap})"
-      if get_config(:list)
-        store.vm.each do |vms|
-	  hostName = vms.guest[:hostName]
-	  guestFullName = vms.guest[:guestFullName]
-	  guestState = vms.guest[:guestState]
-	  puts "#{ui.color("VM Name:", :green)} #{hostName} #{ui.color("OS:", :magenta)} #{guestFullName} #{ui.color("State:", :cyan)} #{guestState}"
-        end
+      puts "#{ui.color('Datastore', :cyan)}: #{store.name} (#{avail} / #{cap})"
+      next unless get_config(:list)
+      store.vm.each do |vms|
+        host_name = vms.guest[:hostName]
+        guest_full_name = vms.guest[:guest_full_name]
+        guest_state = vms.guest[:guest_state]
+        puts "#{ui.color('VM Name:', :green)} #{host_name} #{ui.color('OS:', :magenta)} #{guest_full_name} #{ui.color('State:', :cyan)} #{guest_state}"
       end
     end
   end
 end
-

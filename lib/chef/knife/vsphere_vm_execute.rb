@@ -7,60 +7,56 @@ require 'rbvmomi'
 require 'netaddr'
 
 class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
-  banner "knife vsphere vm execute VMNAME COMMAND ARGS"
+  banner 'knife vsphere vm execute VMNAME COMMAND ARGS'
 
   option :exec_user,
-         :long => "--exec-user USER",
-         :description => "User to execute as",
-         :required => true
+         long: '--exec-user USER',
+         description: 'User to execute as',
+         required: true
 
   option :exec_passwd,
-         :long => "--exec-passwd PASSWORD",
-         :description => "Password for execute user",
-         :required => true
+         long: '--exec-passwd PASSWORD',
+         description: 'Password for execute user',
+         required: true
 
   option :exec_dir,
-         :long => "--exec-dir DIRECTORY",
-         :description => "Working directory to execute in"
+         long: '--exec-dir DIRECTORY',
+         description: 'Working directory to execute in'
 
-  get_common_options
+  common_options
 
   def run
     $stdout.sync = true
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit("You must specify a virtual machine name")
+      fatal_exit('You must specify a virtual machine name')
     end
     command = @name_args[1]
     if command.nil?
       show_usage
-      fatal_exit("You must specify a command to execute")
+      fatal_exit('You must specify a command to execute')
     end
 
     args = @name_args[2]
-    if args.nil?
-      args = ""
-    end
+    args = '' if args.nil?
 
-    vim = get_vim_connection
+    vim = vim_connection
 
-    dc = get_datacenter
+    dc = datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) or
-        abort "VM #{vmname} not found"
+    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
 
     gom = vim.serviceContent.guestOperationsManager
 
-    guest_auth = RbVmomi::VIM::NamePasswordAuthentication(:interactiveSession => false,
-                                                          :username => config[:exec_user],
-                                                          :password => config[:exec_passwd])
-    prog_spec = RbVmomi::VIM::GuestProgramSpec(:programPath => command,
-                                               :arguments => args,
-                                               :workingDirectory => get_config(:exec_dir))
+    guest_auth = RbVmomi::VIM::NamePasswordAuthentication(interactiveSession: false,
+                                                          username: config[:exec_user],
+                                                          password: config[:exec_passwd])
+    prog_spec = RbVmomi::VIM::GuestProgramSpec(programPath: command,
+                                               arguments: args,
+                                               workingDirectory: get_config(:exec_dir))
 
-    gom.processManager.StartProgramInGuest(:vm => vm, :auth => guest_auth, :spec => prog_spec)
-
+    gom.processManager.StartProgramInGuest(vm: vm, auth: guest_auth, spec: prog_spec)
   end
 end
