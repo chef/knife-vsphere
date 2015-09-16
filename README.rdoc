@@ -2,7 +2,7 @@
 
 = DESCRIPTION:
 
-This is an Opscode Knife plugin to interact with VMware's vSphere. This plugin currently supports the following:
+This is an Chef Knife plugin to interact with VMware's vSphere. This plugin currently supports the following:
 
 Listings:
 
@@ -36,6 +36,8 @@ Clone-specific customization options (for linux guests):
 - datastore
 - resource pool
 
+For Windows guests we can run sysprep
+
 = INSTALLATION:
 
     gem install knife-vsphere
@@ -58,6 +60,20 @@ ERROR: OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=SSLv3 read s
     knife[:vsphere_insecure] = true
 
 Credentials can also be specified on the command line for multiple VSphere servers/data centers
+
+= Getting help
+
+If the software isn't behaving the way you think, or you're having trouble doing something, we're happy to help. Try this checklist:
+
+- Are you running the latest version? <tt>gem list knife-vsphere</tt>. You can always upgrade with <tt>gem install knife-vsphere</tt>
+- Try running the same command with <tt>-VV</tt> to add additional logging messages
+- Are there any errors in the vSphere console or logs?
+- Search for known issues at https://github.com/chef-partners/knife-vsphere/issues
+
+If you're still having problems, head on over to the issues[https://github.com/chef-partners/knife-vsphere/issues] page and create a new issue. Please include:
+- A description of what you are trying to do, what you are seeing
+- The version number of knife-vsphere and of vSphere itself
+- The exact command you're running and the output (sanitize anything you don't want public!)
 
 = SUBCOMMANDS:
 
