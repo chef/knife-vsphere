@@ -42,6 +42,10 @@ knife-vsphere changelog
 
 
 1.0
+	rhadoo - add hosts list option
+	rhadoo - add vm networking on/off support
+	rhadoo - add vm move support
+        rhadoo - add vm migrate support
         ezrapagel - by default, show hosts from all pools
         ezrapagel - report back resource pools during pool list
         ezrapagel - include new folder list command
