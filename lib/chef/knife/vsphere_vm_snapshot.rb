@@ -39,6 +39,12 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          description: 'Indicates whether to start the VM after a successful revert',
          boolean: false
 
+  option :wait,
+         long: '--wait',
+         description: 'Indicates whether to wait for creation/removal to complete',
+         boolean: false
+
+
   def run
     $stdout.sync = true
 
@@ -67,14 +73,18 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if config[:create_new_snapshot]
-      vm.CreateSnapshot_Task(name: config[:create_new_snapshot], description: '', memory: false, quiesce: false)
+      snapshot_task=vm.CreateSnapshot_Task(name: config[:create_new_snapshot], description: '', memory: false, quiesce: false)
+      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+      snapshot_task
     end
 
     if config[:remove_named_snapshot]
       ss_name = config[:remove_named_snapshot]
       snapshot = find_node(snapshot_list, ss_name)
       puts "Found snapshot #{ss_name} removing."
-      snapshot.RemoveSnapshot_Task(removeChildren: false)
+      snapshot_task=snapshot.RemoveSnapshot_Task(removeChildren: false)
+      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+      snapshot_task
     end
 
     if config[:revert_current_snapshot]
