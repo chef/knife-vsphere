@@ -85,6 +85,31 @@ Enumerates the Virtual Machines registered in the target datacenter. Only name i
     -r, --recursive    - Recurse down through sub-folders to the specified folder
     --only-folders     - Print only folder names. Implies recursive
 
+== knife vsphere vm find --pool POOL CRITERIA FIELDS
+
+Search for Virtual Machines matching criteria in the specified pool and display selected fields
+CRITERIA:
+    --match-ip IP                match ip
+    --match-name VMNAME          match name
+    --match-os OS                match os
+    --match-tools TOOLSSTATE     match tools state
+    --powered-off                Show only stopped machines
+    --powered-on                 Show only started machines
+FIELDS:
+    --alarms                     show alarm status
+    --cpu                        Show cpu
+    --esx-disk                   Show esx disks
+    --full-path                  Show full path
+    --hostname                   show hostname
+    --ip                         Show ip
+    --os                         show os details
+    --os-disks                   Show os disks
+    --ram                        Show ram
+    --snapshots                  Show snapshots
+    --tools                      show tools status
+
+     knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk --os-disk --os --match-name my_machine_1 --alarms --tools --ip --match-ip 123 --match-tools toolsOk
+
 == knife vsphere vm state [-s STATE, --state STATE] [-w PORT, --wait-port PORT] [-g, --shutdown] [-r, --recursive]
 
 Manage power state of a virtual machine.
