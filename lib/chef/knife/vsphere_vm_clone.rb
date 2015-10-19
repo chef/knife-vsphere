@@ -437,7 +437,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
 
       if get_config(:customization_vlan)
-        hosts.reject! { |host| !host.network.include?(find_network(get_config(:customization_vlan))) }
+        vlan_list = get_config(:customization_vlan).split(',')
+        vlan_list.each do |network|
+          hosts.reject! { |host| !host.network.include?(find_network(network)) }
+        end
       end
 
       fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
