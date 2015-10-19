@@ -1,6 +1,13 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.5   stmos    - Fix problems in vm clone when passing multiple vlans
+        rhadoo   - Add vm find option
+                 - Add a --wait option when creating a snapshot
+        swalberg - Change the two "query" commands to use "show", with a warning
+        brok02   - Adds the missing --only-folders option to vm list
+                 - --disable-customization actually disables customization now
+
 1.2.4   swalberg - Fix dependencies h/t adamedx
         kbrowns  - Add --folders-only for vm list
 				           markastemplate fix to not require a folder
