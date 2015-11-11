@@ -7,6 +7,7 @@
 require 'chef/knife'
 require 'rbvmomi'
 require 'base64'
+require 'filesize'
 
 # Base class for vsphere knife commands
 class Chef

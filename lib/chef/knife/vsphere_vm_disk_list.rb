@@ -15,7 +15,7 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
       fatal_exit 'You must specify a virtual machine name'
     end
 
-    vim = vim_connection
+    vim_connection
     vm = get_vm(vmname)
     fatal_exit "Could not find #{vmname}" unless vm
 
@@ -24,7 +24,9 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
     end
 
     disks.each do |disk|
-      puts "%3d %20s %0.2fg" % [ disk.unitNumber, disk.deviceInfo.label, disk.capacityInKB/1024/1024]
+      puts '%3d %20s %s' % [disk.unitNumber,
+                            disk.deviceInfo.label,
+                            Filesize.from("#{disk.capacityInKB} KB").pretty]
     end
   end
 end
