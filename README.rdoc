@@ -325,6 +325,11 @@ Manages the snapshots for an existing VM, allowing for creation, removal, and re
     --folder              - Search for the VM in the specified folder
     --on_boot BOOL        - Set the Attach On Boot Boolean
 
+== knife vsphere vm disk extend VMNAME SIZE (options)
+    --diskname DISKNAME - The name of the disk that will be extended (use when vm has multiple disks)
+
+Note: SIZE is in kilobytes
+
 == knife vsphere datastore list
 
 Lists all known datastores with capacity and usage
