@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    knife-vsphere (1.2.4)
+    knife-vsphere (1.2.5)
       knife-windows (>= 0.6.0)
       netaddr (~> 1.5)
       rbvmomi (~> 1.8)
