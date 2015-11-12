@@ -1,6 +1,9 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.6   mheidenr - vsphere vm disk extend
+                 - comment cleanup
+        swalberg - vsphere vm disk list
 1.2.5   stmos    - Fix problems in vm clone when passing multiple vlans
         rhadoo   - Add vm find option
                  - Add a --wait option when creating a snapshot
