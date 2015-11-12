@@ -330,6 +330,10 @@ Manages the snapshots for an existing VM, allowing for creation, removal, and re
 
 Note: SIZE is in kilobytes
 
+== knife vsphere vm disk list VMNAME
+
+Lists the disks attached to VMNAME
+
 == knife vsphere datastore list
 
 Lists all known datastores with capacity and usage
