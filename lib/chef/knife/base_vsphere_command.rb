@@ -83,35 +83,37 @@ class Chef
         rval
       end
 
-      def vim_connection
-        conn_opts = {
+      def password
+        if !get_config(:vsphere_pass)
+          # Password is not in the config file - grab it
+          # from the command line
+          get_password_from_stdin
+        elsif get_config(:vsphere_pass).start_with?('base64:')
+          Base64.decode64(get_config(:vsphere_pass)[7..-1]).chomp
+        else
+          get_config(:vsphere_pass)
+        end
+      end
+
+      def conn_opts
+        {
           host: get_config(:vsphere_host),
           path: get_config(:vsphere_path),
           port: get_config(:vsphere_port),
           use_ssl: !get_config(:vsphere_nossl),
           user: get_config(:vsphere_user),
-          password: get_config(:vsphere_pass),
+          password: password,
           insecure: get_config(:vsphere_insecure),
           proxyHost: get_config(:proxy_host),
           proxyPort: get_config(:proxy_port)
         }
-
-        if !conn_opts[:password]
-          # Password is not in the config file - grab it
-          # from the command line
-          conn_opts[:password] = password
-        elsif conn_opts[:password].start_with?('base64:')
-          conn_opts[:password] = Base64.decode64(conn_opts[:password][7..-1]).chomp
-        end
-
-        #    opt :debug, "Log SOAP messages", :short => 'd', :default => (ENV['RBVMOMI_DEBUG'] || false)
-
-        vim = RbVmomi::VIM.connect conn_opts
-        config[:vim] = vim
-        vim
       end
 
-      def password
+      def vim_connection
+        config[:vim] = RbVmomi::VIM.connect conn_opts
+      end
+
+      def get_password_from_stdin
         @password ||= ui.ask('Enter your password: ') { |q| q.echo = false }
       end
 
