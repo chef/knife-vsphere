@@ -1,4 +1,5 @@
 = Knife vSphere
+{<img src="https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/chef-partners/knife-vsphere]
 
 = DESCRIPTION:
 
