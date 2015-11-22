@@ -33,4 +33,61 @@ describe Chef::Knife::BaseVsphereCommand do
       end
     end
   end
+
+  describe '#conn_opts' do
+    let(:ui) { double( 'Ui', ask: 'passwurd') }
+
+    let(:config) {
+      { vsphere_host: 'hostname',
+        vsphere_path: 'path',
+        vsphere_port: 'port',
+        vsphere_nossl: true,
+        vsphere_user: 'user',
+        vsphere_pass: 'password',
+        vsphere_insecure: false,
+        proxy_host: 'proxyhost',
+        proxy_port: 'proxyport' }
+    }
+    before do
+      allow(subject).to receive(:get_config) do |option|
+        config[option]
+      end
+    end
+
+    it 'includes the host' do
+      expect(subject.conn_opts).to include(host: 'hostname')
+    end
+
+    it 'includes the path' do
+      expect(subject.conn_opts).to include(path: 'path')
+    end
+
+    it 'includes the path' do
+      expect(subject.conn_opts).to include(port: 'port')
+    end
+
+    it 'includes whether or not to use ssl' do
+      expect(subject.conn_opts).to include(use_ssl: false)
+    end
+
+    it 'includes the user' do
+      expect(subject.conn_opts).to include(user: 'user')
+    end
+
+    it 'includes the password' do
+      expect(subject.conn_opts).to include(password: 'password')
+    end
+
+    it 'includes whether or not to ignore certificates' do
+      expect(subject.conn_opts).to include(insecure: false)
+    end
+
+    it 'includes the proxy host' do
+      expect(subject.conn_opts).to include(proxyHost: 'proxyhost')
+    end
+
+    it 'includes the proxy port' do
+      expect(subject.conn_opts).to include(proxyPort: 'proxyport')
+    end
+  end
 end
