@@ -27,7 +27,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   option :state,
          short: '-s STATE',
          long: '--state STATE',
-         description: 'The power state to transition the VM into; one of on|off|suspended'
+         description: 'The power state to transition the VM into; one of on|off|suspended|reboot'
 
   option :wait_port,
          short: '-w PORT',
@@ -110,6 +110,9 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
       when 'reset'
         vm.ResetVM_Task.wait_for_completion
         puts "Reset virtual machine #{vmname}"
+      when 'reboot'
+        vm.RebootGuest
+        puts "Reboot virtual machine #{vmname}"
       end
 
       if get_config(:wait_port)

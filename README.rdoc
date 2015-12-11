@@ -114,7 +114,7 @@ FIELDS:
 == knife vsphere vm state [-s STATE, --state STATE] [-w PORT, --wait-port PORT] [-g, --shutdown] [-r, --recursive]
 
 Manage power state of a virtual machine.
-	-s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended
+	-s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended|reboot
 	-w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
 	-g, --shutdown             - Guest OS shutdown
     -r, --recursive            - Recurse down through sub-folders to the specified folder
