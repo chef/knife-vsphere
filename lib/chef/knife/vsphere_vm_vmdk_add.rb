@@ -60,7 +60,15 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       # create the vm folder on the LUN or subsequent operations will fail.
       unless vmdk_datastore.exists? vmname
         dc = datacenter
-        dc._connection.serviceContent.fileManager.MakeDirectory name: vmdk_dir, datacenter: dc, createParentDirectories: false
+        begin
+          dc._connection.serviceContent.fileManager.MakeDirectory name: vmdk_dir, datacenter: dc, createParentDirectories: false
+        rescue RbVmomi::Fault => e
+          ui.warn "Ignoring a fault when trying to create #{vmdk_dir}. This may be related to issue #213."
+          if log_verbose?
+            puts "Chose #{vmdk_datastore.name} out of #{vmdk_datastores.map(&:name).join(', ')}"
+            puts e
+          end
+        end
       end
     end
 
