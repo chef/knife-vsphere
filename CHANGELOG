@@ -1,6 +1,8 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.7   swalberg - ignore create dir errors to get around #213
+
 1.2.6   mheidenr - vsphere vm disk extend
                  - comment cleanup
         swalberg - vsphere vm disk list
