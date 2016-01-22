@@ -25,7 +25,7 @@ describe Chef::Knife::BaseVsphereCommand do
 
     context 'password is not in config file' do
       let(:password) { nil }
-      let(:ui) { double( 'Ui', ask: 'passwurd') }
+      let(:ui) { double('Ui', ask: 'passwurd') }
 
       it 'asks for a password' do
         expect(subject).to receive(:ui).and_return ui
@@ -35,9 +35,9 @@ describe Chef::Knife::BaseVsphereCommand do
   end
 
   describe '#conn_opts' do
-    let(:ui) { double( 'Ui', ask: 'passwurd') }
+    let(:ui) { double('Ui', ask: 'passwurd') }
 
-    let(:config) {
+    let(:config) do
       { vsphere_host: 'hostname',
         vsphere_path: 'path',
         vsphere_port: 'port',
@@ -47,7 +47,8 @@ describe Chef::Knife::BaseVsphereCommand do
         vsphere_insecure: false,
         proxy_host: 'proxyhost',
         proxy_port: 'proxyport' }
-    }
+    end
+
     before do
       allow(subject).to receive(:get_config) do |option|
         config[option]
