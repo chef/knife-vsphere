@@ -24,5 +24,10 @@ describe Chef::Knife::VsphereVmClone do
       expect(subject).to receive(:vim_connection).and_raise ArgumentError
       expect { subject.run }.to raise_error ArgumentError
     end
+
+    it 'tests the testable test' do
+      expect(2).to eq 2
+      expect(1).to eq 1
+    end
   end
 end
