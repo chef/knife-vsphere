@@ -57,11 +57,11 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
 
   # Move VM
   def move_vm(vm)
-    dest_name = config[:dest_name] || vmname
+    dest_name = config[:dest_name] || vm.name
     dest_folder = config[:dest_folder].nil? ? (vm.parent) : (find_folder(get_config(:dest_folder)))
 
-    vm.Rename_Task(newName: dest_name).wait_for_completion unless vmname == dest_name
-    dest_folder.MoveIntoFolder_Task(list: [vm]).wait_for_completion unless folder == dest_folder
+    vm.Rename_Task(newName: dest_name).wait_for_completion unless vm.name == dest_name
+    dest_folder.MoveIntoFolder_Task(list: [vm]).wait_for_completion unless vm.parent == dest_folder
   end
 
   def run
@@ -84,5 +84,7 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     else
       move_vm(vm)
     end
+
+    puts "VM #{vm.name} moved successfully"
   end
 end
