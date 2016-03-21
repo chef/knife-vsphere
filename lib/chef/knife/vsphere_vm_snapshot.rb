@@ -85,28 +85,28 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       current_snapshot = vm.snapshot.currentSnapshot
     end
 
-    if config[:list] && vm.snapshot
+    if get_config(:list) && vm.snapshot
       puts 'Current snapshot tree: '
       puts "#{vmname}"
       snapshot_list.each { |i| puts display_node(i, current_snapshot) }
     end
 
-    if config[:create_new_snapshot]
-      snapshot_task=vm.CreateSnapshot_Task(name: config[:create_new_snapshot], description: '', memory: get_config(:dump_memory), quiesce: get_config(:quiesce))
-      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+    if get_config(:create_new_snapshot)
+      snapshot_task=vm.CreateSnapshot_Task(name: get_config(:create_new_snapshot), description: '', memory: get_config(:dump_memory), quiesce: get_config(:quiesce))
+      snapshot_task=snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
-    if config[:remove_named_snapshot]
-      ss_name = config[:remove_named_snapshot]
+    if get_config(:remove_named_snapshot)
+      ss_name = get_config(:remove_named_snapshot)
       snapshot = find_node(snapshot_list, ss_name)
       puts "Found snapshot #{ss_name} removing."
       snapshot_task=snapshot.RemoveSnapshot_Task(removeChildren: false)
-      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+      snapshot_task=snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
-    if config[:revert_current_snapshot]
+    if get_config(:revert_current_snapshot)
       puts 'Reverting to Current Snapshot'
       vm.RevertToCurrentSnapshot_Task(suppressPowerOn: false).wait_for_completion
       if get_config(:power)
@@ -115,8 +115,8 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    return unless config[:revert_snapshot]
-    ss_name = config[:revert_snapshot]
+    return unless get_config(:revert_snapshot)
+    ss_name = get_config(:revert_snapshot)
     snapshot = find_node(snapshot_list, ss_name)
     snapshot.RevertToSnapshot_Task(suppressPowerOn: false).wait_for_completion
     return unless get_config(:power)
