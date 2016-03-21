@@ -7,3 +7,5 @@
 .idea/
 pkg/
 *~
+tags
+.byebug_history
