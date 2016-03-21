@@ -71,14 +71,13 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     vim_connection
 
     vm = if get_config(:find)
-                    puts "No folder entered, searching for #{vmname}"
-                    src_folder = find_folder(get_config(:folder))
-                    traverse_folders_for_vm(src_folder, vmname)
-                  else
-                    base_folder = find_folder get_config(:folder)
-                    find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
-                  end
-
+           puts "No folder entered, searching for #{vmname}"
+           src_folder = find_folder(get_config(:folder))
+           traverse_folders_for_vm(src_folder, vmname)
+         else
+           base_folder = find_folder get_config(:folder)
+           find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+         end
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList
@@ -92,8 +91,11 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:create_new_snapshot)
-      snapshot_task=vm.CreateSnapshot_Task(name: get_config(:create_new_snapshot), description: '', memory: get_config(:dump_memory), quiesce: get_config(:quiesce))
-      snapshot_task=snapshot_task.wait_for_completion if get_config(:wait)
+      snapshot_task = vm.CreateSnapshot_Task(name: get_config(:create_new_snapshot),
+                                             description: '',
+                                             memory: get_config(:dump_memory),
+                                             quiesce: get_config(:quiesce))
+      snapshot_task = snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
@@ -101,8 +103,8 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       ss_name = get_config(:remove_named_snapshot)
       snapshot = find_node(snapshot_list, ss_name)
       puts "Found snapshot #{ss_name} removing."
-      snapshot_task=snapshot.RemoveSnapshot_Task(removeChildren: false)
-      snapshot_task=snapshot_task.wait_for_completion if get_config(:wait)
+      snapshot_task = snapshot.RemoveSnapshot_Task(removeChildren: false)
+      snapshot_task = snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
