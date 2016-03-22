@@ -1,6 +1,9 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.8   swalberg - Add find, quiesce, memory to snapshot h/t tcicone
+                 - Use supplied hostname for sysprep h/t paulherbosch
+
 1.2.7   swalberg - ignore create dir errors to get around #213
 
 1.2.6   mheidenr - vsphere vm disk extend
