@@ -558,8 +558,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
             fullName: cust_spec.identity.userData.fullName,
             orgName: cust_spec.identity.userData.orgName,
             productId: cust_spec.identity.userData.productId,
-            computerName: cust_spec.identity.userData.computerName
+            computerName: RbVmomi::VIM.CustomizationFixedName(name: hostname)
           )
+
           gui_unattended = RbVmomi::VIM.CustomizationGuiUnattended(
             autoLogon: cust_spec.identity.guiUnattended.autoLogon,
             autoLogonCount: cust_spec.identity.guiUnattended.autoLogonCount,
