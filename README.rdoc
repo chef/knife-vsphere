@@ -314,6 +314,9 @@ Deletes an existing VM, removing it from vSphere inventory and deleting from dis
     --revert-current  - Revert to current snapshot.
     --start           - Indicates whether to start the VM after a successful revert
     --wait            - Indicates whether to wait for creation/removal to complete
+    --find            - Find the VM instead of specifying the folder with -F
+    --dump-memory     - Dump the memory when creating the snapshot (default: false)
+    --quiesce         - Quiesce the VM before snapshotting (default: false)
 
 Manages the snapshots for an existing VM, allowing for creation, removal, and reverting of snapshots.
 

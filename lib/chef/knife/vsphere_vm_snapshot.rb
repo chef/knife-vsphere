@@ -44,6 +44,19 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          description: 'Indicates whether to wait for creation/removal to complete',
          boolean: false
 
+  option :find,
+         long: '--find',
+         description: 'Finds the virtual machine by searching all folders'
+
+  option :dump_memory,
+         long: '--dump-memory',
+         description: 'Dump the memory in the snapshot',
+         default: false
+
+  option :quiesce,
+         long: '--quiesce',
+         description: 'Quiesce the VM prior to snapshotting',
+         default: false
 
   def run
     $stdout.sync = true
@@ -57,37 +70,45 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    base_folder = find_folder(get_config(:folder))
-
-    vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = if get_config(:find)
+           puts "No folder entered, searching for #{vmname}"
+           src_folder = find_folder(get_config(:folder))
+           traverse_folders_for_vm(src_folder, vmname)
+         else
+           base_folder = find_folder get_config(:folder)
+           find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+         end
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList
       current_snapshot = vm.snapshot.currentSnapshot
     end
 
-    if config[:list] && vm.snapshot
+    if get_config(:list) && vm.snapshot
       puts 'Current snapshot tree: '
       puts "#{vmname}"
       snapshot_list.each { |i| puts display_node(i, current_snapshot) }
     end
 
-    if config[:create_new_snapshot]
-      snapshot_task=vm.CreateSnapshot_Task(name: config[:create_new_snapshot], description: '', memory: false, quiesce: false)
-      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+    if get_config(:create_new_snapshot)
+      snapshot_task = vm.CreateSnapshot_Task(name: get_config(:create_new_snapshot),
+                                             description: '',
+                                             memory: get_config(:dump_memory),
+                                             quiesce: get_config(:quiesce))
+      snapshot_task = snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
-    if config[:remove_named_snapshot]
-      ss_name = config[:remove_named_snapshot]
+    if get_config(:remove_named_snapshot)
+      ss_name = get_config(:remove_named_snapshot)
       snapshot = find_node(snapshot_list, ss_name)
       puts "Found snapshot #{ss_name} removing."
-      snapshot_task=snapshot.RemoveSnapshot_Task(removeChildren: false)
-      snapshot_task=snapshot_task.wait_for_completion if config[:wait]
+      snapshot_task = snapshot.RemoveSnapshot_Task(removeChildren: false)
+      snapshot_task = snapshot_task.wait_for_completion if get_config(:wait)
       snapshot_task
     end
 
-    if config[:revert_current_snapshot]
+    if get_config(:revert_current_snapshot)
       puts 'Reverting to Current Snapshot'
       vm.RevertToCurrentSnapshot_Task(suppressPowerOn: false).wait_for_completion
       if get_config(:power)
@@ -96,8 +117,8 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    return unless config[:revert_snapshot]
-    ss_name = config[:revert_snapshot]
+    return unless get_config(:revert_snapshot)
+    ss_name = get_config(:revert_snapshot)
     snapshot = find_node(snapshot_list, ss_name)
     snapshot.RevertToSnapshot_Task(suppressPowerOn: false).wait_for_completion
     return unless get_config(:power)
