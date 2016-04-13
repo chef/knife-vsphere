@@ -41,10 +41,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vim = vim_connection
     vdm = vim.serviceContent.virtualDiskManager
     vm = get_vm(vmname)
-    if vm.nil?
-      puts "Could not find #{vmname}"
-      return
-    end
+    fatal_exit "Could not find #{vmname}" unless vm
 
     target_lun = get_config(:target_lun) unless get_config(:target_lun).nil?
     vmdk_size_kb = size.to_i * 1024 * 1024

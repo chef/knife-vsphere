@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    knife-vsphere (1.2.7)
+    knife-vsphere (1.2.8)
       filesize (~> 0.1.1)
       knife-windows (>= 0.6.0)
       netaddr (~> 1.5)
@@ -168,3 +168,6 @@ DEPENDENCIES
   knife-vsphere!
   rake
   rspec
+
+BUNDLED WITH
+   1.10.6
