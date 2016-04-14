@@ -345,7 +345,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       unless config[:disable_customization]
         # Wait for customization to complete
         puts 'Waiting for customization to complete...'
-        CustomizationHelper.wait_for_sysprep(vm, vim, get_config(:sysprep_timeout), 10)
+        CustomizationHelper.wait_for_sysprep(vm, vim, Integer(get_config(:sysprep_timeout)), 10)
         puts 'Customization Complete'
         sleep 2 until vm.guest.ipAddress
         connect_host = config[:fqdn] = config[:fqdn] ? get_config(:fqdn) : vm.guest.ipAddress
