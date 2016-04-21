@@ -809,7 +809,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def load_winrm_deps
     require 'winrm'
-    require 'em-winrm'
     require 'chef/knife/winrm'
     require 'chef/knife/bootstrap_windows_winrm'
     require 'chef/knife/bootstrap_windows_ssh'
