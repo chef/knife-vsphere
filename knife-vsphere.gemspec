@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency('filesize', ['~> 0.1.1'])
   s.add_dependency('netaddr', ['~> 1.5'])
   s.add_dependency('rbvmomi', ['~> 1.8'])
-  s.add_dependency('knife-windows', ['>= 0.6.0'])
+  s.add_dependency('knife-windows', ['~> 1.0'])
 
   s.add_development_dependency('chef', ['>= 0.10.0'])
   s.add_development_dependency('rspec')
