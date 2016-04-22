@@ -1,6 +1,10 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.9   swalberg - Bump knife-windows to fix gem conflict with em-winrm
+				         - Handle missing VM case in vmdk add
+        dliscomb - Fix casting problem in sysprep-timeout
+
 1.2.8   swalberg - Add find, quiesce, memory to snapshot h/t tcicone
                  - Use supplied hostname for sysprep h/t paulherbosch
 
