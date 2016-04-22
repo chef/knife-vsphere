@@ -50,11 +50,13 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
   option :dump_memory,
          long: '--dump-memory',
+         boolean: true,
          description: 'Dump the memory in the snapshot',
          default: false
 
   option :quiesce,
          long: '--quiesce',
+         boolean: true,
          description: 'Quiesce the VM prior to snapshotting',
          default: false
 
