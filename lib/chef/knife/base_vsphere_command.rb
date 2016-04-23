@@ -78,7 +78,7 @@ class Chef
 
       def get_config(key)
         key = key.to_sym
-        rval = config[key] || Chef::Config[:knife][key]
+        rval = config[key].nil? ? Chef::Config[:knife][key] : config[key]
         Chef::Log.debug("value for config item #{key}: #{rval}")
         rval
       end
