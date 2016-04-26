@@ -1,6 +1,8 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.10  swalberg - Fix get_config to allow falsey values
+
 1.2.9   swalberg - Bump knife-windows to fix gem conflict with em-winrm
 				         - Handle missing VM case in vmdk add
         dliscomb - Fix casting problem in sysprep-timeout
