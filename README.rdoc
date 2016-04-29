@@ -180,6 +180,9 @@ Enumerates the customization specifications registered in the target datacenter.
    --json-attributes - A JSON string to be added to the first run of chef-client
    --disable-customization - Disable default customization
    --sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
+   --bootstrap-ipv4 - Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.
+   --bootstrap-nic INTEGER - Network interface to use when multiple NICs are defined on a template.
+
 
 Clones an existing VM template into a new VM instance, optionally applying an existing customization specification.  If customization arguments such as --chost and --cdomain are specified, or if the customization sepcification fetched from VSphere is considered, a default customization specification will be attempted.  For windows, a sysprep based unattended customization in workgroup mode will be attempted (host name being the VM name unless otherwise specified).  For linux, a fixed named customization using the vmname as the host name unless otherwise specified.  These customization specification defaults can be disabled using the --disable-customization switch and the --cspec specified as-is.
 
