@@ -376,7 +376,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     # address is assigned. As such, we need to wait until a routable IP address
     # becomes available. This is most commonly an issue with Windows instances.
     sleep 2 while vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
-    vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.ipAddress
+    vm.guest.net[config[:bootstrap_nic]].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
   end
 
   def guest_address(vm)
