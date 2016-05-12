@@ -3,6 +3,7 @@
 # Contributor:: Jesse Campbell (<hikeit@gmail.com>)
 # Contributor:: Bethany Erskine (<bethany@paperlesspost.com>)
 # Contributor:: Adrian Stanila (https://github.com/sacx)
+# Contributor:: Ryan Hass (rhass@chef.io)
 # License:: Apache License, Version 2.0
 #
 
@@ -13,6 +14,7 @@ require 'netaddr'
 require 'securerandom'
 require 'chef/knife/winrm_base'
 require 'chef/knife/customization_helper'
+require 'ipaddr'
 
 # Clone an existing template into a new VM, optionally applying a customization specification.
 # usage:
@@ -282,6 +284,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Wait TIMEOUT seconds for sysprep event before continuing with bootstrap',
          default: 600
 
+  option :bootstrap_nic,
+         long: '--bootstrap-nic INTEGER',
+         description: 'Network interface to use when multiple NICs are defined on a template.',
+         default: 0
+
+  option :bootstrap_ipv4,
+         long: '--bootstrap-ipv4',
+         description: 'Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.',
+         default: false
+
   def run
     $stdout.sync = true
 
@@ -332,9 +344,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     return unless get_config(:bootstrap)
-    sleep 2 until vm.guest.ipAddress
 
-    connect_host = config[:fqdn] = config[:fqdn] ? get_config(:fqdn) : vm.guest.ipAddress
+    connect_host = guest_address(vm)
     Chef::Log.debug("Connect Host for Bootstrap: #{connect_host}")
     connect_port = get_config(:ssh_port)
     protocol = get_config(:bootstrap_protocol)
@@ -347,8 +358,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         puts 'Waiting for customization to complete...'
         CustomizationHelper.wait_for_sysprep(vm, vim, Integer(get_config(:sysprep_timeout)), 10)
         puts 'Customization Complete'
-        sleep 2 until vm.guest.ipAddress
-        connect_host = config[:fqdn] = config[:fqdn] ? get_config(:fqdn) : vm.guest.ipAddress
       end
       wait_for_access(connect_host, connect_port, protocol)
       ssh_override_winrm
@@ -359,6 +368,33 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       ssh_override_winrm
       bootstrap_for_node.run
     end
+  end
+
+  def ipv4_address(vm)
+    puts 'Waiting for a valid IPv4 address...'
+    # Multiple reboots occur during guest customization in which a link-local
+    # address is assigned. As such, we need to wait until a routable IP address
+    # becomes available. This is most commonly an issue with Windows instances.
+    sleep 2 while vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
+    vm.guest.net[config[:bootstrap_nic]].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
+  end
+
+  def guest_address(vm)
+    puts 'Waiting for network interfaces to become available...'
+    sleep 2 while vm.guest.net.empty? && !vm.guest.ipAddress
+    guest_address ||=
+      config[:fqdn] = if config[:bootstrap_ipv4]
+                        ipv4_address(vm)
+                      elsif config[:fqdn]
+                        get_config(:fqdn)
+                      else
+                        # Use the first IP which is not a link-local address.
+                        # This is the closest thing to vm.guest.ipAddress but
+                        # allows specifying a NIC.
+                        vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect do |addr|
+                          addr.origin != 'linklayer'
+                        end.ipAddress
+                      end
   end
 
   def wait_for_access(connect_host, connect_port, protocol)

@@ -2,6 +2,10 @@ knife-vsphere changelog
 ----------------------
 
 1.2.10  swalberg - Fix get_config to allow falsey values
+        rhass    - Add clone/bootstrap option to allow choosing NIC when
+                   more than one NIC is configured in the source template
+                   or VM.
+        rhass    - Add clone/bootsrap option to force the use of IPv4 addresses
 
 1.2.9   swalberg - Bump knife-windows to fix gem conflict with em-winrm
 				         - Handle missing VM case in vmdk add
