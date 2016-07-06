@@ -194,9 +194,9 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          print "#{ui.color("IP:", :cyan)} #{vmc.guest.ipAddress}\t"
        end
        if get_config(:ips)
-        ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/ 
-        networks = vmc.guest.net.map { |net| net.network + ":" + net.ipConfig.ipAddress.select { |i| i.ipAddress[ipregex] }[0].ipAddress }
-        print "#{ui.color("IPS:", :cyan)} #{networks.join(",")}\t"
+         ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
+         networks = vmc.guest.net.map { |net| "#{net.network}:" + net.ipConfig.ipAddress.select { |i| i.ipAddress[ipregex] }[0].ipAddress }
+         print "#{ui.color("IPS:", :cyan)} #{networks.join(",")}\t"
        end
        if get_config(:os)
          print "#{ui.color("OS:", :cyan)} #{vmc.guest.guestFullName}\t"
