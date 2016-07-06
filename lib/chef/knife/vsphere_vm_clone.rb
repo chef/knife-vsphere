@@ -381,7 +381,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def guest_address(vm)
     puts 'Waiting for network interfaces to become available...'
-    sleep 2 while vm.guest.net.empty? && !vm.guest.ipAddress
+    sleep 2 while vm.guest.net.empty? || !vm.guest.ipAddress
     guest_address ||=
       config[:fqdn] = if config[:bootstrap_ipv4]
                         ipv4_address(vm)
