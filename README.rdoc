@@ -102,14 +102,15 @@ FIELDS:
     --esx-disk                   Show esx disks
     --full-path                  Show full path
     --hostname                   show hostname
-    --ip                         Show ip
-    --os                         show os details
+    --ip                         Show primary ip
+    --ips                        Show all ips assigned to VM with network (format: VLAN1:IP1,VLAN2:IP2)
+    --os                         Show os details
     --os-disks                   Show os disks
     --ram                        Show ram
     --snapshots                  Show snapshots
     --tools                      show tools status
 
-     knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk --os-disk --os --match-name my_machine_1 --alarms --tools --ip --match-ip 123 --match-tools toolsOk
+     knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk --os-disk --os --match-name my_machine_1 --alarms --tools --ip --ips --match-ip 123 --match-tools toolsOk
 
 == knife vsphere vm state [-s STATE, --state STATE] [-w PORT, --wait-port PORT] [-g, --shutdown] [-r, --recursive]
 
