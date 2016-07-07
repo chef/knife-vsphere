@@ -45,7 +45,11 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   option :ip,
          long: '--ip',
-         description: 'Show ip'
+         description: 'Show primary ip'
+
+  option :ips,
+         long: '--ips',
+         description: 'Show all ips, with networks'
 
   option :soff,
          long: '--powered-off',
@@ -188,6 +192,11 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
        if get_config(:ip)
          print "#{ui.color("IP:", :cyan)} #{vmc.guest.ipAddress}\t"
+       end
+       if get_config(:ips)
+         ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
+         networks = vmc.guest.net.map { |net| "#{net.network}:" + net.ipConfig.ipAddress.select { |i| i.ipAddress[ipregex] }[0].ipAddress }
+         print "#{ui.color("IPS:", :cyan)} #{networks.join(",")}\t"
        end
        if get_config(:os)
          print "#{ui.color("OS:", :cyan)} #{vmc.guest.guestFullName}\t"
