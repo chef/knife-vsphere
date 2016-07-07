@@ -375,13 +375,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     # Multiple reboots occur during guest customization in which a link-local
     # address is assigned. As such, we need to wait until a routable IP address
     # becomes available. This is most commonly an issue with Windows instances.
-    sleep 2 while vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
-    vm.guest.net[config[:bootstrap_nic]].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
+    sleep 2 while vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
+    vm.guest.net[bootstrap_nic_index].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
   end
 
   def guest_address(vm)
     puts 'Waiting for network interfaces to become available...'
     sleep 2 while vm.guest.net.empty? || !vm.guest.ipAddress
+    ui.info "Found address #{vm.guest.ipAddress}" if log_verbose?
     guest_address ||=
       config[:fqdn] = if config[:bootstrap_ipv4]
                         ipv4_address(vm)
@@ -391,7 +392,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                         # Use the first IP which is not a link-local address.
                         # This is the closest thing to vm.guest.ipAddress but
                         # allows specifying a NIC.
-                        vm.guest.net[config[:bootstrap_nic]].ipConfig.ipAddress.detect do |addr|
+                        vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
                           addr.origin != 'linklayer'
                         end.ipAddress
                       end
@@ -871,5 +872,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def random_hostname
     @random_hostname ||= config[:random_vmname_prefix] + SecureRandom.hex(4)
+  end
+
+  def bootstrap_nic_index
+    Integer(get_config(:bootstrap_nic))
   end
 end
