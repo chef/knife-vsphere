@@ -48,8 +48,8 @@ For Windows guests we can run sysprep
 For initial development, the plugin targets all communication at a vCenter instance rather than at specific hosts. Only named user authentication is currently supported; you can add the credentials to your <tt>knife.rb</tt> file:
 
     knife[:vsphere_host] = "vcenter-hostname"
-    knife[:vsphere_user] = "privileged username"
-    knife[:vsphere_pass] = "your password"
+    knife[:vsphere_user] = "privileged username" # Domain logins may need to be "user@domain.com"
+    knife[:vsphere_pass] = "your password"       # or %Q(mypasswordwithfunnycharacters)
     knife[:vsphere_dc] = "your-datacenter"
 
 The vSphere password can also be stored in a base64 encoded version (to visually obfuscate it) by prepending 'base64:' to your encoded password. For example:
