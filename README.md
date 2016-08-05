@@ -173,11 +173,13 @@ datacenter. Only name is currently displayed.
     --resource-pool POOL|CLUSTER - The resource pool into which to put the cloned VM. Also accepts a cluster name.
     --template TEMPLATE - The source VM / Template to clone from
     --cspec CUST_SPEC - The name of any customization specification to apply
+    --sw-uuid SWITCH_UUIDS - Comma-delimited list of virtual switch UUIDs to attach to the network adapters, or *auto* to automatically assign virtual switch
     --disable-customization FALSE - by default conventions will be applied to the customization specification (see below).  Disable these convention with this switch
     --cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
     --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
     --cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
     --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
+    --cmac CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
     --cgw CUST_GW - CIDR IP of gateway for customization
     --chostname CUST_HOSTNAME - Unqualified hostname for customization
     --cdomain CUST_DOMAIN - Domain name for customization
