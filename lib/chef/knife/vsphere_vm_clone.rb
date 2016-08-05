@@ -85,8 +85,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Comma-delimited list of VLAN names for network adapters to join'
 
   option :customization_sw_uuid,
-         :long => "--sw-uuid SWITCH_UUIDS",
-         :description => "Distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
+         long: '--sw-uuid SWITCH_UUIDS',
+         description: "Distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
 
   option :customization_macs,
          long: '--cmacs CUST_MACS',
@@ -339,7 +339,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     puts "Finished creating virtual machine #{vmname}"
 
     if customization_plugin && customization_plugin.respond_to?(:reconfig_vm)
-      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{dest_folder}")
+      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{dest_folder}")  
       customization_plugin.reconfig_vm(target_vm)
     end
 
@@ -534,25 +534,25 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:customization_macs)
-        if ! get_config(:customization_ips)
-            abort("Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use 'dhcp' as placeholder")
-        end
-        if get_config(:customization_macs) == 'auto'
-            mac_list = [ 'auto' ] * get_config(:customization_ips).split(',').length
-        else
-            mac_list = get_config(:customization_macs).split(',')
-        end
+      unless get_config(:customization_ips)
+        abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
+      end
+      mac_list = if get_config(:customization_macs) == 'auto'
+                   ['auto'] * get_config(:customization_ips).split(',').length
+                 else
+                   get_config(:customization_macs).split(',')
+                 end
     end
 
     if get_config(:customization_sw_uuid)
-        if ! get_config(:customization_vlan)
-            abort("Must specify VLANs with --cvlan when specifying switch UUIDs with --sw-uuids")
-        end
-        if get_config(:customization_sw_uuid) != 'auto'
-          swuuid_list = get_config(:customization_sw_uuid).split(',').map { |swuuid| swuuid.gsub(/((\w+\s+){7})(\w+)\s+(.+)/, '\1\3-\4') }
-        else
-          swuuid_list = [ 'auto' ] * get_config(customization_ips).split(',').length
-        end
+      unless get_config(:customization_vlan)
+        abort('Must specify VLANs with --cvlan when specifying switch UUIDs with --sw-uuids')
+      end
+      swuuid_list = if get_config(:customization_sw_uuid) == 'auto'
+                      ['auto'] * get_config(customization_ips).split(',').length
+                    else
+                      get_config(:customization_sw_uuid).split(',').map { |swuuid| swuuid.gsub(/((\w+\s+){7})(\w+)\s+(.+)/, '\1\3-\4') }
+                    end
     end
 
     if get_config(:customization_vlan)
@@ -565,19 +565,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         card = cards[index] || abort("Can't find source network card to customize for vlan #{vlan_list[index]}")
         begin
           if get_config(:customization_sw_uuid) && (swuuid_list[index] != 'auto')
-            switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(switchUuid: swuuid_list[index], portgroupKey: network.key)
-            card.backing.port = switch_port
+            switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(
+              switchUuid: swuuid_list[index], portgroupKey: network.key
+            )
           else
-              switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key)
-          card.backing.port = switch_port
+            switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(
+              switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key
+            )
           end
+          card.backing.port = switch_port
         rescue
           # not connected to a distibuted switch?
           card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
-        if mac_list[index] != 'auto'
-            card.macAddress = mac_list[index]
-        end
+        card.macAddress = mac_list[index] if mac_list[index] != 'auto'
         dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
         clone_spec.config.deviceChange.push dev_spec
       end
@@ -604,14 +605,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if config[:customization_ips]
       if get_config(:customization_gw)
-        cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index| generate_adapter_map(i, get_config(:customization_gw), mac_list[index]) }
+        cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index|
+          generate_adapter_map(i, get_config(:customization_gw), mac_list[index])
+        }
       else
-          cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index| generate_adapter_map(i, nil, mac_list[index]) }
+        cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index|
+          generate_adapter_map(i, nil, mac_list[index])
+        }
       end
     end
 
     if get_config(:disable_customization)
-      clone_spec.customization = cust_spec    
+      clone_spec.customization = cust_spec
     else
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
 
@@ -746,9 +751,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     adapter_map = RbVmomi::VIM.CustomizationAdapterMapping
-    if ( ! mac.nil? ) && (mac != 'auto')
-        adapter_map.macAddress = mac
-    end
+    adapter_map.macAddress = mac if !mac.nil? && (mac != 'auto')
     adapter_map.adapter = settings
     adapter_map
   end
