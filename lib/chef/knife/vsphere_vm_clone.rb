@@ -339,7 +339,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     puts "Finished creating virtual machine #{vmname}"
 
     if customization_plugin && customization_plugin.respond_to?(:reconfig_vm)
-      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{dest_folder}")  
+      target_vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{dest_folder}")
       customization_plugin.reconfig_vm(target_vm)
     end
 
