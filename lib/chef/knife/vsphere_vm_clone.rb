@@ -86,7 +86,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :customization_sw_uuid,
          long: '--sw-uuid SWITCH_UUIDS',
-         description: "Distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
+         description: "Comma-delimited list of distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
 
   option :customization_macs,
          long: '--cmacs CUST_MACS',
@@ -604,15 +604,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if config[:customization_ips]
-      if get_config(:customization_gw)
-        cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index|
-          generate_adapter_map(i, get_config(:customization_gw), mac_list[index])
-        }
-      else
-        cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |i, index|
-          generate_adapter_map(i, nil, mac_list[index])
-        }
-      end
+      cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |cust_ip, index|
+        generate_adapter_map(cust_ip, get_config(:customization_gw), mac_list[index])
+      }
     end
 
     if get_config(:disable_customization)
@@ -664,11 +658,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           ident = RbVmomi::VIM.CustomizationLinuxPrep
           ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
 
-          if get_config(:customization_domain)
-            ident.domain = get_config(:customization_domain)
-          else
-            ident.domain = ''
-          end
+          ident.domain = if get_config(:customization_domain)
+                           get_config(:customization_domain)
+                         else
+                           ''
+                         end
           cust_spec.identity = ident
         else
           ui.error('Customization only supports Linux and Windows currently.')
