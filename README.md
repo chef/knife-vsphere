@@ -179,7 +179,7 @@ datacenter. Only name is currently displayed.
     --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
     --cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
     --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
-    --cmac CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
+    --cmacs CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
     --cgw CUST_GW - CIDR IP of gateway for customization
     --chostname CUST_HOSTNAME - Unqualified hostname for customization
     --cdomain CUST_DOMAIN - Domain name for customization
