@@ -549,7 +549,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         abort('Must specify VLANs with --cvlan when specifying switch UUIDs with --sw-uuids')
       end
       swuuid_list = if get_config(:customization_sw_uuid) == 'auto'
-                      ['auto'] * get_config(customization_ips).split(',').length
+                      ['auto'] * get_config(:customization_ips).split(',').length
                     else
                       get_config(:customization_sw_uuid).split(',').map { |swuuid| swuuid.gsub(/((\w+\s+){7})(\w+)\s+(.+)/, '\1\3-\4') }
                     end
