@@ -90,7 +90,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :customization_macs,
          long: '--cmacs CUST_MACS',
-         description: 'Comma-delimited list of MAC addresses for network adapters'
+         description: 'Comma-delimited list of MAC addresses for network adapters',
+         default: 'auto'
 
   option :customization_ips,
          long: '--cips CUST_IPS',
@@ -335,6 +336,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     task = src_vm.CloneVM_Task(folder: dest_folder, name: vmname, spec: clone_spec)
     puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
+
+    pp clone_spec if log_verbose?
+
     task.wait_for_completion
     puts "Finished creating virtual machine #{vmname}"
 
@@ -533,16 +537,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       clone_spec.config.memoryMB = Integer(get_config(:customization_memory)) * 1024
     end
 
-    if get_config(:customization_macs)
-      unless get_config(:customization_ips)
+    if get_config(:customization_macs) && !get_config(:customization_ips)
         abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
-      end
-      mac_list = if get_config(:customization_macs) == 'auto'
-                   ['auto'] * get_config(:customization_ips).split(',').length
-                 else
-                   get_config(:customization_macs).split(',')
-                 end
     end
+
+    mac_list = if get_config(:customization_macs) == 'auto'
+                 ['auto'] * get_config(:customization_ips).split(',').length
+               else
+                 get_config(:customization_macs).split(',')
+               end
 
     if get_config(:customization_sw_uuid)
       unless get_config(:customization_vlan)

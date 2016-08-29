@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    knife-vsphere (1.2.11)
+    knife-vsphere (1.2.13)
       filesize (~> 0.1.1)
       knife-windows (~> 1.0)
       netaddr (~> 1.5)
