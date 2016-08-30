@@ -1,8 +1,10 @@
 knife-vsphere changelog
 ----------------------
 
-1.2.13 kozmikyak - Bugfix from previous
-       swalberg  - Bugfix from previous
+1.2.14  swalberg - Bugfix from 1.2.12
+
+1.2.13  kozmikyak - Bugfix from previous
+        swalberg  - Bugfix from previous
 
 1.2.12  kozmikyak - Support for specifying the switch and MAC of VM
         mkherlakian - Can list all of a VM's IPS and their associated networks
