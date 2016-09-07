@@ -495,7 +495,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:linked_clone)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(diskMoveType: :moveChildMostDiskBacking)
+      rspec.diskMoveType = :moveChildMostDiskBacking
     end
 
     if get_config(:datastore) && get_config(:datastorecluster)
