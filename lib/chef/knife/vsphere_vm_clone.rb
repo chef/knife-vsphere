@@ -24,6 +24,9 @@ require 'ipaddr'
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm clone VMNAME (options)'
 
+  AUTO_MAC = 'auto'
+  NO_IPS = ''
+
   include Chef::Knife::WinrmBase
   include CustomizationHelper
   deps do
@@ -91,11 +94,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :customization_macs,
          long: '--cmacs CUST_MACS',
          description: 'Comma-delimited list of MAC addresses for network adapters',
-         default: 'auto'
+         default: AUTO_MAC
 
   option :customization_ips,
          long: '--cips CUST_IPS',
-         description: 'Comma-delimited list of CIDR IPs for customization'
+         description: 'Comma-delimited list of CIDR IPs for customization',
+         default: NO_IPS
 
   option :customization_dns_ips,
          long: '--cdnsips CUST_DNS_IPS',
@@ -311,6 +315,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name OR use --random-vmname')
     end
 
+    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
+
+    if get_config(:datastore) && get_config(:datastorecluster)
+      abort 'Please select either datastore or datastorecluster'
+    end
+
+    if get_config(:customization_macs) != AUTO_MAC && get_config(:customization_ips) == NO_IPS
+      abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
+    end
+
     config[:chef_node_name] = vmname unless get_config(:chef_node_name)
     config[:vmname] = vmname
 
@@ -320,8 +334,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dc = datacenter
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) ||
              abort('VM/Template not found')
@@ -456,39 +468,42 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
   end
 
+  def find_available_hosts
+    hosts = traverse_folders_for_computeresources(datacenter.hostFolder)
+    fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
+    hosts.reject!(&:nil?)
+    hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
+    fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
+    if get_config(:datastore)
+      hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
+    end
+
+    fatal_exit "No hosts have the requested Datastore available! #{get_config(:datastore)}" if hosts.empty?
+
+    if get_config(:datastorecluster)
+      hosts.reject! { |host| !host.datastore.include?(find_datastorecluster(get_config(:datastorecluster))) }
+    end
+
+    fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
+
+    if get_config(:customization_vlan)
+      vlan_list = get_config(:customization_vlan).split(',')
+      vlan_list.each do |network|
+        hosts.reject! { |host| !host.network.include?(find_network(network)) }
+      end
+    end
+
+    fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
+    hosts
+  end
+
   # Builds a CloneSpec
   def generate_clone_spec(src_config)
     rspec = nil
     if get_config(:resource_pool)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: find_pool(get_config(:resource_pool)))
     else
-      dc = datacenter
-      hosts = traverse_folders_for_computeresources(dc.hostFolder)
-      fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
-      hosts.reject!(&:nil?)
-      hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
-      fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
-
-      if get_config(:datastore)
-        hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
-      end
-
-      fatal_exit "No hosts have the requested Datastore available! #{get_config(:datastore)}" if hosts.empty?
-
-      if get_config(:datastorecluster)
-        hosts.reject! { |host| !host.datastore.include?(find_datastorecluster(get_config(:datastorecluster))) }
-      end
-
-      fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
-
-      if get_config(:customization_vlan)
-        vlan_list = get_config(:customization_vlan).split(',')
-        vlan_list.each do |network|
-          hosts.reject! { |host| !host.network.include?(find_network(network)) }
-        end
-      end
-
-      fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
+      hosts = find_available_hosts
 
       rp = hosts.first.resourcePool
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
@@ -498,9 +513,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       rspec.diskMoveType = :moveChildMostDiskBacking
     end
 
-    if get_config(:datastore) && get_config(:datastorecluster)
-      abort 'Please select either datastore or datastorecluster'
-    end
 
     if get_config(:datastore)
       rspec.datastore = find_datastore(get_config(:datastore))
@@ -537,12 +549,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       clone_spec.config.memoryMB = Integer(get_config(:customization_memory)) * 1024
     end
 
-    if get_config(:customization_macs) && !get_config(:customization_ips)
-        abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
-    end
-
-    mac_list = if get_config(:customization_macs) == 'auto'
-                 ['auto'] * get_config(:customization_ips).split(',').length
+    mac_list = if get_config(:customization_macs) == AUTO_MAC
+                 [AUTO_MAC] * get_config(:customization_ips).split(',').length
                else
                  get_config(:customization_macs).split(',')
                end
@@ -581,7 +589,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           # not connected to a distibuted switch?
           card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
-        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != 'auto'
+        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != AUTO_MACS
         dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
         clone_spec.config.deviceChange.push dev_spec
       end
@@ -613,8 +621,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:disable_customization)
+      # TODO: either early exit here or something to get rid of one level of indentation
       clone_spec.customization = cust_spec
     else
+      # TODO: should we default to vmname here? Seems like we're sending it off with an empty identity which fails
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
 
       if use_ident
@@ -748,7 +758,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     adapter_map = RbVmomi::VIM.CustomizationAdapterMapping
-    adapter_map.macAddress = mac if !mac.nil? && (mac != 'auto')
+    adapter_map.macAddress = mac if !mac.nil? && (mac != AUTO_MAC)
     adapter_map.adapter = settings
     adapter_map
   end

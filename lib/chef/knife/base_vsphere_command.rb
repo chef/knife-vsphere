@@ -110,7 +110,7 @@ class Chef
       end
 
       def vim_connection
-        config[:vim] = RbVmomi::VIM.connect conn_opts
+        config[:vim] ||= RbVmomi::VIM.connect conn_opts
       end
 
       def get_password_from_stdin
@@ -183,7 +183,7 @@ class Chef
 
       def datacenter
         dcname = get_config(:vsphere_dc)
-        traverse_folders_for_dc(config[:vim].rootFolder, dcname) || abort('datacenter not found')
+        traverse_folders_for_dc(vim_connection.rootFolder, dcname) || abort('datacenter not found')
       end
 
       def find_folder(folderName)
