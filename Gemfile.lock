@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    knife-vsphere (1.2.13)
+    knife-vsphere (1.2.14)
       filesize (~> 0.1.1)
       knife-windows (~> 1.0)
       netaddr (~> 1.5)
@@ -11,6 +11,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     builder (3.2.2)
+    byebug (9.0.5)
     chef (12.4.0)
       chef-config (= 12.4.0)
       chef-zero (~> 4.2, >= 4.2.2)
@@ -159,6 +160,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   chef (>= 0.10.0)
   knife-vsphere!
   rake
