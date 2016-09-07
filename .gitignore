@@ -12,3 +12,4 @@ tags
 .byebug_history
 bundle
 .bundle
+.envrc
