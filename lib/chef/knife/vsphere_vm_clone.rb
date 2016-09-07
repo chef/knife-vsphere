@@ -499,15 +499,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   # Builds a CloneSpec
   def generate_clone_spec(src_config)
-    rspec = nil
-    if get_config(:resource_pool)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: find_pool(get_config(:resource_pool)))
-    else
-      hosts = find_available_hosts
+    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec
 
-      rp = hosts.first.resourcePool
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
-    end
+    rspec.pool = if get_config(:resource_pool)
+                   find_pool(get_config(:resource_pool))
+                 else
+                   hosts = find_available_hosts
+                   hosts.first.resourcePool
+                 end
 
     if get_config(:linked_clone)
       rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(diskMoveType: :moveChildMostDiskBacking)
@@ -529,7 +528,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:thin_provision)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(transform: :sparse, pool: find_pool(get_config(:resource_pool)))
+      rspec.transform = :sparse
     end
 
     is_template = !get_config(:mark_as_template).nil?
