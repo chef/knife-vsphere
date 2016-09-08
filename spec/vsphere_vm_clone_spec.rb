@@ -39,13 +39,12 @@ describe Chef::Knife::VsphereVmClone do
   end
 
   context 'customizing the mac' do
-
     before do
       allow(subject).to receive(:vim_connection).and_return(vim)
       # It is difficult to mock this because the current implementation checks
       # for explicity RbVmomi class names
       allow(subject).to receive(:datacenter).and_return(datacenter)
-      allow(subject).to receive(:find_available_hosts).and_return( [host])
+      allow(subject).to receive(:find_available_hosts).and_return([host])
 
       allow(service_content).to receive(:virtualDiskManager) # what does this call actually do?
       subject.config[:folder] = ''
