@@ -9,6 +9,7 @@ describe Chef::Knife::VsphereVmClone do
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
   let(:host) { double('Host', resourcePool: double('ResourcePool')) }
   let(:task) { double('Task', wait_for_completion: 'done') }
+  let(:template) { double('Template', config: {}) }
 
   subject { described_class.new }
 
@@ -38,7 +39,6 @@ describe Chef::Knife::VsphereVmClone do
   end
 
   context 'customizing the mac' do
-    let(:template) { double('Template', config: {}) }
 
     before do
       allow(subject).to receive(:vim_connection).and_return(vim)
@@ -83,7 +83,27 @@ describe Chef::Knife::VsphereVmClone do
   end
 
   context 'customizations' do
-    context 'skip customizations'
+    include_context 'basic_setup'
+
+    context 'skip customizations' do
+      it 'sends an empty customization' do
+        expect(template).to receive(:CloneVM_Task) do |args|
+          expect(args[:spec].customization.globalIPSettings.props).to be_empty
+          expect(args[:spec].customization.identity.props).to be_empty # really?
+          expect(args[:spec].customization.nicSettingMap).to be_empty
+        end.and_return(task)
+
+        subject.run
+      end
+
+      it 'does not power on by default' do
+        expect(template).to receive(:CloneVM_Task) do |args|
+          expect(args[:spec].powerOn).to eq(false)
+        end.and_return(task)
+
+        subject.run
+      end
+    end
     context 'determining the hostname'
     context 'windows clone'
     context 'linux clone'
