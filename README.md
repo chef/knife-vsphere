@@ -154,6 +154,8 @@ datacenter.
 Enumerates the VM Templates registered in the target datacenter. Only name is
 currently displayed.
 
+    -f FOLDER       - Look inside the designated folder, default is the root folder
+
 ## knife vsphere customization list
 
 Enumerates the customization specifications registered in the target
