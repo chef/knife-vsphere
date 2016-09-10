@@ -20,7 +20,7 @@ Gem:
 chef gem install knife-vsphere
 ```
 
-If you're using bundler, simply add Chef and Knife OpenStack to your `Gemfile`:
+If you're using bundler, simply add Chef and `knife-vsphere` to your `Gemfile`:
 
 ```ruby
 gem 'chef'
