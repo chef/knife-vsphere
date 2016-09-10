@@ -23,8 +23,8 @@ $ chef gem install knife-vsphere
 If you're using bundler, simply add Chef and `knife-vsphere` to your `Gemfile`:
 
 ```ruby
-$ gem 'chef'
-$ gem 'knife-vsphere
+gem 'chef'
+gem 'knife-vsphere
 ```
 
 This plugin is distributed as a Ruby Gem. To install it, run:
