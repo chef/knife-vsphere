@@ -296,23 +296,28 @@ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
 
 Clones an existing VM template into a new VM instance, optionally applying an
 existing customization specification.  If customization arguments such as
---chost and --cdomain are specified, or if the customization sepcification
+`--chost` and `--cdomain` are specified, or if the customization sepcification
 fetched from vSphere is considered, a default customization specification will
-be attempted.  For windows, a sysprep based unattended customization in
-workgroup mode will be attempted (host name being the VM name unless otherwise
-specified).  For linux, a fixed named customization using the vmname as the
-host name unless otherwise specified.  These customization specification
-defaults can be disabled using the --disable-customization switch and the
---cspec specified as-is.
+be attempted.
 
-NOTE!  if you are specifying a --cspec and the cloning process appears to not
+- For windows, a sysprep based unattended customization in
+workgroup mode will be attempted (host name being the VM name unless otherwise
+specified).
+
+- For linux, a fixed named customization using the vmname as the
+host name unless otherwise specified.
+
+These customization specification defaults can be disabled using the
+`--disable-customization` switch and the `--cspec` specified as-is.
+
+NOTE: if you are specifying a `--cspec` and the cloning process appears to not
 be properly applying the spec as defined on vSphere, consider using the
---disable-customization as the conventions described above could be
+`--disable-customization` as the conventions described above could be
 erroneously interfering with the spec as defined on vSphere.
 
-Customization specifications can also be specified in code using the --cplugin
-and/or --cplugin-data arguments.  Below are examples of the potential
-implementations that woudl be saved to an rb file and passed in the --cplugin
+Customization specifications can also be specified in code using the `--cplugin`
+and/or `--cplugin-data` arguments.  Below are examples of the potential
+implementations that would be saved to an rb file and passed in the `--cplugin`
 argument.
 
 ### cplugin_example.rb
@@ -400,7 +405,6 @@ class KnifeVspherePlugin
     puts "In reconfig_vm method.  No actions implemented.."
   end
 end
-
 ```
 
 ### json data file
@@ -479,7 +483,7 @@ reverting of snapshots.
 --iso                 - Path and filename of the ISO
 --attach              - Attach the iso immediately
 --disconnect          - Disconnect any iso currently attached
---recursive           - Search for the VM recursivly
+--recursive           - Search for the VM recursively
 --folder              - Search for the VM in the specified folder
 --on_boot BOOL        - Set the Attach On Boot Boolean
 ```
