@@ -68,7 +68,7 @@ state=SSLv3 read server certificate B: certificate verify failed
 knife[:vsphere_insecure] = true
 ```
 
-Credentials can also be specified on the command line for multiple VSphere
+Credentials can also be specified on the command line for multiple vSphere
 servers/data centers
 
 ## Description:
@@ -297,7 +297,7 @@ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
 Clones an existing VM template into a new VM instance, optionally applying an
 existing customization specification.  If customization arguments such as
 --chost and --cdomain are specified, or if the customization sepcification
-fetched from VSphere is considered, a default customization specification will
+fetched from vSphere is considered, a default customization specification will
 be attempted.  For windows, a sysprep based unattended customization in
 workgroup mode will be attempted (host name being the VM name unless otherwise
 specified).  For linux, a fixed named customization using the vmname as the
@@ -306,9 +306,9 @@ defaults can be disabled using the --disable-customization switch and the
 --cspec specified as-is.
 
 NOTE!  if you are specifying a --cspec and the cloning process appears to not
-be properly applying the spec as defined on VSphere, consider using the
+be properly applying the spec as defined on vSphere, consider using the
 --disable-customization as the conventions described above could be
-erroneously interfering with the spec as defined on VSphere.
+erroneously interfering with the spec as defined on vSphere.
 
 Customization specifications can also be specified in code using the --cplugin
 and/or --cplugin-data arguments.  Below are examples of the potential
