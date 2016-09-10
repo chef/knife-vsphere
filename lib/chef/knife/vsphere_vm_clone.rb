@@ -802,6 +802,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.config[:ssh_port] = get_config(:ssh_port)
     bootstrap.config[:identity_file] = get_config(:identity_file)
     bootstrap.config[:use_sudo] = true unless get_config(:ssh_user) == 'root'
+    bootstrap.config[:use_sudo_password] = true unless get_config(:ssh_user) == 'root'
     bootstrap.config[:log_level] = get_config(:log_level)
     bootstrap_common_params(bootstrap)
   end
