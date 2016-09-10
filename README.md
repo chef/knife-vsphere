@@ -5,9 +5,9 @@
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
-* Documentation: <https://github.com/chef/knife-vsphere/blob/master/README.md>
-* Source: <http://github.com/chef/knife-vsphere/tree/master>
-* Issues: <https://github.com/chef/knife-vsphere/issues>
+* Documentation: <https://github.com/chef-partners/knife-vsphere/blob/master/README.md>
+* Source: <http://github.com/chef-partners/knife-vsphere/tree/master>
+* Issues: <https://github.com/chef-partners/knife-vsphere/issues>
 * Slack: sign up: https://code.vmware.com/slack/ slack channel: #chef
 * Mailing list: <https://discourse.chef.io/>
 
