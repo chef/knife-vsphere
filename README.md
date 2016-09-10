@@ -17,14 +17,14 @@ If you're using [ChefDK](https://downloads.chef.io/chef-dk/), simply install the
 Gem:
 
 ```bash
-chef gem install knife-vsphere
+$ chef gem install knife-vsphere
 ```
 
 If you're using bundler, simply add Chef and `knife-vsphere` to your `Gemfile`:
 
 ```ruby
-gem 'chef'
-gem 'knife-vsphere
+$ gem 'chef'
+$ gem 'knife-vsphere
 ```
 
 This plugin is distributed as a Ruby Gem. To install it, run:
@@ -120,29 +120,29 @@ Here are some basic usage examples to help get you started.
 the generic DHCP options.
 
 ```bash
-knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips dhcp
+$ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips dhcp
 ```
 
 - This clones a vm from a VMware template bootstraps chef, then uses a [Customization template](https://pubs.vmware.com/vsphere-55/index.jsp?topic=%2Fcom.vmware.vsphere.vm_admin.doc%2FGUID-EB5F090E-723C-4470-B640-50B35D1EC016.html)
 called "SPEC" to help bootstrap. Also calls a different SSH user and Password.
 
 ```bash
-knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips dhcp \
+$ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips dhcp \
   --cspec SPEC --ssh-user USER --ssh-password PASSWORD
 ```
 
 - Deleting a machine.
 
 ```bash
-knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
+$ knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
 ```
 
 - Listing the available VMware templates
 
 ```bash
-knife vsphere template list
+$ knife vsphere template list
 Template Name: ubuntu16-template
-knife vsphere template list -f FOLDERNAME
+$ knife vsphere template list -f FOLDERNAME
 Template Name: centos7-template
 ```
 
@@ -194,9 +194,9 @@ FIELDS:
 Example:
 
 ```bash
-knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk \
-  --os-disk --os --match-name my_machine_1 --alarms --tools --ip --ips \
-  --match-ip 123 --match-tools toolsOk
+$ knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk \
+    --os-disk --os --match-name my_machine_1 --alarms --tools --ip --ips \
+    --match-ip 123 --match-tools toolsOk
 ```
 
 ## `knife vsphere vm state`
@@ -208,12 +208,6 @@ Manage power state of a virtual machine, aka turn it off and on
 -w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
 -g, --shutdown             - Guest OS shutdown
 -r, --recursive            - Recurse down through sub-folders to the specified folder
-```
-
-Example:
-
-```bash
-TODO
 ```
 
 ## `knife vsphere pool list`
@@ -289,9 +283,9 @@ datacenter. Only name is currently displayed.
 Example:
 
 ```bash
-knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
-  --cips 192.168.0.99/24,192.168.1.99/24 \
-  --chostname NODENAME --cdomain NODEDOMAIN
+$ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
+    --cips 192.168.0.99/24,192.168.1.99/24 \
+    --chostname NODENAME --cdomain NODEDOMAIN
 ```
 
 Clones an existing VM template into a new VM instance, optionally applying an
@@ -425,17 +419,17 @@ updated during the hand-off to `knife bootstrap`.
 Example using `--bootstrap-vault-json`:
 
 ```bash
-knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
-  --cips 192.168.0.99/24,192.168.1.99/24 \
-  --chostname NODENAME --cdomain NODEDOMAIN \
-  --start true --bootstrap true \
-  --bootstrap-vault-json '{"passwords":"default","appvault":"credentials"}'
+$  knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
+    --cips 192.168.0.99/24,192.168.1.99/24 \
+    --chostname NODENAME --cdomain NODEDOMAIN \
+    --start true --bootstrap true \
+    --bootstrap-vault-json '{"passwords":"default","appvault":"credentials"}'
 ```
 
 ## `knife vsphere vm toolsconfig`
 
 ```bash
-    --empty           - allows clearing string properties
+--empty           - allows clearing string properties
 ```
 
 Sets properties in tools property. See
@@ -445,8 +439,8 @@ for available properties and types.
 Examples:
 
 ```bash
-knife vsphere vm toolsconfig myvirtualmachine syncTimeWithHost false
-knife vsphere vm toolsconfig myvirtualmachine pendingCustomization -e
+$ knife vsphere vm toolsconfig myvirtualmachine syncTimeWithHost false
+$ knife vsphere vm toolsconfig myvirtualmachine pendingCustomization -e
 ```
 
 ## `knife vsphere vm delete`
@@ -608,7 +602,7 @@ Lists the ratio between assigned virtual CPUs and physical CPUs on all hosts.
 Example:
 
 ```bash
-knife vsphere cpu ratio
+$ knife vsphere cpu ratio
 Output:
 ### Cluster Cluster1 ###
 host1.domain.com: 1.8125
@@ -637,19 +631,19 @@ master you can generally consider it ready to use. To use master instead of
 what's published on Ruby gems:
 
 ```bash
-gem uninstall knife-vsphere
-git clone git@github.com:chef-partners/knife-vsphere.git # or your fork
-cd knife-vsphere
-rake build                                           # Take note of the version
-gem install pkg/knife-vsphere-1.1.1.gem              # Use the version above
+$ gem uninstall knife-vsphere
+$ git clone git@github.com:chef-partners/knife-vsphere.git # or your fork
+$ cd knife-vsphere
+$ rake build                                           # Take note of the version
+$ gem install pkg/knife-vsphere-1.1.1.gem              # Use the version above
 ```
 
 If you are doing development, then you can run the plugin out of a checked out
 copy of the source:
 
 ```bash
-bundle install # only needs to be done once
-bundle exec knife vsphere ...
+$ bundle install # only needs to be done once
+$ bundle exec knife vsphere ...
 ```
 
 # Getting help
