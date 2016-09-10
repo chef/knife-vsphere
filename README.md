@@ -98,7 +98,7 @@ currently supports the following:
 * Connect/disconnect network
 
 
-### Clone-specific customization options (for linux guests):
+### Clone-specific customization options (for Linux guests):
 
 * Destination folder
 * CPU core count
@@ -164,8 +164,9 @@ is currently displayed.
 ## `knife vsphere vm find`
 
 Search for Virtual Machines matching criteria in the specified pool and
-display selected fields CRITERIA:
+display selected fields
 
+CRITERIA:
 ```bash
 --match-ip IP                match ip
 --match-name VMNAME          match name
@@ -207,7 +208,7 @@ Manage power state of a virtual machine, aka turn it off and on
 -s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended|reboot
 -w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
 -g, --shutdown             - Guest OS shutdown
--r, --recursive            - Recurse down through sub-folders to the specified folder
+-r, --recursive            - Recurse down through sub-folders to the specified folder to find the VM
 ```
 
 ## `knife vsphere pool list`
@@ -231,56 +232,86 @@ datacenter. Only name is currently displayed.
 
 ## `knife vsphere vm clone`
 
+Clones an existing VM template into a new VM instance, optionally applying an
+existing customization specification.  If customization arguments such as
+`--chost` and `--cdomain` are specified, or if the customization sepcification
+fetched from vSphere is considered, a default customization specification will
+be attempted.
+
+* For windows, a sysprep based unattended customization in
+workgroup mode will be attempted (host name being the VM name unless otherwise
+specified).
+
+* For Linux, a fixed named customization using the vmname as the
+host name unless otherwise specified.
+
+This command has many options which which to customize your VM.
+
+### Chef bootstrap options
+
+These options alter the way that your VM will be bootstrapped with Chef after it is created. It is not necessary
+to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 ```bash
---random-vmname - Creates a random VMNAME starts with vm-XXXXXXXX
---random-vmname-prefix - Change the VMNAME prefix
---dest-folder FOLDER - The folder into which to put the cloned VM
---datastore STORE    - The datastore into which to put the cloned VM
---datastorecluster STORE - The datastorecluster into which to put the cloned VM
---resource-pool POOL|CLUSTER - The resource pool into which to put the cloned VM. Also accepts a cluster name.
---template TEMPLATE - The source VM / Template to clone from
---cspec CUST_SPEC - The name of any customization specification to apply
---sw-uuid SWITCH_UUIDS - Comma-delimited list of virtual switch UUIDs to attach to the network adapters, or *auto* to automatically assign virtual switch
---disable-customization FALSE - by default conventions will be applied to the customization specification (see below).  Disable these convention with this switch
---cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
---cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
---cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
---cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
---cmacs CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
---cgw CUST_GW - CIDR IP of gateway for customization
---chostname CUST_HOSTNAME - Unqualified hostname for customization
---cdomain CUST_DOMAIN - Domain name for customization
---ctz CUST_TIMEZONE - Timezone invalid 'Area/Location' format
---ccpu CUST_CPU_COUNT - Number of CPUs
---cram CUST_MEMORY_GB - Gigabytes of RAM
---start - Start the VM after cloning.
 --bootstrap - Bootstrap the VM after cloning. Implies --start
---fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
---ssh-user USERNAME - SSH username
---ssh-password PASSWORD - SSH password
---ssh-port PORT - SSH port
---identity-file IDENTITY_FILE - SSH identity file used for authentication
---node-name NAME - The Chef node name for your new node
---hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
---prerelease - Install the pre-release chef gems
---bootstrap-version VERSION - The version of Chef to install
---bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
---bootstrap-vault-file VAULT_FILE - A JSON file with a list of vault(s) and item(s) to be updated
---bootstrap-vault-json VAULT_JSON - A JSON string with the vault(s) and item(s) to be updated
---bootstrap-vault-item VAULT_ITEM - A single vault and item to update as "vault:item"
---distro DISTRO - Bootstrap a distro using a template
---template-file TEMPLATE - Full path to location of template to use
---run-list RUN_LIST - Comma separated list of roles/recipes to apply
---secret-file SECRET_FILE - A file containing the secret key to use to encrypt data bag item values
---no-host-key-verify - Disable host key verification
---json-attributes - A JSON string to be added to the first run of chef-client
---disable-customization - Disable default customization
---sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
 --bootstrap-ipv4 - Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.
 --bootstrap-nic INTEGER - Network interface to use when multiple NICs are defined on a template.
+--bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
+--bootstrap-vault-file VAULT_FILE - A JSON file with a list of vault(s) and item(s) to be updated
+--bootstrap-vault-item VAULT_ITEM - A single vault and item to update as "vault:item"
+--bootstrap-vault-json VAULT_JSON - A JSON string with the vault(s) and item(s) to be updated
+--bootstrap-version VERSION - The version of Chef to install
+--distro DISTRO - Bootstrap a distro using a template
+--fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
+--hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
+--identity-file IDENTITY_FILE - SSH identity file used for authentication
+--json-attributes - A JSON string to be added to the first run of chef-client
+--node-name NAME - The Chef node name for your new node
+--no-host-key-verify - Disable host key verification
+--prerelease - Install the pre-release chef gems
+--run-list RUN_LIST - Comma separated list of roles/recipes to apply
+--secret-file SECRET_FILE - A file containing the secret key to use to encrypt data bag item values
+--ssh-password PASSWORD - SSH password
+--ssh-port PORT - SSH port
+--ssh-user USERNAME - SSH username
+--sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
 ```
 
-Example:
+### Customization options
+
+These options are related to the customization of the VM by the vSphere agent. They include hardware settings and networking.
+```bash
+--ccpu CUST_CPU_COUNT - Number of CPUs
+--cdomain CUST_DOMAIN - Domain name for customization
+--cgw CUST_GW - CIDR IP of gateway for customization
+--chostname CUST_HOSTNAME - Unqualified hostname for customization
+--cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
+--cmacs CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
+--cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
+--cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
+--cram CUST_MEMORY_GB - Gigabytes of RAM
+--cspec CUST_SPEC - The name of any customization specifications that are defined in vCenter to apply
+--ctz CUST_TIMEZONE - Timezone in valid 'Area/Location' format
+--cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
+--disable-customization - By default conventions will be applied to the customization specification (see below).  Disable these convention with this switch
+--random-vmname - Creates a random VMNAME starts with vm-XXXXXXXX
+--random-vmname-prefix - Change the VMNAME prefix
+```
+
+### VMware options
+
+These options alter the way the VM is created, such as to decide where it is placed.
+```bash
+--datastore STORE    - The datastore into which to put the cloned VM
+--datastorecluster STORE - The datastorecluster into which to put the cloned VM
+--dest-folder FOLDER - The folder into which to put the cloned VM
+--resource-pool POOL|CLUSTER - The resource pool into which to put the cloned VM. Also accepts a cluster name.
+--start - Start the VM after cloning.
+--sw-uuid SWITCH_UUIDS - Comma-delimited list of virtual switch UUIDs to attach to the network adapters, or *auto* to automatically assign virtual switch
+--template TEMPLATE - The source VM / Template to clone from
+--template-file TEMPLATE - Full path to location of template to use
+```
+
+### Examples
 
 ```bash
 $ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
@@ -288,20 +319,7 @@ $ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
     --chostname NODENAME --cdomain NODEDOMAIN
 ```
 
-Clones an existing VM template into a new VM instance, optionally applying an
-existing customization specification.  If customization arguments such as
-`--chost` and `--cdomain` are specified, or if the customization sepcification
-fetched from vSphere is considered, a default customization specification will
-be attempted.
-
-- For windows, a sysprep based unattended customization in
-workgroup mode will be attempted (host name being the VM name unless otherwise
-specified).
-
-- For linux, a fixed named customization using the vmname as the
-host name unless otherwise specified.
-
-These customization specification defaults can be disabled using the
+The customization specification defaults can be disabled using the
 `--disable-customization` switch and the `--cspec` specified as-is.
 
 NOTE: if you are specifying a `--cspec` and the cloning process appears to not
@@ -310,108 +328,7 @@ be properly applying the spec as defined on vSphere, consider using the
 erroneously interfering with the spec as defined on vSphere.
 
 Customization specifications can also be specified in code using the `--cplugin`
-and/or `--cplugin-data` arguments.  Below are examples of the potential
-implementations that would be saved to an rb file and passed in the `--cplugin`
-argument.
-
-### cplugin_example.rb
-
-```ruby
-class KnifeVspherePlugin
-  def data=(cplugin_data)
-    # Parse your cplugin_data from the format of your choosing.
-  end
-
-  # optional
-  def customize_clone_spec(src_config, clone_spec)
-    # Customize the clone spec as you see fit.
-     return customized_clone_spec
-  end
-
-  # optional
-  def reconfig_vm(target_vm)
-    # Do anything you want in here with the cloned VM.
-  end
-end
-```
-
-#### cplugin_example.rb for cloning a Windows template to VM
-
-```ruby
-require 'rbvmomi'
-
-class KnifeVspherePlugin
-  attr_accessor :data
-
-  def customize_clone_spec(src_config, clone_spec)
-
-    if File.exists? data
-      customization_data = JSON.parse(IO.read(data))
-    else
-      abort "Customization plugin data file #{data} not accessible"
-    end
-
-    cust_guiUnattended = RbVmomi::VIM.CustomizationGuiUnattended(
-      :autoLogon => false,
-      :autoLogonCount => 1,
-      :password => nil,
-      :timeZone => customization_data['timeZone']
-    )
-    cust_identification = RbVmomi::VIM.CustomizationIdentification(
-      :domainAdmin => nil,
-      :domainAdminPassword => nil,
-      :joinDomain => nil
-    )
-    cust_name = RbVmomi::VIM.CustomizationFixedName(
-      :name => customization_data['host_name']
-    )
-    cust_user_data = RbVmomi::VIM.CustomizationUserData(
-      :computerName => cust_name,
-      :fullName => customization_data['fullName'],
-      :orgName => customization_data['orgName'],
-      :productId => customization_data['windows_key']
-    )
-    cust_sysprep = RbVmomi::VIM.CustomizationSysprep(
-      :guiUnattended => cust_guiUnattended,
-      :identification => cust_identification,
-      :userData => cust_user_data
-    )
-    dhcp_ip = RbVmomi::VIM.CustomizationDhcpIpGenerator
-    cust_ip = RbVmomi::VIM.CustomizationIPSettings(
-      :ip => dhcp_ip
-    )
-    cust_adapter_mapping = RbVmomi::VIM.CustomizationAdapterMapping(
-      :adapter => cust_ip
-    )
-    cust_adapter_mapping_list = [cust_adapter_mapping]
-    global_ip = RbVmomi::VIM.CustomizationGlobalIPSettings
-    customization_spec = RbVmomi::VIM.CustomizationSpec(
-      :identity => cust_sysprep,
-      :globalIPSettings => global_ip,
-      :nicSettingMap => cust_adapter_mapping_list
-    )
-    clone_spec.customization = customization_spec
-    puts "New clone_spec object :\n #{YAML::dump(clone_spec)}"
-    clone_spec
-  end
-
-  def reconfig_vm (target_vm)
-    puts "In reconfig_vm method.  No actions implemented.."
-  end
-end
-```
-
-### json data file
-
-```json
-{
-  "fullName": "Your Company Inc.",
-  "orgName": "Your Company Inc.",
-  "windows_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
-  "host_name": "foo_host",
-  "timeZone": "100"
-}
-```
+and/or `--cplugin-data` arguments.  See the _plugins_ section for examples.
 
 The `--bootstrap-vault-*` options can be used to send `chef-vault` items to be
 updated during the hand-off to `knife bootstrap`.
@@ -443,16 +360,20 @@ $ knife vsphere vm toolsconfig myvirtualmachine syncTimeWithHost false
 $ knife vsphere vm toolsconfig myvirtualmachine pendingCustomization -e
 ```
 
-## `knife vsphere vm delete`
+## `knife vsphere vm delete NAME`
 
 Deletes an existing VM, removing it from vSphere inventory and deleting from
 disk, optionally deleting it from Chef as well.
 
 ```bash
---purge           - Delete the client and node from Chef as well
+--purge|-P        - Delete the client and node from Chef as well
+-N                - Specify the name of the node and client to delete if it differs from NAME (requires -P)
 ```
 
 ## `knife vsphere vm snapshot`
+
+Manages the snapshots for an existing VM, allowing for creation, removal, and
+reverting of snapshots.
 
 ```bash
 --list            - List the current tree of snapshots
@@ -466,9 +387,6 @@ disk, optionally deleting it from Chef as well.
 --dump-memory     - Dump the memory when creating the snapshot (default: false)
 --quiesce         - Quiesce the VM before snapshotting (default: false)
 ```
-
-Manages the snapshots for an existing VM, allowing for creation, removal, and
-reverting of snapshots.
 
 ## `knife vsphere vm cdrom`
 
@@ -646,6 +564,118 @@ $ bundle install # only needs to be done once
 $ bundle exec knife vsphere ...
 ```
 
+# Plugins
+
+`knife-vsphere` supports some plugins, currently only for the clone operation.
+
+Plugins let you write code to further customize the operation you are sending to vCenter.
+
+The basic idea is that plugins expose well known methods to `knife`, which are then run at particular times. 
+The values returned from your methods are passed directly to vSphere.
+
+Below are examples of the potential implementations that would be saved to an rb file and passed in the `--cplugin`
+argument.
+
+### cplugin_example.rb
+
+```ruby
+class KnifeVspherePlugin
+  def data=(cplugin_data)
+    # Parse your cplugin_data from the format of your choosing.
+  end
+
+  # optional
+  def customize_clone_spec(src_config, clone_spec)
+    # Customize the clone spec as you see fit.
+     return customized_clone_spec
+  end
+
+  # optional
+  def reconfig_vm(target_vm)
+    # Do anything you want in here with the cloned VM.
+  end
+end
+```
+
+#### cplugin_example.rb for cloning a Windows template to VM
+
+```ruby
+require 'rbvmomi'
+
+class KnifeVspherePlugin
+  attr_accessor :data # rather than defining a data= method
+
+  def customize_clone_spec(src_config, clone_spec)
+
+    if File.exists? data
+      customization_data = JSON.parse(IO.read(data)) # see example below
+    else
+      abort "Customization plugin data file #{data} not accessible"
+    end
+
+    cust_guiUnattended = RbVmomi::VIM.CustomizationGuiUnattended(
+      :autoLogon => false,
+      :autoLogonCount => 1,
+      :password => nil,
+      :timeZone => customization_data['timeZone']
+    )
+    cust_identification = RbVmomi::VIM.CustomizationIdentification(
+      :domainAdmin => nil,
+      :domainAdminPassword => nil,
+      :joinDomain => nil
+    )
+    cust_name = RbVmomi::VIM.CustomizationFixedName(
+      :name => customization_data['host_name']
+    )
+    cust_user_data = RbVmomi::VIM.CustomizationUserData(
+      :computerName => cust_name,
+      :fullName => customization_data['fullName'],
+      :orgName => customization_data['orgName'],
+      :productId => customization_data['windows_key']
+    )
+    cust_sysprep = RbVmomi::VIM.CustomizationSysprep(
+      :guiUnattended => cust_guiUnattended,
+      :identification => cust_identification,
+      :userData => cust_user_data
+    )
+    dhcp_ip = RbVmomi::VIM.CustomizationDhcpIpGenerator
+    cust_ip = RbVmomi::VIM.CustomizationIPSettings(
+      :ip => dhcp_ip
+    )
+    cust_adapter_mapping = RbVmomi::VIM.CustomizationAdapterMapping(
+      :adapter => cust_ip
+    )
+    cust_adapter_mapping_list = [cust_adapter_mapping]
+    global_ip = RbVmomi::VIM.CustomizationGlobalIPSettings
+    customization_spec = RbVmomi::VIM.CustomizationSpec(
+      :identity => cust_sysprep,
+      :globalIPSettings => global_ip,
+      :nicSettingMap => cust_adapter_mapping_list
+    )
+    clone_spec.customization = customization_spec
+    puts "New clone_spec object :\n #{YAML::dump(clone_spec)}"
+    clone_spec
+  end
+
+  def reconfig_vm (target_vm)
+    puts "In reconfig_vm method.  No actions implemented.."
+  end
+end
+```
+
+### json data file for the above example
+
+```json
+{
+  "fullName": "Your Company Inc.",
+  "orgName": "Your Company Inc.",
+  "windows_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+  "host_name": "foo_host",
+  "timeZone": "100"
+}
+```
+
+
 # Getting help
 
 If the software isn't behaving the way you think, or you're having trouble
@@ -678,6 +708,7 @@ Authors
 - Adrian Stanila <adrian.stanila@sacx.net>
 - Raducu Deaconu <rhadoo_io@yahoo.com>
 - Leeor Aharon
+- Sean Walberg <sean@ertw.com>
 
 ```
 Copyright
