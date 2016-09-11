@@ -3,13 +3,13 @@ require 'chef/knife/vsphere_vm_clone'
 
 describe Chef::Knife::VsphereVmClone do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
-  let(:vim) { double('VimConnection', serviceContent: service_content) }
-  let(:service_content) { double('ServiceContent') }
-  let(:root_folder) { double('RootFolder', children: []) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
   let(:host) { double('Host', resourcePool: double('ResourcePool')) }
+  let(:root_folder) { double('RootFolder', children: []) }
+  let(:service_content) { double('ServiceContent') }
   let(:task) { double('Task', wait_for_completion: 'done') }
-  let(:template) { double('Template', config: {}) }
+  let(:template) { double('Template', config: double(guestId: 'Linux')) }
+  let(:vim) { double('VimConnection', serviceContent: service_content) }
 
   subject { described_class.new }
 
@@ -32,7 +32,7 @@ describe Chef::Knife::VsphereVmClone do
     end
 
     it 'takes a hostname' do
-      subject.name_args = 'foo'
+      subject.name_args = ['foo']
       expect(subject).to receive(:vim_connection).and_raise ArgumentError
       expect { subject.run }.to raise_error ArgumentError
     end
@@ -53,7 +53,7 @@ describe Chef::Knife::VsphereVmClone do
 
     context 'the mac is given' do
       it 'requires an ip' do
-        subject.name_args = 'foo'
+        subject.name_args = [ 'foo' ]
         subject.config[:customization_macs] = '00:11:22:33:44:55'
 
         expect { subject.run }.to raise_error SystemExit
@@ -62,7 +62,7 @@ describe Chef::Knife::VsphereVmClone do
 
     context 'the mac is not given' do
       before do
-        subject.name_args = 'foo'
+        subject.name_args = [ 'foo' ]
 
         allow(subject).to receive(:find_in_folder).and_return(template)
       end
@@ -84,8 +84,69 @@ describe Chef::Knife::VsphereVmClone do
   context 'customizations' do
     include_context 'basic_setup'
 
-    context 'skip customizations' do
+    context 'naming the vm in the identity' do
+      context 'no name is passed' do
+        it "should use the vmname in the identity" do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization.identity.hostName.name).to eq 'foo'
+          end.and_return(task)
+
+          subject.run
+        end
+      end
+
+      context 'customization_hostname is passed' do
+        before do
+          subject.config[:customization_hostname] = 'bar'
+        end
+
+        it "should use the passed name in the identity" do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization.identity.hostName.name).to eq 'bar'
+          end.and_return(task)
+
+          subject.run
+        end
+
+        it "has a blank domain name" do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization.identity.domain).to eq ''
+          end.and_return(task)
+
+          subject.run
+        end
+      end
+
+      context 'customization_domain is passed' do
+        before do
+          subject.config[:customization_domain] = 'example.com'
+        end
+
+        it "should use the vmname" do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization.identity.hostName.name).to eq 'foo'
+          end.and_return(task)
+
+          subject.run
+        end
+
+        it "adds the domain name to the spec" do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization.identity.domain).to eq 'example.com'
+          end.and_return(task)
+
+          subject.run
+        end
+      end
+    end
+
+    context 'customizations disabled' do
+      before do
+        subject.config[:disable_customization] = true
+      end
+
       it 'sends an empty customization' do
+        # I realize this doesn't work
         expect(template).to receive(:CloneVM_Task) do |args|
           expect(args[:spec].customization.globalIPSettings.props).to be_empty
           expect(args[:spec].customization.identity.props).to be_empty # really?
@@ -103,9 +164,16 @@ describe Chef::Knife::VsphereVmClone do
         subject.run
       end
     end
-    context 'determining the hostname'
-    context 'windows clone'
+    context 'windows clone' do
+      before do
+        let(:guest_id) { 'Windows 3.1' }
+      end
+    end
     context 'linux clone'
-    context 'neither windows or linux'
+    context 'neither windows or linux' do
+      before do
+        let(:guest_id) { 'Darwin' }
+      end
+    end
   end
 end

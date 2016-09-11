@@ -373,6 +373,7 @@ class Chef
       def linux?(config)
         gid = config.guestId.downcase
         # This makes the assumption that if it isn't mac or windows it's linux
+        # See https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html for values
         is_linux_bool = !gid.include?('windows') && !gid.include?('darwin')
         Chef::Log.debug('Identified os as linux.') if is_linux_bool
         is_linux_bool

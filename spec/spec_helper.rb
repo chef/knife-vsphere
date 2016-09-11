@@ -99,8 +99,9 @@ end
 RSpec.shared_context 'basic_setup' do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
+  let(:guest_id) { 'Other Linux' }
   let(:host) { double('Host', resourcePool: double('ResourcePool')) }
-  let(:template) { double('Template', config: {}) }
+  let(:template) { double('Template', config: double(guestId: guest_id )) }
   let(:vim) { double('VimConnection', serviceContent: service_content) }
 
   before do
@@ -113,7 +114,7 @@ RSpec.shared_context 'basic_setup' do
     allow(subject).to receive(:find_in_folder).and_return(template)
     allow(service_content).to receive(:virtualDiskManager) # what does this call actually do?
 
-    subject.name_args = 'foo'
+    subject.name_args = [ 'foo' ]
     subject.config[:source_vm] = 'my_template'
     subject.config[:folder] = ''
   end

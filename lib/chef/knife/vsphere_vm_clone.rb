@@ -16,11 +16,6 @@ require 'chef/knife/winrm_base'
 require 'chef/knife/customization_helper'
 require 'ipaddr'
 
-# Clone an existing template into a new VM, optionally applying a customization specification.
-# usage:
-# knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
-#     --cips 192.168.0.99/24,192.168.1.99/24 \
-#     --chostname NODENAME --cdomain NODEDOMAIN
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm clone VMNAME (options)'
 
@@ -622,75 +617,75 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     if get_config(:disable_customization)
       # TODO: either early exit here or something to get rid of one level of indentation
       clone_spec.customization = cust_spec
-    else
-      # TODO: should we default to vmname here? Seems like we're sending it off with an empty identity which fails
-      use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
+      return clone_spec
+    end
 
-      if use_ident
-        hostname = if config[:customization_hostname]
-                     config[:customization_hostname]
-                   else
-                     config[:vmname]
-                   end
-        if windows?(src_config)
-          identification = RbVmomi::VIM.CustomizationIdentification(
-            joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
-          )
-          license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
-            autoMode: cust_spec.identity.licenseFilePrintData.autoMode
-          )
+    # TODO: why does the domain matter?
+    use_ident = config[:customization_hostname] || get_config(:customization_domain) || cust_spec.identity.props.empty?
 
-          user_data = RbVmomi::VIM.CustomizationUserData(
-            fullName: cust_spec.identity.userData.fullName,
-            orgName: cust_spec.identity.userData.orgName,
-            productId: cust_spec.identity.userData.productId,
-            computerName: RbVmomi::VIM.CustomizationFixedName(name: hostname)
-          )
+    # TODO: How could we not take this? Only if the identity were empty, but that's statically defined as empty above
+    if use_ident
+      hostname = config[:customization_hostname] || config[:vmname]
 
-          gui_unattended = RbVmomi::VIM.CustomizationGuiUnattended(
-            autoLogon: cust_spec.identity.guiUnattended.autoLogon,
-            autoLogonCount: cust_spec.identity.guiUnattended.autoLogonCount,
-            password: RbVmomi::VIM.CustomizationPassword(
-              plainText: cust_spec.identity.guiUnattended.password.plainText,
-              value: cust_spec.identity.guiUnattended.password.value
-            ),
-            timeZone: cust_spec.identity.guiUnattended.timeZone
-          )
-          runonce = RbVmomi::VIM.CustomizationGuiRunOnce(
-            commandList: ['cust_spec.identity.guiUnattended.commandList']
-          )
-          ident = RbVmomi::VIM.CustomizationSysprep
-          ident.guiRunOnce = runonce
-          ident.guiUnattended = gui_unattended
-          ident.identification = identification
-          ident.licenseFilePrintData = license_file_print_data
-          ident.userData = user_data
-          cust_spec.identity = ident
-        elsif linux?(src_config)
-          ident = RbVmomi::VIM.CustomizationLinuxPrep
-          ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
+      if windows?(src_config)
+        # TODO: This is just copying itself onto itself, isn't it?
+        identification = RbVmomi::VIM.CustomizationIdentification(
+          joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
+        )
+        license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
+          autoMode: cust_spec.identity.licenseFilePrintData.autoMode
+        )
 
-          ident.domain = if get_config(:customization_domain)
-                           get_config(:customization_domain)
-                         else
-                           ''
-                         end
-          cust_spec.identity = ident
-        else
-          ui.error('Customization only supports Linux and Windows currently.')
-          exit 1
-        end
+        user_data = RbVmomi::VIM.CustomizationUserData(
+          fullName: cust_spec.identity.userData.fullName,
+          orgName: cust_spec.identity.userData.orgName,
+          productId: cust_spec.identity.userData.productId,
+          computerName: RbVmomi::VIM.CustomizationFixedName(name: hostname)
+        )
+
+        gui_unattended = RbVmomi::VIM.CustomizationGuiUnattended(
+          autoLogon: cust_spec.identity.guiUnattended.autoLogon,
+          autoLogonCount: cust_spec.identity.guiUnattended.autoLogonCount,
+          password: RbVmomi::VIM.CustomizationPassword(
+            plainText: cust_spec.identity.guiUnattended.password.plainText,
+            value: cust_spec.identity.guiUnattended.password.value
+          ),
+          timeZone: cust_spec.identity.guiUnattended.timeZone
+        )
+        runonce = RbVmomi::VIM.CustomizationGuiRunOnce(
+          commandList: ['cust_spec.identity.guiUnattended.commandList']
+        )
+        ident = RbVmomi::VIM.CustomizationSysprep
+        ident.guiRunOnce = runonce
+        ident.guiUnattended = gui_unattended
+        ident.identification = identification
+        ident.licenseFilePrintData = license_file_print_data
+        ident.userData = user_data
+        cust_spec.identity = ident
+      elsif linux?(src_config)
+        ident = RbVmomi::VIM.CustomizationLinuxPrep
+        ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
+
+        ident.domain = if get_config(:customization_domain)
+                         get_config(:customization_domain)
+                       else
+                         ''
+                       end
+        cust_spec.identity = ident
+      else
+        ui.error('Customization only supports Linux and Windows currently.')
+        exit 1
       end
-      clone_spec.customization = cust_spec
+    end
+    clone_spec.customization = cust_spec
 
-      if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
-        clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
-      end
+    if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
+      clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
     end
     clone_spec
   end
 
-  # Loads the customization plugin if one was specified
+# Loads the customization plugin if one was specified
   # @return [KnifeVspherePlugin] the loaded and initialized plugin or nil
   def customization_plugin
     if @customization_plugin.nil?
