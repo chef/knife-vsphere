@@ -53,7 +53,7 @@ describe Chef::Knife::VsphereVmClone do
 
     context 'the mac is given' do
       it 'requires an ip' do
-        subject.name_args = [ 'foo' ]
+        subject.name_args = ['foo']
         subject.config[:customization_macs] = '00:11:22:33:44:55'
 
         expect { subject.run }.to raise_error SystemExit
@@ -62,7 +62,7 @@ describe Chef::Knife::VsphereVmClone do
 
     context 'the mac is not given' do
       before do
-        subject.name_args = [ 'foo' ]
+        subject.name_args = ['foo']
 
         allow(subject).to receive(:find_in_folder).and_return(template)
       end
@@ -86,7 +86,7 @@ describe Chef::Knife::VsphereVmClone do
 
     context 'naming the vm in the identity' do
       context 'no name is passed' do
-        it "should use the vmname in the identity" do
+        it 'should use the vmname in the identity' do
           expect(template).to receive(:CloneVM_Task) do |args|
             expect(args[:spec].customization.identity.hostName.name).to eq 'foo'
           end.and_return(task)
@@ -100,7 +100,7 @@ describe Chef::Knife::VsphereVmClone do
           subject.config[:customization_hostname] = 'bar'
         end
 
-        it "should use the passed name in the identity" do
+        it 'should use the passed name in the identity' do
           expect(template).to receive(:CloneVM_Task) do |args|
             expect(args[:spec].customization.identity.hostName.name).to eq 'bar'
           end.and_return(task)
@@ -108,7 +108,7 @@ describe Chef::Knife::VsphereVmClone do
           subject.run
         end
 
-        it "has a blank domain name" do
+        it 'has a blank domain name' do
           expect(template).to receive(:CloneVM_Task) do |args|
             expect(args[:spec].customization.identity.domain).to eq ''
           end.and_return(task)
@@ -122,7 +122,7 @@ describe Chef::Knife::VsphereVmClone do
           subject.config[:customization_domain] = 'example.com'
         end
 
-        it "should use the vmname" do
+        it 'should use the vmname' do
           expect(template).to receive(:CloneVM_Task) do |args|
             expect(args[:spec].customization.identity.hostName.name).to eq 'foo'
           end.and_return(task)
@@ -130,7 +130,7 @@ describe Chef::Knife::VsphereVmClone do
           subject.run
         end
 
-        it "adds the domain name to the spec" do
+        it 'adds the domain name to the spec' do
           expect(template).to receive(:CloneVM_Task) do |args|
             expect(args[:spec].customization.identity.domain).to eq 'example.com'
           end.and_return(task)
