@@ -124,7 +124,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
     dc = datacenter
     folder = dc.hostFolder
 
-    pool = traverse_folders_for_pool_clustercompute(folder, poolname) || abort "Pool #{poolname} not found"
+    pool = traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
 
     if pool.class == RbVmomi::VIM::ResourcePool
       vm = pool.vm
