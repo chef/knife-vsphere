@@ -402,19 +402,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     puts 'Waiting for network interfaces to become available...'
     sleep 2 while vm.guest.net.empty? || !vm.guest.ipAddress
     ui.info "Found address #{vm.guest.ipAddress}" if log_verbose?
-    guest_address ||=
-      config[:fqdn] = if config[:bootstrap_ipv4]
-                        ipv4_address(vm)
-                      elsif config[:fqdn]
-                        get_config(:fqdn)
-                      else
-                        # Use the first IP which is not a link-local address.
-                        # This is the closest thing to vm.guest.ipAddress but
-                        # allows specifying a NIC.
-                        vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
-                          addr.origin != 'linklayer'
-                        end.ipAddress
-                      end
+    config[:fqdn] = if config[:bootstrap_ipv4]
+                      ipv4_address(vm)
+                    elsif config[:fqdn]
+                      get_config(:fqdn)
+                    else
+                      # Use the first IP which is not a link-local address.
+                      # This is the closest thing to vm.guest.ipAddress but
+                      # allows specifying a NIC.
+                      vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
+                        addr.origin != 'linklayer'
+                      end.ipAddress
+                    end
   end
 
   def wait_for_access(connect_host, connect_port, protocol)
@@ -424,7 +423,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         config[:winrm_port] = '5986'
       end
       connect_port = get_config(:winrm_port)
-      print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}",:magenta)}"
+      print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}", :magenta)}"
       print('.') until tcp_test_winrm(connect_host, connect_port) do
         sleep 10
         puts('done')
@@ -503,10 +502,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                    hosts.first.resourcePool
                  end
 
-    if get_config(:linked_clone)
-      rspec.diskMoveType = :moveChildMostDiskBacking
-    end
-
+    rspec.diskMoveType = :moveChildMostDiskBacking if get_config(:linked_clone)
 
     if get_config(:datastore)
       rspec.datastore = find_datastore(get_config(:datastore))
@@ -522,9 +518,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    if get_config(:thin_provision)
-      rspec.transform = :sparse
-    end
+    rspec.transform = :sparse if get_config(:thin_provision)
 
     is_template = !get_config(:mark_as_template).nil?
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(location: rspec, powerOn: false, template: is_template)
@@ -685,7 +679,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     clone_spec
   end
 
-# Loads the customization plugin if one was specified
+  # Loads the customization plugin if one was specified
   # @return [KnifeVspherePlugin] the loaded and initialized plugin or nil
   def customization_plugin
     if @customization_plugin.nil?
