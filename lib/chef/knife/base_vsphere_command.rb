@@ -9,6 +9,10 @@ require 'rbvmomi'
 require 'base64'
 require 'filesize'
 
+PS_ON ||= 'poweredOn'.freeze
+PS_OFF ||= 'poweredOff'.freeze
+PS_SUSPENDED ||= 'suspended'.freeze
+
 # Base class for vsphere knife commands
 class Chef
   class Knife

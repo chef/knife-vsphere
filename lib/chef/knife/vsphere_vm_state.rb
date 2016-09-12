@@ -8,18 +8,14 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-PS_ON = 'poweredOn'
-PS_OFF = 'poweredOff'
-PS_SUSPENDED = 'suspended'
-
-POWER_STATES = {
-  PS_ON => 'powered on',
-  PS_OFF => 'powered off',
-  PS_SUSPENDED => 'suspended'
-}
-
 # Manage power state of a virtual machine
 class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
+  POWER_STATES = {
+    PS_ON => 'powered on',
+    PS_OFF => 'powered off',
+    PS_SUSPENDED => 'suspended'
+  }
+
   banner 'knife vsphere vm state VMNAME (options)'
 
   common_options

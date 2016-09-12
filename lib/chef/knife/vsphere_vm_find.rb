@@ -8,10 +8,6 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-PS_ON = 'poweredOn'.freeze
-PS_OFF = 'poweredOff'.freeze
-PS_SUSPENDED = 'suspended'.freeze
-
 # find vms belonging to pool that match criteria, display specified fields
 class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm find'
