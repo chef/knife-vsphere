@@ -583,15 +583,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    if get_config(:customization_spec)
-      csi = find_customization(get_config(:customization_spec)) ||
-            fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
+    cust_spec = if get_config(:customization_spec)
+                  csi = find_customization(get_config(:customization_spec)) ||
+                    fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
 
-      cust_spec = csi.spec
-    else
-      global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
-      identity_settings = RbVmomi::VIM.CustomizationIdentitySettings
-      cust_spec = RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset, identity: identity_settings)
+                  csi.spec
+                else
+                  global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
+                  identity_settings = RbVmomi::VIM.CustomizationIdentitySettings
+                  RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset, identity: identity_settings)
+                end
+
+    if get_config(:disable_customization)
+      clone_spec.customization = get_config(:customization_spec) ? cust_spec : nil
+      return clone_spec
     end
 
     if get_config(:customization_dns_ips)
@@ -606,12 +611,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |cust_ip, index|
         generate_adapter_map(cust_ip, get_config(:customization_gw), mac_list[index])
       }
-    end
-
-    if get_config(:disable_customization)
-      # TODO: either early exit here or something to get rid of one level of indentation
-      clone_spec.customization = cust_spec
-      return clone_spec
     end
 
     # TODO: why does the domain matter?
@@ -715,7 +714,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # @param name [String] name of customization
   # @return [RbVmomi::VIM::CustomizationSpecItem]
   def find_customization(name)
-    csm = config[:vim].serviceContent.customizationSpecManager
+    csm = vim_connection.serviceContent.customizationSpecManager
     csm.GetCustomizationSpec(name: name)
   end
 

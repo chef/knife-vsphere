@@ -145,12 +145,9 @@ describe Chef::Knife::VsphereVmClone do
         subject.config[:disable_customization] = true
       end
 
-      it 'sends an empty customization' do
-        # I realize this doesn't work
+      it 'sends no customization' do
         expect(template).to receive(:CloneVM_Task) do |args|
-          expect(args[:spec].customization.globalIPSettings.props).to be_empty
-          expect(args[:spec].customization.identity.props).to be_empty # really?
-          expect(args[:spec].customization.nicSettingMap).to be_empty
+          expect(args[:spec].customization).to be_nil
         end.and_return(task)
 
         subject.run
@@ -163,7 +160,27 @@ describe Chef::Knife::VsphereVmClone do
 
         subject.run
       end
+
+      context 'also asking for a cspec' do
+        before do
+          subject.config[:customization_spec] = 'cspec'
+          allow(service_content).to receive(:customizationSpecManager).and_return(csm)
+        end
+
+        let(:csm) { double('CustomizationSpecManager', GetCustomizationSpec: cspec) }
+        let(:cspec) { double('Cspec', spec: spec) }
+        let(:spec) { double('Specification') }
+
+        it 'sends that spec in' do
+          expect(template).to receive(:CloneVM_Task) do |args|
+            expect(args[:spec].customization).to eq(spec)
+          end.and_return(task)
+
+          subject.run
+        end
+      end
     end
+
     context 'windows clone' do
       before do
         let(:guest_id) { 'Windows 3.1' }
