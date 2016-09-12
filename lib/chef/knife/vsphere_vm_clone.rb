@@ -581,7 +581,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           # not connected to a distibuted switch?
           card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
-        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != AUTO_MACS
+        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != AUTO_MAC
         dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
         clone_spec.config.deviceChange.push dev_spec
       end
