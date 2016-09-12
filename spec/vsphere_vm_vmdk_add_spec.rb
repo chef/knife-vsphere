@@ -41,6 +41,5 @@ describe Chef::Knife::VsphereVmVmdkAdd do
 
       expect { subject.run }.to raise_error SystemExit
     end
-
   end
 end

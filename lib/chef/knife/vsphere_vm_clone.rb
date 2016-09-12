@@ -16,13 +16,11 @@ require 'chef/knife/winrm_base'
 require 'chef/knife/customization_helper'
 require 'ipaddr'
 
-# Clone an existing template into a new VM, optionally applying a customization specification.
-# usage:
-# knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
-#     --cips 192.168.0.99/24,192.168.1.99/24 \
-#     --chostname NODENAME --cdomain NODEDOMAIN
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm clone VMNAME (options)'
+
+  AUTO_MAC = 'auto'
+  NO_IPS = ''
 
   include Chef::Knife::WinrmBase
   include CustomizationHelper
@@ -91,11 +89,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :customization_macs,
          long: '--cmacs CUST_MACS',
          description: 'Comma-delimited list of MAC addresses for network adapters',
-         default: 'auto'
+         default: AUTO_MAC
 
   option :customization_ips,
          long: '--cips CUST_IPS',
-         description: 'Comma-delimited list of CIDR IPs for customization'
+         description: 'Comma-delimited list of CIDR IPs for customization',
+         default: NO_IPS
 
   option :customization_dns_ips,
          long: '--cdnsips CUST_DNS_IPS',
@@ -311,6 +310,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name OR use --random-vmname')
     end
 
+    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
+
+    if get_config(:datastore) && get_config(:datastorecluster)
+      abort 'Please select either datastore or datastorecluster'
+    end
+
+    if get_config(:customization_macs) != AUTO_MAC && get_config(:customization_ips) == NO_IPS
+      abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
+    end
+
     config[:chef_node_name] = vmname unless get_config(:chef_node_name)
     config[:vmname] = vmname
 
@@ -320,8 +329,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dc = datacenter
 
     src_folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
 
     src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) ||
              abort('VM/Template not found')
@@ -395,19 +402,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     puts 'Waiting for network interfaces to become available...'
     sleep 2 while vm.guest.net.empty? || !vm.guest.ipAddress
     ui.info "Found address #{vm.guest.ipAddress}" if log_verbose?
-    guest_address ||=
-      config[:fqdn] = if config[:bootstrap_ipv4]
-                        ipv4_address(vm)
-                      elsif config[:fqdn]
-                        get_config(:fqdn)
-                      else
-                        # Use the first IP which is not a link-local address.
-                        # This is the closest thing to vm.guest.ipAddress but
-                        # allows specifying a NIC.
-                        vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
-                          addr.origin != 'linklayer'
-                        end.ipAddress
-                      end
+    config[:fqdn] = if config[:bootstrap_ipv4]
+                      ipv4_address(vm)
+                    elsif config[:fqdn]
+                      get_config(:fqdn)
+                    else
+                      # Use the first IP which is not a link-local address.
+                      # This is the closest thing to vm.guest.ipAddress but
+                      # allows specifying a NIC.
+                      vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
+                        addr.origin != 'linklayer'
+                      end.ipAddress
+                    end
   end
 
   def wait_for_access(connect_host, connect_port, protocol)
@@ -417,7 +423,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         config[:winrm_port] = '5986'
       end
       connect_port = get_config(:winrm_port)
-      print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}",:magenta)}"
+      print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}", :magenta)}"
       print('.') until tcp_test_winrm(connect_host, connect_port) do
         sleep 10
         puts('done')
@@ -456,51 +462,47 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
   end
 
+  def find_available_hosts
+    hosts = traverse_folders_for_computeresources(datacenter.hostFolder)
+    fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
+    hosts.reject!(&:nil?)
+    hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
+    fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
+    if get_config(:datastore)
+      hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
+    end
+
+    fatal_exit "No hosts have the requested Datastore available! #{get_config(:datastore)}" if hosts.empty?
+
+    if get_config(:datastorecluster)
+      hosts.reject! { |host| !host.datastore.include?(find_datastorecluster(get_config(:datastorecluster))) }
+    end
+
+    fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
+
+    if get_config(:customization_vlan)
+      vlan_list = get_config(:customization_vlan).split(',')
+      vlan_list.each do |network|
+        hosts.reject! { |host| !host.network.include?(find_network(network)) }
+      end
+    end
+
+    fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
+    hosts
+  end
+
   # Builds a CloneSpec
   def generate_clone_spec(src_config)
-    rspec = nil
-    if get_config(:resource_pool)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: find_pool(get_config(:resource_pool)))
-    else
-      dc = datacenter
-      hosts = traverse_folders_for_computeresources(dc.hostFolder)
-      fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
-      hosts.reject!(&:nil?)
-      hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
-      fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
+    rspec = RbVmomi::VIM.VirtualMachineRelocateSpec
 
-      if get_config(:datastore)
-        hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
-      end
+    rspec.pool = if get_config(:resource_pool)
+                   find_pool(get_config(:resource_pool))
+                 else
+                   hosts = find_available_hosts
+                   hosts.first.resourcePool
+                 end
 
-      fatal_exit "No hosts have the requested Datastore available! #{get_config(:datastore)}" if hosts.empty?
-
-      if get_config(:datastorecluster)
-        hosts.reject! { |host| !host.datastore.include?(find_datastorecluster(get_config(:datastorecluster))) }
-      end
-
-      fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
-
-      if get_config(:customization_vlan)
-        vlan_list = get_config(:customization_vlan).split(',')
-        vlan_list.each do |network|
-          hosts.reject! { |host| !host.network.include?(find_network(network)) }
-        end
-      end
-
-      fatal_exit "No hosts have the requested Network available! #{get_config(:customization_vlan)}" if hosts.empty?
-
-      rp = hosts.first.resourcePool
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(pool: rp)
-    end
-
-    if get_config(:linked_clone)
-      rspec.diskMoveType = :moveChildMostDiskBacking
-    end
-
-    if get_config(:datastore) && get_config(:datastorecluster)
-      abort 'Please select either datastore or datastorecluster'
-    end
+    rspec.diskMoveType = :moveChildMostDiskBacking if get_config(:linked_clone)
 
     if get_config(:datastore)
       rspec.datastore = find_datastore(get_config(:datastore))
@@ -516,9 +518,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
     end
 
-    if get_config(:thin_provision)
-      rspec = RbVmomi::VIM.VirtualMachineRelocateSpec(transform: :sparse, pool: find_pool(get_config(:resource_pool)))
-    end
+    rspec.transform = :sparse if get_config(:thin_provision)
 
     is_template = !get_config(:mark_as_template).nil?
     clone_spec = RbVmomi::VIM.VirtualMachineCloneSpec(location: rspec, powerOn: false, template: is_template)
@@ -537,12 +537,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       clone_spec.config.memoryMB = Integer(get_config(:customization_memory)) * 1024
     end
 
-    if get_config(:customization_macs) && !get_config(:customization_ips)
-        abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
-    end
-
-    mac_list = if get_config(:customization_macs) == 'auto'
-                 ['auto'] * get_config(:customization_ips).split(',').length
+    mac_list = if get_config(:customization_macs) == AUTO_MAC
+                 [AUTO_MAC] * get_config(:customization_ips).split(',').length
                else
                  get_config(:customization_macs).split(',')
                end
@@ -581,21 +577,26 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           # not connected to a distibuted switch?
           card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
-        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != 'auto'
+        card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != AUTO_MACS
         dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
         clone_spec.config.deviceChange.push dev_spec
       end
     end
 
-    if get_config(:customization_spec)
-      csi = find_customization(get_config(:customization_spec)) ||
-            fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
+    cust_spec = if get_config(:customization_spec)
+                  csi = find_customization(get_config(:customization_spec)) ||
+                    fatal_exit("failed to find customization specification named #{get_config(:customization_spec)}")
 
-      cust_spec = csi.spec
-    else
-      global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
-      identity_settings = RbVmomi::VIM.CustomizationIdentitySettings
-      cust_spec = RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset, identity: identity_settings)
+                  csi.spec
+                else
+                  global_ipset = RbVmomi::VIM.CustomizationGlobalIPSettings
+                  identity_settings = RbVmomi::VIM.CustomizationIdentitySettings
+                  RbVmomi::VIM.CustomizationSpec(globalIPSettings: global_ipset, identity: identity_settings)
+                end
+
+    if get_config(:disable_customization)
+      clone_spec.customization = get_config(:customization_spec) ? cust_spec : nil
+      return clone_spec
     end
 
     if get_config(:customization_dns_ips)
@@ -612,71 +613,67 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       }
     end
 
-    if get_config(:disable_customization)
-      clone_spec.customization = cust_spec
-    else
-      use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
+    # TODO: why does the domain matter?
+    use_ident = config[:customization_hostname] || get_config(:customization_domain) || cust_spec.identity.props.empty?
 
-      if use_ident
-        hostname = if config[:customization_hostname]
-                     config[:customization_hostname]
-                   else
-                     config[:vmname]
-                   end
-        if windows?(src_config)
-          identification = RbVmomi::VIM.CustomizationIdentification(
-            joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
-          )
-          license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
-            autoMode: cust_spec.identity.licenseFilePrintData.autoMode
-          )
+    # TODO: How could we not take this? Only if the identity were empty, but that's statically defined as empty above
+    if use_ident
+      hostname = config[:customization_hostname] || config[:vmname]
 
-          user_data = RbVmomi::VIM.CustomizationUserData(
-            fullName: cust_spec.identity.userData.fullName,
-            orgName: cust_spec.identity.userData.orgName,
-            productId: cust_spec.identity.userData.productId,
-            computerName: RbVmomi::VIM.CustomizationFixedName(name: hostname)
-          )
+      if windows?(src_config)
+        # TODO: This is just copying itself onto itself, isn't it?
+        identification = RbVmomi::VIM.CustomizationIdentification(
+          joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
+        )
+        license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
+          autoMode: cust_spec.identity.licenseFilePrintData.autoMode
+        )
 
-          gui_unattended = RbVmomi::VIM.CustomizationGuiUnattended(
-            autoLogon: cust_spec.identity.guiUnattended.autoLogon,
-            autoLogonCount: cust_spec.identity.guiUnattended.autoLogonCount,
-            password: RbVmomi::VIM.CustomizationPassword(
-              plainText: cust_spec.identity.guiUnattended.password.plainText,
-              value: cust_spec.identity.guiUnattended.password.value
-            ),
-            timeZone: cust_spec.identity.guiUnattended.timeZone
-          )
-          runonce = RbVmomi::VIM.CustomizationGuiRunOnce(
-            commandList: ['cust_spec.identity.guiUnattended.commandList']
-          )
-          ident = RbVmomi::VIM.CustomizationSysprep
-          ident.guiRunOnce = runonce
-          ident.guiUnattended = gui_unattended
-          ident.identification = identification
-          ident.licenseFilePrintData = license_file_print_data
-          ident.userData = user_data
-          cust_spec.identity = ident
-        elsif linux?(src_config)
-          ident = RbVmomi::VIM.CustomizationLinuxPrep
-          ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
+        user_data = RbVmomi::VIM.CustomizationUserData(
+          fullName: cust_spec.identity.userData.fullName,
+          orgName: cust_spec.identity.userData.orgName,
+          productId: cust_spec.identity.userData.productId,
+          computerName: RbVmomi::VIM.CustomizationFixedName(name: hostname)
+        )
 
-          ident.domain = if get_config(:customization_domain)
-                           get_config(:customization_domain)
-                         else
-                           ''
-                         end
-          cust_spec.identity = ident
-        else
-          ui.error('Customization only supports Linux and Windows currently.')
-          exit 1
-        end
+        gui_unattended = RbVmomi::VIM.CustomizationGuiUnattended(
+          autoLogon: cust_spec.identity.guiUnattended.autoLogon,
+          autoLogonCount: cust_spec.identity.guiUnattended.autoLogonCount,
+          password: RbVmomi::VIM.CustomizationPassword(
+            plainText: cust_spec.identity.guiUnattended.password.plainText,
+            value: cust_spec.identity.guiUnattended.password.value
+          ),
+          timeZone: cust_spec.identity.guiUnattended.timeZone
+        )
+        runonce = RbVmomi::VIM.CustomizationGuiRunOnce(
+          commandList: ['cust_spec.identity.guiUnattended.commandList']
+        )
+        ident = RbVmomi::VIM.CustomizationSysprep
+        ident.guiRunOnce = runonce
+        ident.guiUnattended = gui_unattended
+        ident.identification = identification
+        ident.licenseFilePrintData = license_file_print_data
+        ident.userData = user_data
+        cust_spec.identity = ident
+      elsif linux?(src_config)
+        ident = RbVmomi::VIM.CustomizationLinuxPrep
+        ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
+
+        ident.domain = if get_config(:customization_domain)
+                         get_config(:customization_domain)
+                       else
+                         ''
+                       end
+        cust_spec.identity = ident
+      else
+        ui.error('Customization only supports Linux and Windows currently.')
+        exit 1
       end
-      clone_spec.customization = cust_spec
+    end
+    clone_spec.customization = cust_spec
 
-      if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
-        clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
-      end
+    if customization_plugin && customization_plugin.respond_to?(:customize_clone_spec)
+      clone_spec = customization_plugin.customize_clone_spec(src_config, clone_spec)
     end
     clone_spec
   end
@@ -717,7 +714,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # @param name [String] name of customization
   # @return [RbVmomi::VIM::CustomizationSpecItem]
   def find_customization(name)
-    csm = config[:vim].serviceContent.customizationSpecManager
+    csm = vim_connection.serviceContent.customizationSpecManager
     csm.GetCustomizationSpec(name: name)
   end
 
@@ -748,7 +745,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     adapter_map = RbVmomi::VIM.CustomizationAdapterMapping
-    adapter_map.macAddress = mac if !mac.nil? && (mac != 'auto')
+    adapter_map.macAddress = mac if !mac.nil? && (mac != AUTO_MAC)
     adapter_map.adapter = settings
     adapter_map
   end
