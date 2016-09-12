@@ -254,6 +254,7 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 ```bash
 --bootstrap - Bootstrap the VM after cloning. Implies --start
 --bootstrap-ipv4 - Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.
+--bootstrap-msi-url URL - Location of the Chef Client MSI if not default from chef.io
 --bootstrap-nic INTEGER - Network interface to use when multiple NICs are defined on a template.
 --bootstrap-proxy PROXY_URL - The proxy server for the node being bootstrapped
 --bootstrap-vault-file VAULT_FILE - A JSON file with a list of vault(s) and item(s) to be updated

@@ -146,6 +146,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          long: '--fqdn SERVER_FQDN',
          description: 'Fully qualified hostname for bootstrapping'
 
+  option :bootstrap_msi_url,
+         long: '--bootstrap-msi-url URL',
+         description: 'Location of the Chef Client MSI. The default templates will prefer to download from this location.'
+
   option :bootstrap_protocol,
          long: '--bootstrap-protocol protocol',
          description: 'Protocol to bootstrap windows servers. options: winrm/ssh',
@@ -786,6 +790,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       ui.error('Unsupported Bootstrapping Protocol. Supports : winrm, ssh')
       exit 1
     end
+    bootstrap.config[:msi_url] = get_config(:bootstrap_msi_url)
     bootstrap_common_params(bootstrap)
   end
 
