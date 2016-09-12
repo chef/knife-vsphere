@@ -1,6 +1,19 @@
 knife-vsphere changelog
 ----------------------
 
+1.2.15  swalberg - Add --bootstrap-msi-url (#289, #272)
+                 - Refactoring clone to add tests
+								 - --disable-customization now makes a nil customization
+								   unless used with --cspec. Its use is to restrict the
+									 customizations done to the VM
+								 - Doc updates
+								 - Travis fixes (remove Gemfile.lock, bump Ruby)
+								 - Final fix(?) for that mac and ip interaction
+								 - Refactor LocationSpec creation and fix thin-provision
+			  jjasghar - Doc updates
+				         - Pass sudo password to Boostrap when needed
+ martinmosegaard - VM clone with resource pool and linked clone (
+
 1.2.14  swalberg - Bugfix from 1.2.12
 
 1.2.13  kozmikyak - Bugfix from previous
