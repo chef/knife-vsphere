@@ -8,9 +8,9 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-PS_ON = 'poweredOn'
-PS_OFF = 'poweredOff'
-PS_SUSPENDED = 'suspended'
+PS_ON = 'poweredOn'.freeze
+PS_OFF = 'poweredOff'.freeze
+PS_SUSPENDED = 'suspended'.freeze
 
 # find vms belonging to pool that match criteria, display specified fields
 class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
@@ -103,10 +103,8 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
       next unless child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ResourcePool
       if child.name == poolname
         return child
-      else
-        if child.class == RbVmomi::VIM::Folder || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ResourcePool
-          pool = traverse_folders_for_pool_clustercompute(child, poolname)
-        end
+      elsif child.class == RbVmomi::VIM::Folder || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ResourcePool
+        pool = traverse_folders_for_pool_clustercompute(child, poolname)
       end
       return pool if pool
     end
@@ -126,11 +124,11 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
     pool = traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
 
-    if pool.class == RbVmomi::VIM::ResourcePool
-      vm = pool.vm
-    else
-      vm = pool.resourcePool.vm
-    end
+    vm = if pool.class == RbVmomi::VIM::ResourcePool
+           pool.vm
+         else
+           pool.resourcePool.vm
+         end
 
     return if vm.nil?
     vm.each do |vmc|
@@ -181,8 +179,8 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
           actualname.concat("#{vmcp.parent.name}/")
           vmcp = vmcp.parent
         end
-        print "#{ui.color('Folder:', :cyan)}"
-        print "\""
+        print ui.color('Folder:', :cyan)
+        print '"'
         print actualname.split('/').reverse.join('/')
         print "\"\t"
 
@@ -216,7 +214,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
       end
 
       if get_config(:os_disk)
-        print "#{ui.color('OS Disks:', :cyan)}"
+        print ui.color('OS Disks:', :cyan)
         vmc.guest.disk.each do |disc|
           print "#{disc.diskPath} #{disc.capacity / 1024 / 1024}MB Free:#{disc.freeSpace / 1024 / 1024}MB |"
         end
