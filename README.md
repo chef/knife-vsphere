@@ -132,8 +132,9 @@ $ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips 
 ```
 
 Note: add a `-f FOLDERNAME` if you put your `--template` in someplace other then
-root folder, and the `--dest-folder FOLDERNAME` to the folder you want to put it in.
-FYI: The `/` is the root "Datacenter" folder.
+root folder, and use `--dest-folder FOLDERNAME` if you want your VM created in
+`FOLDERNAME` rather than the root.
+
 
 A full basic example of cloning from a folder, and putting it in the "Datacenter Root"
 directory is the following:
@@ -584,7 +585,7 @@ $ bundle exec knife vsphere ...
 
 Plugins let you write code to further customize the operation you are sending to vCenter.
 
-The basic idea is that plugins expose well known methods to `knife`, which are then run at particular times. 
+The basic idea is that plugins expose well known methods to `knife`, which are then run at particular times.
 The values returned from your methods are passed directly to vSphere.
 
 Below are examples of the potential implementations that would be saved to an rb file and passed in the `--cplugin`
