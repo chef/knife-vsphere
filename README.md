@@ -135,7 +135,6 @@ Note: add a `-f FOLDERNAME` if you put your `--template` in someplace other then
 root folder, and use `--dest-folder FOLDERNAME` if you want your VM created in
 `FOLDERNAME` rather than the root.
 
-
 A full basic example of cloning from a folder, and putting it in the "Datacenter Root"
 directory is the following:
 
