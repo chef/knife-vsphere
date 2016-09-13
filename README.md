@@ -131,10 +131,16 @@ $ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips 
   --cspec SPEC --ssh-user USER --ssh-password PASSWORD
 ```
 
-- Deleting a machine.
+Note: add a `-f FOLDERNAME` if you put your `--template` in someplace other then
+root folder, and the `--dest-folder FOLDERNAME` to the folder you want to put it in.
+FYI: The `/` is the root "Datacenter" folder.
+
+A full basic example of cloning from a folder, and putting it in the "Datacenter Root"
+directory is the following:
 
 ```bash
-$ knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
+$ knife vsphere vm clone MACHINENAME --template TEMPLATENAME -f LOCATIONOFTEMPLATE \
+  --bootstrap --start --cips dhcp --dest-folder /
 ```
 
 - Listing the available VMware templates
@@ -144,6 +150,12 @@ $ knife vsphere template list
 Template Name: ubuntu16-template
 $ knife vsphere template list -f FOLDERNAME
 Template Name: centos7-template
+```
+
+- Deleting a machine.
+
+```bash
+$ knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
 ```
 
 # Subcommands
