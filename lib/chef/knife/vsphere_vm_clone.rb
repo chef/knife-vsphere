@@ -257,6 +257,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Disable host key verification',
          boolean: true
 
+  option :node_ssl_verify_mode,
+         long: '--node-ssl-verify-mode [peer|none]',
+         description: 'Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping',
+         boolean: true
+
   option :first_boot_attributes,
          short: '-j JSON_ATTRIBS',
          long: '--json-attributes',
@@ -769,6 +774,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.config[:bootstrap_vault_item] = get_config(:bootstrap_vault_item)
     # may be needed for vpc mode
     bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
+    bootstrap.config[:node_ssl_verify_mode] = get_config(:node_ssl_verify_mode)
     bootstrap
   end
 
