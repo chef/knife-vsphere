@@ -131,10 +131,16 @@ $ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips 
   --cspec SPEC --ssh-user USER --ssh-password PASSWORD
 ```
 
-- Deleting a machine.
+Note: add a `-f FOLDERNAME` if you put your `--template` in someplace other then
+root folder, and use `--dest-folder FOLDERNAME` if you want your VM created in
+`FOLDERNAME` rather than the root.
+
+A full basic example of cloning from a folder, and putting it in the "Datacenter Root"
+directory is the following:
 
 ```bash
-$ knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
+$ knife vsphere vm clone MACHINENAME --template TEMPLATENAME -f LOCATIONOFTEMPLATE \
+  --bootstrap --start --cips dhcp --dest-folder /
 ```
 
 - Listing the available VMware templates
@@ -144,6 +150,12 @@ $ knife vsphere template list
 Template Name: ubuntu16-template
 $ knife vsphere template list -f FOLDERNAME
 Template Name: centos7-template
+```
+
+- Deleting a machine.
+
+```bash
+$ knife vsphere vm delete MACHINENAME (-P will remove from the chef server)
 ```
 
 # Subcommands
@@ -572,7 +584,7 @@ $ bundle exec knife vsphere ...
 
 Plugins let you write code to further customize the operation you are sending to vCenter.
 
-The basic idea is that plugins expose well known methods to `knife`, which are then run at particular times. 
+The basic idea is that plugins expose well known methods to `knife`, which are then run at particular times.
 The values returned from your methods are passed directly to vSphere.
 
 Below are examples of the potential implementations that would be saved to an rb file and passed in the `--cplugin`
