@@ -280,6 +280,7 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 --json-attributes - A JSON string to be added to the first run of chef-client
 --node-name NAME - The Chef node name for your new node
 --no-host-key-verify - Disable host key verification
+--node-ssl-verify-mode [peer|none] - Whether or not to verify the SSL cert for all HTTPS requests
 --prerelease - Install the pre-release chef gems
 --run-list RUN_LIST - Comma separated list of roles/recipes to apply
 --secret-file SECRET_FILE - A file containing the secret key to use to encrypt data bag item values
