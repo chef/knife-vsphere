@@ -259,8 +259,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :node_ssl_verify_mode,
          long: '--node-ssl-verify-mode [peer|none]',
-         description: 'Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping',
-         boolean: true
+         description: 'Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping'
 
   option :first_boot_attributes,
          short: '-j JSON_ATTRIBS',
