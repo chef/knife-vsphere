@@ -114,6 +114,14 @@ RSpec.shared_context 'basic_setup' do
 
     subject.name_args = ['foo']
     subject.config[:source_vm] = 'my_template'
+    # Defaults from the code
     subject.config[:folder] = ''
+    subject.config[:distro] = 'chef-full'
+    subject.config[:bootstrap_protocol] = nil
+    subject.config[:bootstrap_nic] = 0
+    subject.config[:bootstrap_ipv4] = false
+    subject.config[:run_list] = []
+    subject.config[:ssh_port] = 22
+    subject.config[:ssh_user] = 'root'
   end
 end
