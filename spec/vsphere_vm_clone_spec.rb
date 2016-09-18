@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'chef/knife/vsphere_vm_clone'
+require 'chef/knife/bootstrap'
 
 describe Chef::Knife::VsphereVmClone do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
@@ -190,6 +191,49 @@ describe Chef::Knife::VsphereVmClone do
     context 'neither windows or linux' do
       before do
         let(:guest_id) { 'Darwin' }
+      end
+    end
+  end
+
+  context 'bootstrapping chef' do
+    include_context 'basic_setup'
+
+    let(:chef) { OpenStruct.new(config: {}, run: 'boom') }
+    let(:guest) { double('Guest', net: [:thing], ipAddress: '1.2.3.4') }
+
+    before do
+      subject.config[:bootstrap] = true
+      allow(template).to receive(:PowerOnVM_Task).and_return(task)
+      allow(template).to receive(:guest).and_return(guest)
+      allow(subject).to receive(:tcp_test_ssh).with('foo.bar', 22).and_return(true) # cheat
+
+      expect(Chef::Knife::Bootstrap).to receive(:new).and_return(chef)
+      expect(template).to receive(:CloneVM_Task).and_return(task)
+    end
+
+    context 'with an fqdn' do
+      before do
+        subject.config[:fqdn] = 'foo.bar'
+      end
+
+      it 'calls Chef to bootstrap' do
+        subject.config['run_list'] = %w{role[a] recipe[foo::bar]}
+
+        expect(chef).to receive(:run) do
+          expect(chef.name_args).to eq(['foo.bar'])
+        end
+
+        subject.run
+      end
+
+      it 'sends the runlist' do
+        subject.config[:run_list] = %w{role[a] recipe[foo::bar]}
+        expect(chef).to receive(:run) do
+          expect(chef.name_args).to eq(['foo.bar'])
+          expect(chef.config[:run_list]).to eq(%w{role[a] recipe[foo::bar]})
+        end
+
+        subject.run
       end
     end
   end
