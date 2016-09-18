@@ -1,7 +1,7 @@
 # Knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
-[![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef/knife-vsphere)
+[![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
