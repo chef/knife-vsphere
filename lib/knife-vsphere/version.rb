@@ -1,3 +1,3 @@
 module KnifeVsphere
-  VERSION = '1.2.16'
+  VERSION = '1.2.17'
 end
