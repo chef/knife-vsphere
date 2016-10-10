@@ -727,15 +727,15 @@ Authors
 
 ```
 Copyright
-  Copyright (c) 2011-2013 Ezra Pagel
-  Copyright (c) 2015-2016 Chef Software, Inc
+  Copyright © 2011-2013 Ezra Pagel
+  Copyright © 2015-2016 Chef Software, Inc
 ```
 
 ```
 VMware vSphere is a trademark of VMware, Inc.
 ```
 
-License: Apache License, Version 2.0
+![Apache License](https://www.apache.org/img/asf_logo.png)
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
@@ -753,4 +753,4 @@ Software changes provided by Nicholas Brisebois at Dell SecureWorks. For more
 information on Dell SecureWorks security services please browse to
 http://www.secureworks.com
 
-Copyright 2015 Dell SecureWorks
+© Dell SecureWorks 2015
