@@ -396,8 +396,8 @@ reverting of snapshots.
 --remove SNAPSHOT - Remove a named snapshot.
 --revert SNAPSHOT - Revert to a named snapshot.
 --revert-current  - Revert to current snapshot.
---start           - Indicates whether to start the VM after a successful revert
---wait            - Indicates whether to wait for creation/removal to complete
+--start           - Starts the VM after a successful revert
+--wait            - Wait for creation/removal to complete rather than returning immediately
 --find            - Find the VM instead of specifying the folder with -F
 --dump-memory     - Dump the memory when creating the snapshot (default: false)
 --quiesce         - Quiesce the VM before snapshotting (default: false)
