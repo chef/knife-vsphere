@@ -183,10 +183,14 @@ describe Chef::Knife::VsphereVmClone do
     end
 
     context 'windows clone' do
-      before do
-        let(:guest_id) { 'Windows 3.1' }
+      let(:guest_id) { 'Windows 3.1' }
+
+      it 'provides an error message when called with no customization' do
+        expect(subject).to receive(:fatal_exit).and_raise ArgumentError
+        expect { subject.run }.to raise_error ArgumentError
       end
     end
+
     context 'linux clone'
     context 'neither windows or linux' do
       before do
