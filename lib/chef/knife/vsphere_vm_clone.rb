@@ -629,7 +629,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       hostname = config[:customization_hostname] || config[:vmname]
 
       if windows?(src_config)
-        # TODO: This is just copying itself onto itself, isn't it?
+        # We should get here with the customizations set, either by a plugin or a --cspec
+        fatal_exit 'Windows clones need a customization identity. Try passing a --cspec or making a --cplugin' if cust_spec.identity.props.empty?
+
         identification = RbVmomi::VIM.CustomizationIdentification(
           joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
         )
