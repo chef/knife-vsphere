@@ -224,6 +224,12 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          proc: proc { |d| Chef::Config[:knife][:distro] = d },
          default: 'chef-full'
 
+  option :tags,
+         long: '--tags TAGS',
+         description: 'Comma separated list of tags to apply to the node',
+         proc: ->(tags) { tags.split(/[\s,]+/) },
+         default: []
+
   option :template_file,
          long: '--template-file TEMPLATE',
          description: 'Full path to location of template to use'
@@ -776,6 +782,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     # may be needed for vpc mode
     bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
     bootstrap.config[:node_ssl_verify_mode] = get_config(:node_ssl_verify_mode)
+    bootstrap.config[:tags] = get_config(:tags)
     bootstrap
   end
 

@@ -123,5 +123,6 @@ RSpec.shared_context 'basic_setup' do
     subject.config[:run_list] = []
     subject.config[:ssh_port] = 22
     subject.config[:ssh_user] = 'root'
+    subject.config[:tags] = []
   end
 end
