@@ -221,8 +221,6 @@ describe Chef::Knife::VsphereVmClone do
       end
 
       it 'calls Chef to bootstrap' do
-        subject.config['run_list'] = %w{role[a] recipe[foo::bar]}
-
         expect(chef).to receive(:run) do
           expect(chef.name_args).to eq(['foo.bar'])
         end
@@ -233,11 +231,41 @@ describe Chef::Knife::VsphereVmClone do
       it 'sends the runlist' do
         subject.config[:run_list] = %w{role[a] recipe[foo::bar]}
         expect(chef).to receive(:run) do
-          expect(chef.name_args).to eq(['foo.bar'])
           expect(chef.config[:run_list]).to eq(%w{role[a] recipe[foo::bar]})
         end
 
         subject.run
+      end
+    end
+
+    context 'handing over tags' do
+      before do
+        # Avoid the complexity inside `guest_address`
+        subject.config[:fqdn] = 'foo.bar'
+      end
+
+      context 'without tags' do
+        it 'does not set any tags' do
+          expect(chef).to receive(:run) do
+            expect(chef.config[:tags]).to eq([])
+          end
+
+          subject.run
+        end
+      end
+
+      context 'with tags' do
+        before do
+          subject.config[:tags] = %w(tag1 tag2)
+        end
+
+        it 'sends the tags to the bootstrap' do
+          expect(chef).to receive(:run) do
+            expect(chef.config[:tags]).to eq(%w(tag1 tag2))
+          end
+
+          subject.run
+        end
       end
     end
   end

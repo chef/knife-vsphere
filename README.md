@@ -288,6 +288,7 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 --ssh-port PORT - SSH port
 --ssh-user USERNAME - SSH username
 --sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
+--tags TAG1,TAG2 - Tag the node with the given list of tags
 ```
 
 ### Customization options
