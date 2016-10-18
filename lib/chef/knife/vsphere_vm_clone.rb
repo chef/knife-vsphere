@@ -227,7 +227,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :tags,
          long: '--tags TAGS',
          description: 'Comma separated list of tags to apply to the node',
-         proc: lambda { |o| o.split(/[\s,]+/) },
+         proc: ->(tags) { tags.split(/[\s,]+/) },
          default: []
 
   option :template_file,
