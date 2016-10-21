@@ -526,7 +526,10 @@ interfaces. Posible states are up/down.
 Set NETWORKNAME on first interface of VMNAME. Works for both standard and distributed switches. 
 
 ```bash
-knife vsphere vm network set example.test.com vlan123
+--nic INTEGER     - NIC to change (optional, default 0)
+
+knife vsphere vm network set example1.test.com vlan123
+knife vsphere vm network set example2.test.com vlan234 --nic 1
 ```
 
 ## `knife vsphere vm wait sysprep`
