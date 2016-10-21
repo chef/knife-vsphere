@@ -25,18 +25,17 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
     end
 
     network = find_network(networkname)
-    vm = get_vm(vmname) || abort("VM not found")
-    vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard).each do |nic|
-      if network.is_a? RbVmomi::VIM::DistributedVirtualPortgroup
-        port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection({switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key})
-        nic.backing = RbVmomi::VIM.VirtualEthernetCardDistributedVirtualPortBackingInfo(port: port)
-      elsif network.is_a? RbVmomi::VIM::Network
-        nic.backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: network.name)
-      else
-        fatal_exit('Network type not recognized')
-      end
-      change_spec = RbVmomi::VIM.VirtualMachineConfigSpec(deviceChange: [RbVmomi::VIM.VirtualDeviceConfigSpec(device: nic, operation: 'edit')])
-      vm.ReconfigVM_Task(spec: change_spec).wait_for_completion
+    vm = get_vm(vmname) || abort('VM not found')
+    nic = vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard)[0]
+    if network.is_a? RbVmomi::VIM::DistributedVirtualPortgroup
+      port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection( switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key )
+      nic.backing = RbVmomi::VIM.VirtualEthernetCardDistributedVirtualPortBackingInfo(port: port)
+    elsif network.is_a? RbVmomi::VIM::Network
+      nic.backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: network.name)
+    else
+      fatal_exit('Network type not recognized')
     end
+    change_spec = RbVmomi::VIM.VirtualMachineConfigSpec(deviceChange: [RbVmomi::VIM.VirtualDeviceConfigSpec(device: nic, operation: 'edit')])
+    vm.ReconfigVM_Task(spec: change_spec).wait_for_completion
   end
 end
