@@ -1,11 +1,16 @@
 knife-vsphere changelog
 ----------------------
+1.2.18  omgroves - knife vsphere vm network set (change nic)
+        swalberg - support tagging during bootstrap
+				         - provide sane error message for common windows clone failure
 
 1.2.17  martinmosegaard - Add --node-ssl-verify-mode
         jjasghar - doc improvements
         swalberg - bootstrap testing
                  - doc improvements
+
 1.2.16  swalberg - Somehow a typo from refactoring got out, sorry
+
 1.2.15  swalberg - Add --bootstrap-msi-url (#289, #272)
                  - Refactoring clone to add tests
 								 - --disable-customization now makes a nil customization
