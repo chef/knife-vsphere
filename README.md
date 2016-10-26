@@ -96,6 +96,7 @@ currently supports the following:
 * VMDK addition
 * Migrate
 * Connect/disconnect network
+* Change network
 
 
 ### Clone-specific customization options (for Linux guests):
@@ -519,6 +520,17 @@ mandatory.
 
 Set networking state for VMNAME by connecting/disconnecting network
 interfaces. Posible states are up/down.
+
+## `knife vsphere vm network set`
+
+Set NETWORKNAME on first interface of VMNAME. Works for both standard and distributed switches. 
+
+```bash
+--nic INTEGER     - NIC to change (optional, default 0)
+
+knife vsphere vm network set example1.test.com vlan123
+knife vsphere vm network set example2.test.com vlan234 --nic 1
+```
 
 ## `knife vsphere vm wait sysprep`
 
