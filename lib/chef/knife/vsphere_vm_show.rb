@@ -6,6 +6,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+
 class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm show VMNAME QUERY.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html\" for allowed QUERY values."
 
@@ -30,19 +31,94 @@ class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
     dc = datacenter
     folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
+    #vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
 
-    # split QUERY by dots, and walk the object model
-    query = query_string.split '.'
-    result = vm
-    query.each do |part|
-      message, index = part.split(/[\[\]]/)
-      unless result.respond_to? message.to_sym
-        fatal_exit("\"#{query_string}\" not recognized.")
-      end
 
-      result = index ? result.send(message)[index.to_i] : result.send(message)
+
+
+
+	network = find_network(options["net"])
+
+    puts network.class
+    case network
+    when RbVmomi::VIM::DistributedVirtualPortgroup
+      switch, pg_key = network.collect 'config.distributedVirtualSwitch', 'key'
+      port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(
+        switchUuid: switch.uuid,
+        portgroupKey: pg_key)
+      summary = network.name
+      backing = RbVmomi::VIM.VirtualEthernetCardDistributedVirtualPortBackingInfo(port: port)
+    when VIM::Network
+      summary = network.name
+      backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: network.name)
+    else fail
     end
-    puts result
+
+    vm = find_by_name(vmname)
+
+    vm.ReconfigVM_Task(spec: { 
+      deviceChange: [
+        { operation: :add,
+          fileOperation: nil,
+          device: RbVmomi::VIM::VirtualVmxnet3(
+            key: -1,
+            deviceInfo: {
+              summary: summary,
+              label: ""
+            },
+            backing: backing,
+            addressType: "generated"
+          )
+      }
+      ]}).wait_for_completion
+
+
+
+
+
+
   end
+
+
+  private
+
+  def vim
+    @vim ||= RbVmomi::VIM.connect host: '10.4.17.49', user: 'administrator@vsphere.local', password: 'QW@#23qw', insecure: true
+  end
+
+  def dc
+    @dc ||= vim.serviceInstance.find_datacenter(options["Bunbury"]) or fail "datacenter not found"
+  end
+
+  def networks
+    @networks ||= dc.networkFolder.childEntity
+  end
+
+  def find_network(name)
+    networks.find { |n| n.name == name }
+  end
+
+  def find_by_name(name)
+    @vm ||= begin
+              folder = dc.vmFolder
+              all_vms = vms(folder)
+              all_vms.find { |vm| vm.name == name }
+            end
+    raise "can't find #{name}" unless @vm
+    @vm
+  end
+
+  def vms(folder) # recursively go thru a folder, dumping vm info
+    folder.childEntity.flat_map do |obj|
+      name, junk = obj.to_s.split('(')
+      case name
+      when "Folder"
+        vms(obj)
+      when "VirtualMachine"
+        obj
+      end
+    end.reject(&:nil?)
+  end
+
+
 end
