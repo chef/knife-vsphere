@@ -1,15 +1,12 @@
 # Author:: Scott Williams (scott@backups.net.au)
 # License:: Apache License, Version 2.0
-# https://www.forwardingplane.net/2013/04/vnc-console-on-vmware-esxi/
-# https://gist.github.com/jasonberanek/3856352
-# asd
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-class Chef::Knife::VsphereVmVNCSet < Chef::Knife::BaseVsphereCommand
+class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm vncset VMNAME VNCPORT VNCPASSWORD'
 
   common_options
@@ -40,17 +37,18 @@ class Chef::Knife::VsphereVmVNCSet < Chef::Knife::BaseVsphereCommand
 
     vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
 
-    extraConfig, = raw.collect('config.extraConfig')
+    extraConfig, = vm.collect('config.extraConfig')
    
 
-	vm.ReconfigVM_Task(:spec => {
-		      :extraConfig => [
-		        { :key => 'RemoteDisplay.vnc.enabled', :value => 'true' },
-		        { :key => 'RemoteDisplay.vnc.port', :value => vnc_port.to_s },
-		        { :key => 'RemoteDisplay.vnc.password', :value => vnc_password.to_s }
-		      ]
-	}).wait_for_completion
+    vm.ReconfigVM_Task(:spec => {
+      :extraConfig => [
+        { :key => 'RemoteDisplay.vnc.enabled', :value => 'true' },
+        { :key => 'RemoteDisplay.vnc.port', :value => vnc_port.to_s },
+        { :key => 'RemoteDisplay.vnc.password', :value => vnc_password.to_s }
+      ]
+    }).wait_for_completion
 
+    puts extraConfig.find { |x| x.key == 'RemoteDisplay.vnc.enabled' && x.value.downcase == 'true' }
 
   end
 end
