@@ -1,3 +1,4 @@
+#
 # Author:: Scott Williams (scott@backups.net.au)
 # License:: Apache License, Version 2.0
 
@@ -6,9 +7,8 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-
 class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
-  banner "knife vsphere vm nic add VMNAME NETWORKNAME"
+  banner 'knife vsphere vm nic add VMNAME NETWORKNAME'
 
   common_options
 
@@ -25,7 +25,6 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
       show_usage
       fatal_exit('You must specify the network name')
     end
-    
 
     vim_connection
 
@@ -34,27 +33,22 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
 
     vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
 
-
     backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: networkname)
 
-
     vm.ReconfigVM_Task(spec: { 
-      deviceChange: [
+        deviceChange: [
         { operation: :add,
           fileOperation: nil,
           device: RbVmomi::VIM::VirtualVmxnet3(
             key: -1,
             deviceInfo: {
               summary: networkname,
-              label: ""
+              label: ''
             },
             backing: backing,
-            addressType: "generated"
-          )
-      }
-      ]}).wait_for_completion
-
-
-
+            addressType: 'generated'
+          )}
+      ]
+    }).wait_for_completion
   end
 end
