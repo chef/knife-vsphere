@@ -31,8 +31,7 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
 
     backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: networkname)
 
-    vm.ReconfigVM_Task(spec:
-    {
+    vm.ReconfigVM_Task(spec: {
       deviceChange: [
         { operation: :add,
           fileOperation: nil,
