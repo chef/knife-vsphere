@@ -43,9 +43,7 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
               label: ''
             },
             backing: backing,
-            addressType: 'generated'
-          )
-        }
+            addressType: 'generated')}
       ]
     }).wait_for_completion
   end
