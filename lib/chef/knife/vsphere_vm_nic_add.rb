@@ -41,9 +41,10 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
             deviceInfo: {
               summary: networkname,
               label: ''
-        },
-        backing: backing,
-        addressType: 'generated')
+            },
+            backing: backing,
+            addressType: 'generated'
+          )
         }
       ]
     }).wait_for_completion
