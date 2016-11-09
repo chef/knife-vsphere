@@ -1,6 +1,3 @@
-# Author:: Scott Williams (scott@backups.net.au)
-# License:: Apache License, Version 2.0
-
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
@@ -37,8 +34,7 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
 
     vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
 
-    extraConfig, = vm.collect('config.extraConfig')
-   
+    extra_config, = vm.collect('config.extraConfig')   
 
     vm.ReconfigVM_Task(:spec => {
       :extraConfig => [
@@ -48,7 +44,6 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
       ]
     }).wait_for_completion
 
-    puts extraConfig.find { |x| x.key == 'RemoteDisplay.vnc.enabled' && x.value.downcase == 'true' }
-
+    puts extra_config.detect { |x| 'RemoteDisplay.vnc.enabled'.casecmp(x.key) && x.value.downcase == 'true' }
   end
 end
