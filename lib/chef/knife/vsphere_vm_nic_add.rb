@@ -35,8 +35,7 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
       deviceChange: [
         { operation: :add,
           fileOperation: nil,
-          device: RbVmomi::VIM::VirtualVmxnet3
-	  (
+          device: RbVmomi::VIM::VirtualVmxnet3(
             key: -1,
             deviceInfo: {
               summary: networkname,
@@ -45,7 +44,7 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
             backing: backing,
             addressType: 'generated'
           )
-      }
+        }
       ]}).wait_for_completion
   end
 end
