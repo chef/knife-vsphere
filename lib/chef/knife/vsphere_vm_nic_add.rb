@@ -1,7 +1,3 @@
-#
-# Author:: Scott Williams (scott@backups.net.au)
-# License:: Apache License, Version 2.0
-
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
@@ -35,7 +31,8 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
 
     backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: networkname)
 
-    vm.ReconfigVM_Task(spec: {
+    vm.ReconfigVM_Task(spec: 
+    {
       deviceChange: [
         { operation: :add,
           fileOperation: nil,
@@ -47,7 +44,7 @@ class Chef::Knife::VsphereVmNicAdd < Chef::Knife::BaseVsphereCommand
             },
             backing: backing,
             addressType: 'generated'
-          ) 
+          )
         }
       ]
     }).wait_for_completion
