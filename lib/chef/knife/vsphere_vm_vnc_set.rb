@@ -35,22 +35,15 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
 
     extra_config, = vm.collect('config.extraConfig')
 
-    vm.ReconfigVM_Task(spec: {
-      extraConfig: [
-        { 
-          key: 'RemoteDisplay.vnc.enabled',
-          value: 'true' 
-        },
-        { 
-          key: 'RemoteDisplay.vnc.port',
-          value: vnc_port.to_s 
-        },
-        { 
-          key: 'RemoteDisplay.vnc.password',
-          value: vnc_password.to_s 
-        }
-      ]
-    }).wait_for_completion
+    vm.ReconfigVM_Task(
+      spec: {
+        extraConfig: [
+          { key: 'RemoteDisplay.vnc.enabled', value: 'true' },
+          { key: 'RemoteDisplay.vnc.port', value: vnc_port.to_s },
+          { key: 'RemoteDisplay.vnc.password', value: vnc_password.to_s }
+        ]
+      }
+    ).wait_for_completion
 
     puts extra_config.detect { |x| 'RemoteDisplay.vnc.enabled'.casecmp(x.key) && 'true'.casecmp(x.value.downcase) }
   end
