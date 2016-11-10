@@ -4,7 +4,17 @@ require 'rbvmomi'
 require 'netaddr'
 
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vm vncset VMNAME VNCPORT VNCPASSWORD'
+  banner 'knife vsphere vm vncset VMNAME COMMAND ARGS'
+
+  option :vnc_port,
+         long: '--vnc-port PORT',
+         description: 'Port to run VNC on',
+         required: true
+
+  option :vnc_password,
+         long: '--vnc-password PASSWORD',
+         description: 'Password for connecting to VNC',
+         required: true
 
   common_options
 
@@ -14,16 +24,6 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
     if vmname.nil?
       show_usage
       fatal_exit('You must specify a virtual machine name')
-    end
-
-    vnc_port = @name_args[1]
-    if vnc_port.nil?
-      fatal_exit('Specify the port to use for VNC')
-    end
-
-    vnc_password = @name_args[2]
-    if vnc_password.nil?
-      fatal_exit('Specify the password for VNC')
     end
 
     vim_connection
@@ -39,8 +39,8 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
       spec: {
         extraConfig: [
           { key: 'RemoteDisplay.vnc.enabled', value: 'true' },
-          { key: 'RemoteDisplay.vnc.port', value: vnc_port.to_s },
-          { key: 'RemoteDisplay.vnc.password', value: vnc_password.to_s }
+          { key: 'RemoteDisplay.vnc.port', value: config[:vnc_port].to_s },
+          { key: 'RemoteDisplay.vnc.password', value: config[:vnc_password].to_s }
         ]
       }
     ).wait_for_completion

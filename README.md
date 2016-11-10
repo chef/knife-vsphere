@@ -97,6 +97,7 @@ currently supports the following:
 * Migrate
 * Connect/disconnect network
 * Change network
+* Enable VNC remote console
 
 
 ### Clone-specific customization options (for Linux guests):
@@ -479,6 +480,15 @@ Arguments are optional, and allow for redirection in Linux and Solaris.
 --exec-passwd PASSWD - The password for the user executing as.
 --exec-dir DIRECTORY - Optional: Working directory to execute in. Will default to $HOME of user.
 ```
+
+## `knife vsphere vm vncset`
+
+Enable VNC remote console.
+
+Required arguments:
+--vnc-port PORT           -Port to run VNC on
+--vnc-password PASSWORD   -Password for connecting to VNC
+
 
 ## `knife vsphere vm vmdk`
 
