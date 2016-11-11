@@ -486,9 +486,11 @@ Arguments are optional, and allow for redirection in Linux and Solaris.
 Enable VNC remote console.
 
 Required arguments:
+
+```bash
 --vnc-port PORT           -Port to run VNC on
 --vnc-password PASSWORD   -Password for connecting to VNC
-
+```
 
 ## `knife vsphere vm vmdk`
 
