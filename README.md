@@ -95,6 +95,7 @@ currently supports the following:
 * Delete
 * VMDK addition
 * Migrate
+* Add network
 * Connect/disconnect network
 * Change network
 
@@ -531,6 +532,11 @@ Set NETWORKNAME on first interface of VMNAME. Works for both standard and distri
 knife vsphere vm network set example1.test.com vlan123
 knife vsphere vm network set example2.test.com vlan234 --nic 1
 ```
+
+## `knife vsphere vm network add VMNAME NETWORKNAME`
+
+Add a network card to a VM and connect it to a network.
+
 
 ## `knife vsphere vm wait sysprep`
 
