@@ -36,7 +36,8 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       switch, pg_key = network.collect 'config.distributedVirtualSwitch', 'key'
       port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(
         switchUuid: switch.uuid,
-        portgroupKey: pg_key)
+        portgroupKey: pg_key
+      )
       summary = network.name
       backing = RbVmomi::VIM.VirtualEthernetCardDistributedVirtualPortBackingInfo(port: port)
     when VIM::Network
@@ -45,20 +46,19 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     else fail
     end
 
-    vm.ReconfigVM_Task(spec: { 
-      deviceChange: [
-        { operation: :add,
+    vm.ReconfigVM_Task(
+      spec: {
+        deviceChange: [{
+          operation: :add,
           fileOperation: nil,
           device: RbVmomi::VIM::VirtualVmxnet3(
             key: -1,
-            deviceInfo: {
-              summary: summary,
-              label: ''
-            },
+            deviceInfo: { summary: summary, label: '' },
             backing: backing,
             addressType: 'generated'
           )
+        }]
       }
-      ]}).wait_for_completion
+    ).wait_for_completion
   end
 end
