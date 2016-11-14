@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+#
 # Author:: Scott Williams (<scott@backups.net.au>)
 # License:: Apache License, Version 2.0
 #
