@@ -1,5 +1,8 @@
 knife-vsphere changelog
 ----------------------
+1.2.19  coda4096 - Enable VNC on a VM
+                 - Add a NIC to an existing VM <3 <3
+
 1.2.18  omgroves - knife vsphere vm network set (change nic)
         swalberg - support tagging during bootstrap
 				         - provide sane error message for common windows clone failure
