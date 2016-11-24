@@ -97,6 +97,7 @@ currently supports the following:
 * Migrate
 * Add network
 * Connect/disconnect network
+* Delete network card
 * Change network
 * Enable VNC remote console
 
@@ -548,6 +549,11 @@ knife vsphere vm network set example2.test.com vlan234 --nic 1
 ## `knife vsphere vm network add VMNAME NETWORKNAME`
 
 Add a network card to a VM and connect it to a network.
+
+
+## `knife vsphere vm nic delete VMNAME NICNAME`
+
+Delete a network card from a VM.
 
 
 ## `knife vsphere vm wait sysprep`
