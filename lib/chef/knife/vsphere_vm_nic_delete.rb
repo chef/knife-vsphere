@@ -31,9 +31,9 @@ class Chef::Knife::VsphereVmNicDelete < Chef::Knife::BaseVsphereCommand
     vm = get_vm(vmname) || abort('VM not found')
 
     cards = vm.config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
-    card = cards.find { |c| c.deviceInfo.label == nicname }
+    card = cards.detect { |c| c.deviceInfo.label == nicname }
     if card.nil?
-      found = cards.map { |c| c.deviceInfo.label}.join ', '
+      found = cards.map { |c| c.deviceInfo.label }.join ', '
       fatal_exit "Could not find #{nicname}. I did find #{found}."
     else
       spec = RbVmomi::VIM.VirtualMachineConfigSpec(
