@@ -26,24 +26,8 @@ class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
     folder = find_folder(get_config(:folder)) || dc.vmFolder
     vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
 
-
     vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard) do |a|
-
-      backing = a.backing
-      key = a.key
-
-
       puts "#{ui.color('NIC', :cyan)}: #{a.deviceInfo.label}"
-
-
-      #.network.each do |network|
-      #  puts "#{ui.color('VLAN', :red)}: #{network.name}"
-      #end
-
-
     end
-
   end
-
-  
 end
