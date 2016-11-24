@@ -30,19 +30,21 @@ class Chef::Knife::VsphereVmNicDelete < Chef::Knife::BaseVsphereCommand
     vim_connection
     vm = get_vm(vmname) || abort('VM not found')
 
-    vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard) do |a|
-      if a.deviceInfo.label == nicname
+    cards = vm.config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
+    card = cards.find { |c| c.deviceInfo.label == nicname }
+    if card.nil?
+      found = cards.map { |c| c.deviceInfo.label}.join ', '
+      fatal_exit "Could not find #{nicname}. I did find #{found}."
+    else
+      spec = RbVmomi::VIM.VirtualMachineConfigSpec(
+        deviceChange: [{
+          operation: :remove,
+          device: card
+        }]
+      )
 
-        spec = RbVmomi::VIM.VirtualMachineConfigSpec(
-          deviceChange: [{
-            operation: :remove,
-            device: a
-          }]
-        )
-
-        vm.ReconfigVM_Task(spec: spec).wait_for_completion
-        puts "#{ui.color('NIC', :red)}: #{a.deviceInfo.label} was deleted"
-      end
+      vm.ReconfigVM_Task(spec: spec).wait_for_completion
+      puts "#{ui.color('NIC', :red)}: #{card.deviceInfo.label} was deleted"
     end
   end
 end
