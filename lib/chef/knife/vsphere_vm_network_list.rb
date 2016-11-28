@@ -30,7 +30,7 @@ class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
       dc.network.each.grep(RbVmomi::VIM::DistributedVirtualPortgroup) do |net|
         if nic.backing.port.portgroupKey.eql?(net.key)
           puts "NIC: #{nic.deviceInfo.label} VLAN: #{net.name}"
-	end
+        end
       end
     end
   end
