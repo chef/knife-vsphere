@@ -55,18 +55,20 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
     if get_config(:recursive)
       vms = get_vms(vmname)
       if vms.length > 1
-        abort "More than one VM with name #{vmname} found:\n" + vms.map { |vm| get_path_to_object(vm) }.join("\n")
+        fatal_exit "More than one VM with name #{vmname} found:\n" + vms.map { |vm| get_path_to_object(vm) }.join("\n")
       end
-      abort "VM #{vmname} not found" if vms.length == 0
+      fatal_exit "VM #{vmname} not found" if vms.length == 0
       vm = vms[0]
     else
       base_folder = find_folder(get_config(:folder))
 
-      vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+      vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || fatal_exit("VM #{vmname} not found")
     end
 
     if get_config(:iso)
       cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
+      fatal_exit 'Could not find a cd drive' unless cdrom_obj
+
       machine_conf_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
         deviceChange: [{
           operation: :edit,
@@ -87,6 +89,8 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
       vm.ReconfigVM_Task(spec: machine_conf_spec).wait_for_completion
     elsif get_config(:disconnect)
       cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
+      fatal_exit 'Could not find a cd drive' unless cdrom_obj
+
       machine_conf_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
         deviceChange: [{
           operation: :edit,
@@ -103,7 +107,6 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
           )
         }]
       )
-      puts 'attempting to reconfigure the vm'
       vm.ReconfigVM_Task(spec: machine_conf_spec).wait_for_completion
     end
   end
