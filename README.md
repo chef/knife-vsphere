@@ -86,6 +86,7 @@ currently supports the following:
 * Resource Pools and Clusters
 * Customization Specifications
 * Hosts in a Pool or Cluster
+* Network cards and VLANs for a VM
 
 
 ### VM Operations:
@@ -549,6 +550,9 @@ knife vsphere vm network set example2.test.com vlan234 --nic 1
 
 Add a network card to a VM and connect it to a network.
 
+## `knife vsphere vm network list VMNAME`
+
+List the network cards and their VLAN that are connected to a VM.
 
 ## `knife vsphere vm wait sysprep`
 
