@@ -8,7 +8,7 @@ require 'netaddr'
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm cdrom VMNAME (options)'
 
-  EMPTY_DEVICE_NAME = ''
+  EMPTY_DEVICE_NAME = ''.freeze
 
   common_options
 
@@ -53,12 +53,12 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    unless (get_config(:attach) ^ get_config(:disconnect))
+    unless get_config(:attach) ^ get_config(:disconnect)
       fatal_exit('You must specify one of --attach or --disconnect')
     end
 
-    fatal_exit 'You must specify the name and path of an ISO with --iso' if (get_config(:attach) && ! get_config(:iso))
-    fatal_exit 'You must specify the datastore containing the ISO with --datastore' if (get_config(:attach) && ! get_config(:datastore))
+    fatal_exit 'You must specify the name and path of an ISO with --iso' if get_config(:attach) && !get_config(:iso)
+    fatal_exit 'You must specify the datastore containing the ISO with --datastore' if get_config(:attach) && !get_config(:datastore)
 
     vim_connection
 
@@ -67,7 +67,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
       if vms.length > 1
         fatal_exit "More than one VM with name #{vmname} found:\n" + vms.map { |vm| get_path_to_object(vm) }.join("\n")
       end
-      fatal_exit "VM #{vmname} not found" if vms.length == 0
+      fatal_exit "VM #{vmname} not found" if vms.empty?
       vm = vms[0]
     else
       base_folder = find_folder(get_config(:folder))
@@ -77,7 +77,6 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
 
     cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
     fatal_exit 'Could not find a cd drive' unless cdrom_obj
-
 
     backing = if get_config(:attach)
                 RbVmomi::VIM::VirtualCdromIsoBackingInfo(

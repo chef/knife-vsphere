@@ -12,7 +12,9 @@ Metrics/BlockNesting:
   Enabled: false
 Metrics/LineLength:
   Max: 160
-
+# Apparently this is a Ruby 3.0 thing?
+Style/FrozenStringLiteralComment:
+    Enabled: false
 Style/ClassAndModuleChildren:
   Enabled: false
 Style/Documentation:

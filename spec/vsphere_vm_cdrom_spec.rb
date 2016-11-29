@@ -4,7 +4,7 @@ require 'chef/knife/vsphere_vm_cdrom'
 describe Chef::Knife::VsphereVmCdrom do
   include_context 'existing_vm'
 
-  let(:config) { double('Config', hardware: hardware ) }
+  let(:config) { double('Config', hardware: hardware) }
   let(:hardware) { double('Hardware', device: devices) }
   let(:devices) { double('Devices') }
   let(:cd_rom) { double('CDROM', key: 'key', controllerKey: 'controllerKey') }
