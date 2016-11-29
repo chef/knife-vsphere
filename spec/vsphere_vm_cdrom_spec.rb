@@ -17,9 +17,22 @@ describe Chef::Knife::VsphereVmCdrom do
     subject.name_args = ['foo']
   end
 
+  context 'input sanity' do
+    it 'rejects both mount and disconnect' do
+      subject.config[:attach] = true
+      subject.config[:disconnect] = true
+      expect { subject.run }.to raise_error SystemExit
+    end
+
+    it 'requires a data store and iso to mount' do
+      subject.config[:attach] = true
+      expect { subject.run }.to raise_error SystemExit
+    end
+  end
+
   context 'mount' do
     before do
-      subject.config[:attach] = 'true'
+      subject.config[:attach] = true
     end
 
     context 'with correct options' do
@@ -69,7 +82,7 @@ describe Chef::Knife::VsphereVmCdrom do
 
   context 'disconnect' do
     before do
-      subject.config[:disconnect] = 'true'
+      subject.config[:disconnect] = true
     end
 
     context 'with correct options' do

@@ -8,6 +8,8 @@ require 'netaddr'
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm cdrom VMNAME (options)'
 
+  EMPTY_DEVICE_NAME = ''
+
   common_options
 
   option :datastore,
@@ -21,11 +23,13 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   option :attach,
          short: '-a',
          long: '--attach',
-         description: 'Attach the virtual cdrom to the VM'
+         description: 'Attach the virtual cdrom to the VM',
+         boolean: true
 
   option :disconnect,
          long: '--disconnect',
-         description: 'Disconnect the virtual cdrom from the VM'
+         description: 'Disconnect the virtual cdrom from the VM',
+         boolean: true
 
   option :on_boot,
          long: '--on_boot ONBOOT',
@@ -46,9 +50,15 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      ui.fatal('You must specify a virtual machine name')
-      exit 1
+      fatal_exit('You must specify a virtual machine name')
     end
+
+    unless (get_config(:attach) ^ get_config(:disconnect))
+      fatal_exit('You must specify one of --attach or --disconnect')
+    end
+
+    fatal_exit 'You must specify the name and path of an ISO with --iso' if (get_config(:attach) && ! get_config(:iso))
+    fatal_exit 'You must specify the datastore containing the ISO with --datastore' if (get_config(:attach) && ! get_config(:datastore))
 
     vim_connection
 
@@ -65,49 +75,44 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
       vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || fatal_exit("VM #{vmname} not found")
     end
 
-    if get_config(:iso)
-      cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
-      fatal_exit 'Could not find a cd drive' unless cdrom_obj
+    cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
+    fatal_exit 'Could not find a cd drive' unless cdrom_obj
 
-      machine_conf_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
-        deviceChange: [{
-          operation: :edit,
-          device: RbVmomi::VIM::VirtualCdrom(
-            backing: RbVmomi::VIM::VirtualCdromIsoBackingInfo(
-              fileName: "[#{get_config(:datastore)}] #{get_config(:iso)}"
-            ),
-            key: cdrom_obj.key,
-            controllerKey: cdrom_obj.controllerKey,
-            connectable: RbVmomi::VIM::VirtualDeviceConnectInfo(
-              startConnected: get_config(:on_boot) || false,
-              connected: get_config(:attach) || false,
-              allowGuestControl: true
-            )
-          )
-        }]
-      )
-      vm.ReconfigVM_Task(spec: machine_conf_spec).wait_for_completion
-    elsif get_config(:disconnect)
-      cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
-      fatal_exit 'Could not find a cd drive' unless cdrom_obj
 
-      machine_conf_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
-        deviceChange: [{
-          operation: :edit,
-          device: RbVmomi::VIM::VirtualCdrom(
-            backing: RbVmomi::VIM::VirtualCdromRemoteAtapiBackingInfo(
-              deviceName: ''),
-            key: cdrom_obj.key,
-            controllerKey: cdrom_obj.controllerKey,
-            connectable: RbVmomi::VIM::VirtualDeviceConnectInfo(
-              startConnected: false,
-              connected: false,
-              allowGuestControl: true
-            )
+    backing = if get_config(:attach)
+                RbVmomi::VIM::VirtualCdromIsoBackingInfo(
+                  fileName: iso_path
+                )
+              else
+                RbVmomi::VIM::VirtualCdromRemoteAtapiBackingInfo(deviceName: EMPTY_DEVICE_NAME)
+              end
+
+    vm.ReconfigVM_Task(
+      spec: spec(cdrom_obj, backing)
+    ).wait_for_completion
+  end
+
+  private
+
+  def spec(cd_device, backing)
+    RbVmomi::VIM::VirtualMachineConfigSpec(
+      deviceChange: [{
+        operation: :edit,
+        device: RbVmomi::VIM::VirtualCdrom(
+          backing: backing,
+          key: cd_device.key,
+          controllerKey: cd_device.controllerKey,
+          connectable: RbVmomi::VIM::VirtualDeviceConnectInfo(
+            startConnected: get_config(:on_boot) || false,
+            connected: get_config(:attach) || false,
+            allowGuestControl: true
           )
-        }]
-      )
-      vm.ReconfigVM_Task(spec: machine_conf_spec).wait_for_completion
-    end
+        )
+      }]
+    )
+  end
+
+  def iso_path
+    "[#{get_config(:datastore)}] #{get_config(:iso)}"
   end
 end
