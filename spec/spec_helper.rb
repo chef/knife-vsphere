@@ -94,11 +94,28 @@ RSpec.configure do |config|
   #   Kernel.srand config.seed
 end
 
+RSpec.shared_context 'existing_vm' do
+  let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
+  let(:empty_folder) { double('Folder', childEntity: [], children: []) }
+  let(:service_content) { double('ServiceContent') }
+  let(:vim) { double('VimConnection', serviceContent: service_content) }
+  let(:vm) { double('VM') }
+
+  before do
+    allow(subject).to receive(:vim_connection).and_return(vim)
+    # It is difficult to mock this because the current implementation checks
+    # for explicity RbVmomi class names
+    allow(subject).to receive(:datacenter).and_return(datacenter)
+    allow(subject).to receive(:find_folder).and_return(empty_folder)
+  end
+end
+
 RSpec.shared_context 'basic_setup' do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
   let(:guest_id) { 'Other Linux' }
   let(:host) { double('Host', resourcePool: double('ResourcePool')) }
+  let(:service_content) { double('ServiceContent') }
   let(:template) { double('Template', config: double(guestId: guest_id)) }
   let(:vim) { double('VimConnection', serviceContent: service_content) }
 
