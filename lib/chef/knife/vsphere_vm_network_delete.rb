@@ -7,8 +7,8 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
-class Chef::Knife::VsphereVmNicDelete < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vm nic delete VMNAME NICNAME'
+class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
+  banner 'knife vsphere vm network delete VMNAME NICNAME'
 
   common_options
 
