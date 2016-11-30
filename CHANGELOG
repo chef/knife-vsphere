@@ -1,5 +1,9 @@
 knife-vsphere changelog
 ----------------------
+1.2.20  coda4096 - Delete a NIC
+                 - List networks on a VM
+			  swalberg - Cleanup of mounting CD
+
 1.2.19  coda4096 - Enable VNC on a VM
                  - Add a NIC to an existing VM <3 <3
 
