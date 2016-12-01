@@ -22,7 +22,6 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
 
   common_options
 
-
   def run
     $stdout.sync = true
     vmname = @name_args[0]
@@ -75,7 +74,6 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       adapter_type = 'vmxnet3'
     end
 
-
     if config[:mac_address].nil?
       puts 'MAC address: auto'
       mac_address = ''
@@ -84,7 +82,6 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       puts 'MAC address: ' + mac_address
     end
 
-    #puts config[:adapter_type]
     case adapter_type
     when 'e1000'
       vm.ReconfigVM_Task(
@@ -118,8 +115,8 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
           }]
         }
       ).wait_for_completion
-    else 
-       puts 'Unknown adapter type. Use e1000 or vmxnet3 (default)'
+    else
+      puts 'Unknown adapter type. Use e1000 or vmxnet3 (default)'
     end
   end
 end

@@ -549,6 +549,11 @@ knife vsphere vm network set example2.test.com vlan234 --nic 1
 
 Add a network card to a VM and connect it to a network.
 
+```bash
+--adapter-type STRING      - Adapter type eg e1000,vmxnet3
+--mac-address STRING       - Adapter MAC address eg. AA:BB:CC:DD:EE:FF
+
+```
 
 ## `knife vsphere vm wait sysprep`
 
