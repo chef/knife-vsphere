@@ -75,10 +75,12 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     end
 
     if config[:mac_address].nil?
-      puts 'MAC address: auto'
       mac_address = ''
+      address_type = 'generated'
+      puts 'MAC address: auto'
     else
       mac_address = config[:mac_address]
+      address_type = 'manual'
       puts 'MAC address: ' + mac_address
     end
 
@@ -93,7 +95,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
               key: -1,
               deviceInfo: { summary: summary, label: '' },
               backing: backing,
-              addressType: 'generated',
+              addressType: address_type,
               macAddress: mac_address
             )
           }]
@@ -109,7 +111,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
               key: -1,
               deviceInfo: { summary: summary, label: '' },
               backing: backing,
-              addressType: 'generated',
+              addressType: address_type,
               macAddress: mac_address
             )
           }]
