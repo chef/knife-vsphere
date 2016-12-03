@@ -78,20 +78,19 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     end
 
     vm.ReconfigVM_Task(
-        spec: {
-          deviceChange: [{
-            operation: :add,
-            fileOperation: nil,
-            device: RbVmomi::VIM.send(device_type, {
-              key: -1,
-              deviceInfo: { summary: summary, label: '' },
-              backing: backing,
-              addressType: addressType,
-              macAddress: macAddress }
-            )
-          }]
-        }
-      ).wait_for_completion
-
+      spec: {
+        deviceChange: [{
+          operation: :add,
+          fileOperation: nil,
+          device: RbVmomi::VIM.send(device_type, {
+            key: -1,
+            deviceInfo: { summary: summary, label: '' },
+            backing: backing,
+            addressType: addressType,
+            macAddress: macAddress }
+          )
+        }]
+      }
+    ).wait_for_completion
   end
 end
