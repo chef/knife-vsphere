@@ -61,20 +61,20 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     end
 
     device_type = case get_config(:adapter_type)
-      when 'e1000'
-        :VirtualE1000
-      when 'vmxnet3'
-        :VirtualVmxnet3
-      when *
-        fatal_exit('The adapter must be either e1000 or vmxnet3')
-      end
+    when 'e1000'
+      :VirtualE1000
+    when 'vmxnet3'
+      :VirtualVmxnet3
+    when *
+      fatal_exit('The adapter must be either e1000 or vmxnet3')
+    end
 
     if get_config(:mac_address).nil?
-      addressType = 'generated'
-      macAddress = ''
+      address_type = 'generated'
+      mac_address = ''
     else
-      addressType = 'manual'
-      macAddress = get_config(:mac_address)
+      address_type = 'manual'
+      mac_address = get_config(:mac_address)
     end
 
     vm.ReconfigVM_Task(
@@ -82,12 +82,12 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
         deviceChange: [{
           operation: :add,
           fileOperation: nil,
-          device: RbVmomi::VIM.send(device_type, {
+          device: RbVmomi::VIM.send(device_type,
             key: -1,
             deviceInfo: { summary: summary, label: '' },
             backing: backing,
-            addressType: addressType,
-            macAddress: macAddress }
+            addressType: address_type,
+            macAddress: mac_address 
           )
         }]
       }
