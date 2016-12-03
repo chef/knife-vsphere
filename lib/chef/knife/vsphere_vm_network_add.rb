@@ -67,7 +67,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       :VirtualVmxnet3
     when *
       fatal_exit('The adapter must be either e1000 or vmxnet3')
-    end
+                  end
 
     if get_config(:mac_address).nil?
       address_type = 'generated'
