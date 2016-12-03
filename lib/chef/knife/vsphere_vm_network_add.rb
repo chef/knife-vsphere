@@ -87,7 +87,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
             deviceInfo: { summary: summary, label: '' },
             backing: backing,
             addressType: address_type,
-            macAddress: mac_address 
+            macAddress: mac_address
           )
         }]
       }
