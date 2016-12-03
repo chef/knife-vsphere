@@ -22,6 +22,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
 
   common_options
 
+
   def run
     $stdout.sync = true
     vmname = @name_args[0]
@@ -44,7 +45,6 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
 
     network = find_network(networkname)
 
-    puts network.class
     case network
     when RbVmomi::VIM::DistributedVirtualPortgroup
       switch, pg_key = network.collect 'config.distributedVirtualSwitch', 'key'
@@ -60,65 +60,38 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     else fail
     end
 
-    adapter_type = ''
-    if config[:adapter_type] == 'vmxnet3'
-      puts 'Adapter type: vmxnet3'
-      adapter_type = 'vmxnet3'
-    end
-    if config[:adapter_type] == 'e1000'
-      adapter_type = 'e1000'
-      puts 'Adapter type: e1000'
-    end
-    if config[:adapter_type].nil?
-      puts 'Adapter type: default=vmxnet3'
-      adapter_type = 'vmxnet3'
-    end
+    device_type = case get_config(:adapter_type)
+      when 'e1000'
+        :VirtualE1000
+      when 'vmxnet3'
+        :VirtualVmxnet3
+      when *
+        fatal_exit('The adapter must be either e1000 or vmxnet3')
+      end
 
-    if config[:mac_address].nil?
-      mac_address = ''
-      address_type = 'generated'
-      puts 'MAC address: auto'
+    if get_config(:mac_address).nil?
+      addressType = 'generated'
+      macAddress = ''
     else
-      mac_address = config[:mac_address]
-      address_type = 'manual'
-      puts 'MAC address: ' + mac_address
+      addressType = 'manual'
+      macAddress = get_config(:mac_address)
     end
 
-    case adapter_type
-    when 'e1000'
-      vm.ReconfigVM_Task(
+    vm.ReconfigVM_Task(
         spec: {
           deviceChange: [{
             operation: :add,
             fileOperation: nil,
-            device: RbVmomi::VIM::VirtualE1000(
+            device: RbVmomi::VIM.send(device_type, {
               key: -1,
               deviceInfo: { summary: summary, label: '' },
               backing: backing,
-              addressType: address_type,
-              macAddress: mac_address
+              addressType: addressType,
+              macAddress: macAddress }
             )
           }]
         }
       ).wait_for_completion
-    when 'vmxnet3'
-      vm.ReconfigVM_Task(
-        spec: {
-          deviceChange: [{
-            operation: :add,
-            fileOperation: nil,
-            device: RbVmomi::VIM::VirtualVmxnet3(
-              key: -1,
-              deviceInfo: { summary: summary, label: '' },
-              backing: backing,
-              addressType: address_type,
-              macAddress: mac_address
-            )
-          }]
-        }
-      ).wait_for_completion
-    else
-      puts 'Unknown adapter type. Use e1000 or vmxnet3 (default)'
-    end
+
   end
 end
