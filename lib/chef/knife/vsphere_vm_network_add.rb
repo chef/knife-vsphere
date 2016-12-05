@@ -13,7 +13,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
   option :adapter_type,
          long: '--adapter-type STRING',
          description: 'Adapter type eg e1000,vmxnet3',
-         required: false
+         required: true
 
   option :mac_address,
          long: '--mac-address STRING',
