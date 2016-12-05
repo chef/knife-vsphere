@@ -86,6 +86,7 @@ currently supports the following:
 * Resource Pools and Clusters
 * Customization Specifications
 * Hosts in a Pool or Cluster
+* Network cards and VLANs for a VM
 
 
 ### VM Operations:
@@ -97,6 +98,7 @@ currently supports the following:
 * Migrate
 * Add network
 * Connect/disconnect network
+* Delete network
 * Change network
 * Enable VNC remote console
 
@@ -554,6 +556,15 @@ Add a network card to a VM and connect it to a network.
 --mac-address STRING       - Adapter MAC address eg. AA:BB:CC:DD:EE:FF
 
 ```
+
+## `knife vsphere vm network list VMNAME`
+
+List the network cards and their VLAN that are connected to a VM.
+
+## `knife vsphere vm network delete VMNAME NICNAME`
+
+Delete a network card from a VM.
+
 
 ## `knife vsphere vm wait sysprep`
 
