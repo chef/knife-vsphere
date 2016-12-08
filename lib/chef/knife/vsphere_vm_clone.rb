@@ -621,7 +621,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       cust_spec.globalIPSettings.dnsSuffixList = get_config(:customization_dns_suffixes).split(',')
     end
 
-    if config[:customization_ips]
+    if config[:customization_ips] != NO_IPS
       cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |cust_ip, index|
         generate_adapter_map(cust_ip, get_config(:customization_gw), mac_list[index])
       }
