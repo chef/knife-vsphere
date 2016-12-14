@@ -23,8 +23,10 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
     vms = find_all_in_folder(base_folder, RbVmomi::VIM::VirtualMachine)
           .select { |v| !v.config.nil? && v.config.template == true }
 
-    vms.each do |vm|
-      puts "#{ui.color('Template Name', :cyan)}: #{vm.name}"
+    vm_list = vms.map do |vm|
+      { 'Template Name' => vm.name }
     end
+
+    ui.output(vm_list)
   end
 end
