@@ -1,5 +1,3 @@
-require 'byebug'
-#
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # Contributor:: Jesse Campbell (<hikeit@gmail.com>)
 # Contributor:: Bethany Erskine (<bethany@paperlesspost.com>)
@@ -650,7 +648,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       cust_spec.globalIPSettings.dnsSuffixList = get_config(:customization_dns_suffixes).split(',')
     end
 
-    if config[:customization_ips] != NO_IPS
+    if config[:customization_ips]
       cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |cust_ip, index|
         generate_adapter_map(cust_ip, get_config(:customization_gw), mac_list[index])
       }
