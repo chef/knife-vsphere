@@ -21,11 +21,12 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
     base_folder = find_folder(get_config(:folder))
 
     vms = find_all_in_folder(base_folder, RbVmomi::VIM::VirtualMachine)
-          .select { |v| !v.config.nil? && v.config.template == true }
+    .select { |v| !v.config.nil? && v.config.template == true }
 
-    vm_list =vms.map do |vm|
-                 {"Template Name" => vm.name}
-              end
+    vm_list = vms.map do |vm|
+      { 'Template Name' => vm.name }
+    end
+
     ui.output(vm_list)
   end
 end
