@@ -536,11 +536,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     case
     when get_config(:host)
       rspec.host = find_host(get_config(:host))
+      hosts = find_available_hosts
+      rspec.pool = hosts.first.resourcePool
     when get_config(:resource_pool)
       rspec.pool = find_pool(get_config(:resource_pool))
     else
       hosts = find_available_hosts
-      hosts.first.resourcePool
+      rspec.pool = hosts.first.resourcePool
     end
 
     rspec.diskMoveType = :moveChildMostDiskBacking if get_config(:linked_clone)
