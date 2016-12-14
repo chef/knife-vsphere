@@ -1,3 +1,4 @@
+require 'byebug'
 #
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # Contributor:: Jesse Campbell (<hikeit@gmail.com>)
@@ -43,6 +44,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   option :datastorecluster,
          long: '--datastorecluster STORE',
          description: 'The datastorecluster into which to put the cloned VM'
+
+  option :host,
+         long: '--host HOST',
+         description: 'The host into which to put the cloned VM'
 
   option :resource_pool,
          long: '--resource-pool POOL',
@@ -505,16 +510,38 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     hosts
   end
 
+  def all_the_hosts
+    hosts = traverse_folders_for_computeresources(datacenter.hostFolder)
+    all_hosts = []
+    hosts.each do |host|
+      if host.is_a? RbVmomi::VIM::ClusterComputeResource
+        all_hosts.concat(host.host)
+      else
+        all_hosts.push host
+      end
+    end
+    all_hosts
+  end
+
+  def find_host(host_name)
+    host = all_the_hosts.find { |host| host.name == host_name }
+    raise "Can't find #{host_name}. I found #{all_the_hosts.map(&:name)}" unless host
+    host
+  end
+
   # Builds a CloneSpec
   def generate_clone_spec(src_config)
     rspec = RbVmomi::VIM.VirtualMachineRelocateSpec
 
-    rspec.pool = if get_config(:resource_pool)
-                   find_pool(get_config(:resource_pool))
-                 else
-                   hosts = find_available_hosts
-                   hosts.first.resourcePool
-                 end
+    case
+    when get_config(:host)
+      rspec.host = find_host(get_config(:host))
+    when get_config(:resource_pool)
+      rspec.pool = find_pool(get_config(:resource_pool))
+    else
+      hosts = find_available_hosts
+      hosts.first.resourcePool
+    end
 
     rspec.diskMoveType = :moveChildMostDiskBacking if get_config(:linked_clone)
 
