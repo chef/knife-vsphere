@@ -39,6 +39,31 @@ describe Chef::Knife::VsphereVmClone do
     end
   end
 
+  context 'cloning to a specific host' do
+    include_context 'basic_setup'
+
+    let(:desired_host) { 'myhost' }
+
+    before do
+      subject.config[:host] = desired_host
+      expect(subject).to receive(:find_host).with(desired_host).and_return(host)
+    end
+
+    it 'creates a specification that clones to the given host' do
+      expect(template).to receive(:CloneVM_Task) do |args|
+        expect(args[:spec].location.host).to eq host
+      end.and_return(task)
+      subject.run
+    end
+
+    it 'requires a pool' do
+      expect(template).to receive(:CloneVM_Task) do |args|
+        expect(args[:spec].location.pool).to eq pool
+      end.and_return(task)
+      subject.run
+    end
+  end
+
   context 'customizing the mac' do
     before do
       allow(subject).to receive(:vim_connection).and_return(vim)

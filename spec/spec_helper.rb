@@ -114,7 +114,8 @@ RSpec.shared_context 'basic_setup' do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
   let(:guest_id) { 'Other Linux' }
-  let(:host) { double('Host', resourcePool: double('ResourcePool')) }
+  let(:pool) { double('ResourcePool') }
+  let(:host) { double('Host', resourcePool: pool) }
   let(:service_content) { double('ServiceContent') }
   let(:template) { double('Template', config: double(guestId: guest_id)) }
   let(:vim) { double('VimConnection', serviceContent: service_content) }
