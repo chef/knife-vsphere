@@ -17,11 +17,11 @@ class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
 
     if folder.is_a? RbVmomi::VIM::ClusterComputeResource
       clusters = folder.path[3..-1].reject { |p| p.last == 'ClusterComputeResource' }
-      puts "#{ui.color('Cluster', :cyan)}: " + clusters.map(&:last).join('/')
+      return { 'Cluster' => clusters.map(&:last).join('/') }
     end
 
     folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject) || []
-    folders.each do |child|
+    folders.map do |child|
       traverse_folders(child)
     end
   end
@@ -42,6 +42,6 @@ class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
   def run
     vim_connection
     base_folder = find_cluster_folder(get_config(:folder))
-    traverse_folders(base_folder)
+    ui.output(traverse_folders(base_folder))
   end
 end

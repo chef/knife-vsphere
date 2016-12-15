@@ -31,12 +31,13 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
       return
     end
 
-    pools.each do |pool|
-      puts "#{ui.color('Pool', :cyan)}: #{pool.name}"
+    pool_list = pools.map do |pool|
       hosts = pool.host || []
-      hosts.each do |hostc|
-        puts "  #{ui.color('Host', :cyan)}: #{hostc.name}"
+      host_list = hosts.map do |hostc|
+        { 'Host' => hostc.name }
       end
+      { 'Pool' => pool.name, 'Hosts' => host_list }
     end
+    ui.output(pool_list)
   end
 end

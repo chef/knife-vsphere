@@ -52,17 +52,21 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
 
     vim_connection
     dc = datacenter
-    dc.datastore.each do |store|
+    datastores = dc.datastore.map do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
-      puts "#{ui.color('Datastore', :cyan)}: #{store.name} (#{avail} / #{cap})"
-      next unless get_config(:list)
-      store.vm.each do |vms|
-        host_name = vms.guest[:hostName]
-        guest_full_name = vms.guest[:guest_full_name]
-        guest_state = vms.guest[:guest_state]
-        puts "#{ui.color('VM Name:', :green)} #{host_name} #{ui.color('OS:', :magenta)} #{guest_full_name} #{ui.color('State:', :cyan)} #{guest_state}"
+      ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
+      if get_config(:list)
+        vms = store.vm.map do |vm|
+          host_name = vm.guest[:hostName]
+          guest_full_name = vm.guest[:guest_full_name]
+          guest_state = vm.guest[:guest_state]
+          { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
+        end
+        ds_info['Vms'] = vms
       end
+      ds_info
     end
+    ui.output(datastores)
   end
 end
