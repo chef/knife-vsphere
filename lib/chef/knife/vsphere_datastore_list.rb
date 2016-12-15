@@ -55,13 +55,13 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
     datastores = dc.datastore.map do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
-      ds_info = {'Datastore' => store.name, 'Free'=> avail, 'Capacity' => cap}
+      ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
       if get_config(:list)
         vms = store.vm.map do |vm|
           host_name = vm.guest[:hostName]
           guest_full_name = vm.guest[:guest_full_name]
           guest_state = vm.guest[:guest_state]
-          {'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state}
+          { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
         end
         ds_info['Vms'] = vms
       end

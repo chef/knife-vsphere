@@ -17,7 +17,7 @@ class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
 
     if folder.is_a? RbVmomi::VIM::ClusterComputeResource
       clusters = folder.path[3..-1].reject { |p| p.last == 'ClusterComputeResource' }
-      return {'Cluster'=>clusters.map(&:last).join('/')}
+      return { 'Cluster' => clusters.map(&:last).join('/') }
     end
 
     folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject) || []
