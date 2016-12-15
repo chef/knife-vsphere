@@ -36,7 +36,7 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
       host_list = hosts.map do |hostc|
         { 'Host' => hostc.name }
       end
-      { 'Pool' => pool.name,'Hosts' =>host_list }
+      { 'Pool' => pool.name, 'Hosts' => host_list }
     end
     ui.output(pool_list)
   end
