@@ -46,27 +46,47 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          short: '-L',
          description: "Indicates whether to list VM's in datastore",
          boolean: true
+  option :pool,
+         long: '--pool pool',
+         short: '-h',
+         description: 'Target pool'
+
+  def find_pools(folder, poolname = nil)
+    pools = folder.children.find_all.select { |p| p.is_a?(RbVmomi::VIM::ComputeResource) || p.is_a?(RbVmomi::VIM::ResourcePool) }
+    poolname.nil? ? pools : pools.select { |p| p.name == poolname }
+  end
 
   def run
     $stdout.sync = true
 
     vim_connection
     dc = datacenter
-    datastores = dc.datastore.map do |store|
-      avail = number_to_human_size(store.summary[:freeSpace])
-      cap = number_to_human_size(store.summary[:capacity])
-      ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
-      if get_config(:list)
-        vms = store.vm.map do |vm|
-          host_name = vm.guest[:hostName]
-          guest_full_name = vm.guest[:guest_full_name]
-          guest_state = vm.guest[:guest_state]
-          { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
-        end
-        ds_info['Vms'] = vms
-      end
-      ds_info
+    folder = dc.hostFolder
+    target_pool = config[:pool]
+
+    pools = find_pools(folder, target_pool)
+    if target_pool && pools.empty?
+      puts "Pool #{target_pool} not found"
+      return
     end
-    ui.output(datastores)
+    pool_info = pools.map do |pool|
+      datastores = pool.datastore.map do |store|
+        avail = number_to_human_size(store.summary[:freeSpace])
+        cap = number_to_human_size(store.summary[:capacity])
+        ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
+        if get_config(:list)
+          vms = store.vm.map do |vm|
+            host_name = vm.guest[:hostName]
+            guest_full_name = vm.guest[:guest_full_name]
+            guest_state = vm.guest[:guest_state]
+            { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
+          end
+          ds_info['Vms'] = vms
+        end
+        ds_info
+      end
+      { 'Pool' => pool.name, 'Datastores' => datastores }
+    end
+    ui.output(pool_info)
   end
 end
