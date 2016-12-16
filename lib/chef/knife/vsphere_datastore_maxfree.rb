@@ -39,7 +39,7 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
 
     vim_connection
     dcname = get_config(:vsphere_dc)
-    regex = /#{Regexp.escape(get_config(:regex))}/
+    regex = /#{get_config(:regex)}/
     dc = config[:vim].serviceInstance.find_datacenter(dcname) || abort('datacenter not found')
     max = nil
     datastores = if get_config(:vlan)
