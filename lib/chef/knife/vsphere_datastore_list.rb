@@ -45,7 +45,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
     vim_connection
     dc = datacenter
     folder = dc.hostFolder
-    target_pool = config[:pool]
+    target_pool = get_config(:pool)
 
     pools = find_pools(folder, target_pool)
     if target_pool && pools.empty?
