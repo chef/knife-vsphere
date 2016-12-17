@@ -52,24 +52,32 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
       puts "Pool #{target_pool} not found"
       return
     end
+
     pool_info = pools.map do |pool|
-      datastores = pool.datastore.map do |store|
-        avail = number_to_human_size(store.summary[:freeSpace])
-        cap = number_to_human_size(store.summary[:capacity])
-        ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
-        if get_config(:list)
-          vms = store.vm.map do |vm|
-            host_name = vm.guest[:hostName]
-            guest_full_name = vm.guest[:guest_full_name]
-            guest_state = vm.guest[:guest_state]
-            { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
-          end
-          ds_info['Vms'] = vms
-        end
-        ds_info
-      end
+      datastores = list_ds(pool)
       { 'Pool' => pool.name, 'Datastores' => datastores }
     end
     ui.output(pool_info)
+  end
+
+  private
+
+  def list_vms(store)
+    store.vm.map do |vm|
+      host_name = vm.guest[:hostName]
+      guest_full_name = vm.guest[:guest_full_name]
+      guest_state = vm.guest[:guest_state]
+      { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
+    end
+  end
+
+  def list_ds(pool)
+    pool.datastore.map do |store|
+      avail = number_to_human_size(store.summary[:freeSpace])
+      cap = number_to_human_size(store.summary[:capacity])
+      ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
+      ds_info['Vms'] = list_vms(store) if get_config(:list)
+      ds_info
+    end
   end
 end
