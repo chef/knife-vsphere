@@ -34,8 +34,10 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          description: 'Target pool'
 
   def find_pools(folder, poolname = nil)
-    pools = folder.children.find_all.select { |p| p.is_a?(RbVmomi::VIM::ComputeResource) || p.is_a?(RbVmomi::VIM::ResourcePool) }
-    poolname.nil? ? pools : pools.select { |p| p.name == poolname }
+    pools = traverse_folders_for_pools(folder)
+    clusters = traverse_folders_for_computeresources(folder)
+    cluster_pool = clusters + pools
+    poolname.nil? ? cluster_pool : cluster_pool.select { |p| p.name == poolname }
   end
 
   def run
