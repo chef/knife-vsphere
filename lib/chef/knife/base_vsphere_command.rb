@@ -293,6 +293,23 @@ class Chef
         nil
       end
 
+      def number_to_human_size(number)
+        number = number.to_f
+        storage_units_fmt = %w(byte kB MB GB TB)
+        base = 1024
+        if number.to_i < base
+          unit = storage_units_fmt[0]
+        else
+          max_exp = storage_units_fmt.size - 1
+          exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
+          exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
+          number /= base**exponent
+          unit = storage_units_fmt[exponent]
+        end
+
+        format('%0.2f %s', number, unit)
+      end
+
       def find_device(vm, deviceName)
         vm.config.hardware.device.each do |device|
           return device if device.deviceInfo.label == deviceName
