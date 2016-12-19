@@ -146,6 +146,19 @@ class Chef
         false
       end
 
+      def traverse_folders_for_pools(folder)
+        retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::ResourcePool
+            retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_pools(child))
+          end
+        end
+        retval
+      end
+
       def traverse_folders_for_computeresources(folder)
         retval = []
         children = folder.children.find_all
