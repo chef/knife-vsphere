@@ -31,7 +31,6 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          boolean: true
   option :pool,
          long: '--pool pool',
-         short: '-h',
          description: 'Target pool'
 
   def find_pools(folder, poolname = nil)
