@@ -33,13 +33,6 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          long: '--pool pool',
          description: 'Target pool'
 
-  def find_pools(folder, poolname = nil)
-    pools = traverse_folders_for_pools(folder)
-    clusters = traverse_folders_for_computeresources(folder)
-    cluster_pool = clusters + pools
-    poolname.nil? ? cluster_pool : cluster_pool.select { |p| p.name == poolname }
-  end
-
   def run
     $stdout.sync = true
 
@@ -48,7 +41,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
     folder = dc.hostFolder
     target_pool = get_config(:pool)
 
-    pools = find_pools(folder, target_pool)
+    pools = find_pools_and_clusters(folder, target_pool)
     if target_pool && pools.empty?
       puts "Pool #{target_pool} not found"
       return
