@@ -18,23 +18,6 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
-def number_to_human_size(number)
-  number = number.to_f
-  storage_units_fmt = %w(byte kB MB GB TB)
-  base = 1024
-  if number.to_i < base
-    unit = storage_units_fmt[0]
-  else
-    max_exp = storage_units_fmt.size - 1
-    exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
-    exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-    number /= base**exponent
-    unit = storage_units_fmt[exponent]
-  end
-
-  format('%0.2f %s', number, unit)
-end
-
 # Lists all known data stores in datacenter with sizes
 class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere datastore list'
@@ -46,27 +29,56 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          short: '-L',
          description: "Indicates whether to list VM's in datastore",
          boolean: true
+  option :pool,
+         long: '--pool pool',
+         description: 'Target pool'
+
+  def find_pools(folder, poolname = nil)
+    pools = traverse_folders_for_pools(folder)
+    clusters = traverse_folders_for_computeresources(folder)
+    cluster_pool = clusters + pools
+    poolname.nil? ? cluster_pool : cluster_pool.select { |p| p.name == poolname }
+  end
 
   def run
     $stdout.sync = true
 
     vim_connection
     dc = datacenter
-    datastores = dc.datastore.map do |store|
+    folder = dc.hostFolder
+    target_pool = get_config(:pool)
+
+    pools = find_pools(folder, target_pool)
+    if target_pool && pools.empty?
+      puts "Pool #{target_pool} not found"
+      return
+    end
+
+    pool_info = pools.map do |pool|
+      datastores = list_ds(pool)
+      { 'Pool' => pool.name, 'Datastores' => datastores }
+    end
+    ui.output(pool_info)
+  end
+
+  private
+
+  def list_vms(store)
+    store.vm.map do |vm|
+      host_name = vm.guest[:hostName]
+      guest_full_name = vm.guest[:guest_full_name]
+      guest_state = vm.guest[:guest_state]
+      { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
+    end
+  end
+
+  def list_ds(pool)
+    pool.datastore.map do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
       ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
-      if get_config(:list)
-        vms = store.vm.map do |vm|
-          host_name = vm.guest[:hostName]
-          guest_full_name = vm.guest[:guest_full_name]
-          guest_state = vm.guest[:guest_state]
-          { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
-        end
-        ds_info['Vms'] = vms
-      end
+      ds_info['Vms'] = list_vms(store) if get_config(:list)
       ds_info
     end
-    ui.output(datastores)
   end
 end

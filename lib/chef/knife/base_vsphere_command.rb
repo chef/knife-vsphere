@@ -146,6 +146,19 @@ class Chef
         false
       end
 
+      def traverse_folders_for_pools(folder)
+        retval = []
+        children = folder.children.find_all
+        children.each do |child|
+          if child.class == RbVmomi::VIM::ResourcePool
+            retval << child
+          elsif child.class == RbVmomi::VIM::Folder
+            retval.concat(traverse_folders_for_pools(child))
+          end
+        end
+        retval
+      end
+
       def traverse_folders_for_computeresources(folder)
         retval = []
         children = folder.children.find_all
@@ -291,6 +304,23 @@ class Chef
           end
         end
         nil
+      end
+
+      def number_to_human_size(number)
+        number = number.to_f
+        storage_units_fmt = %w(byte kB MB GB TB)
+        base = 1024
+        if number.to_i < base
+          unit = storage_units_fmt[0]
+        else
+          max_exp = storage_units_fmt.size - 1
+          exponent = (Math.log(number) / Math.log(base)).to_i # Convert to base
+          exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
+          number /= base**exponent
+          unit = storage_units_fmt[exponent]
+        end
+
+        format('%0.2f %s', number, unit)
       end
 
       def find_device(vm, deviceName)
