@@ -198,6 +198,13 @@ class Chef
         false
       end
 
+      def find_pools_and_clusters(folder, poolname = nil)
+        pools = traverse_folders_for_pools(folder)
+        clusters = traverse_folders_for_computeresources(folder)
+        cluster_pool = clusters + pools
+        poolname.nil? ? cluster_pool : cluster_pool.select { |p| p.name == poolname }
+      end
+
       def datacenter
         dcname = get_config(:vsphere_dc)
         traverse_folders_for_dc(vim_connection.rootFolder, dcname) || abort('datacenter not found')

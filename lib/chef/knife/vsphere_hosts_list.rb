@@ -13,13 +13,6 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
          short: '-h',
          description: 'Target pool'
 
-  def find_pools(folder, poolname = nil)
-    pools = traverse_folders_for_pools(folder)
-    clusters = traverse_folders_for_computeresources(folder)
-    cluster_pool = clusters + pools
-    poolname.nil? ? cluster_pool : cluster_pool.select { |p| p.name == poolname }
-  end
-
   def run
     vim_connection
     dc = datacenter
@@ -27,7 +20,7 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
 
     target_pool = config[:pool]
 
-    pools = find_pools(folder, target_pool)
+    pools = find_pools_and_clusters(folder, target_pool)
     if target_pool && pools.empty?
       puts "Pool #{target_pool} not found"
       return
