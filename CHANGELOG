@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+1.2.22  warroyo  - Use presenters for cluster, host, datastore listings 
+                   Means -f json and -f yaml work!
+		    zachsmorgan  - stop escaping regexps in datastore maxfree
+				swalberg - Clone to specific host (thanks to @jjashgar for help)
+        mheidenr - check if config[:customization_ips] is still the default NO_IPS
+
 1.2.21  coda4096 - Set MAC and NIC type in vm network add
 
 1.2.20  coda4096 - Delete a NIC
