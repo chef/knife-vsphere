@@ -1,5 +1,6 @@
 knife-vsphere changelog
 ----------------------
+1.2.23  mheidenr - re-add accidentally reverted fix from '22
 1.2.22  warroyo  - Use presenters for cluster, host, datastore listings 
                    Means -f json and -f yaml work!
 		    zachsmorgan  - stop escaping regexps in datastore maxfree
