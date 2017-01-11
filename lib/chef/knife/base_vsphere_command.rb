@@ -12,7 +12,6 @@ require 'filesize'
 PS_ON ||= 'poweredOn'.freeze
 PS_OFF ||= 'poweredOff'.freeze
 PS_SUSPENDED ||= 'suspended'.freeze
-UUID_RE = /^([0-9a-f]{2}[ -]{0,1})*$/
 
 # Base class for vsphere knife commands
 class Chef
