@@ -12,6 +12,7 @@ require 'filesize'
 PS_ON ||= 'poweredOn'.freeze
 PS_OFF ||= 'poweredOff'.freeze
 PS_SUSPENDED ||= 'suspended'.freeze
+UUID_RE = /^([0-9a-f]{2}[ -]{0,1})*$/
 
 # Base class for vsphere knife commands
 class Chef
@@ -224,8 +225,6 @@ class Chef
       end
 
       def find_network(networkName, dvswitch = nil)
-        switch_uuid = true if dvswitch =~ /^([0-9a-f]{2}[ -]{0,1})*$/
-
         dc = datacenter
         base_entity = dc.network
 
@@ -233,9 +232,11 @@ class Chef
           base_entity.select { |f| f.name == networkName } ||
           abort("no such network #{networkName}")
 
-        if dvswitch
-          return networks.find { |f| f.config.distributedVirtualSwitch.uuid == dvswitch } if switch_uuid
-          return networks.find { |f| f.config.distributedVirtualSwitch.name == dvswitch }
+        if dvswitch && dvswitch != 'auto'
+          return networks.find do |f|
+            sw = f.config.distributedVirtualSwitch
+            sw.uuid == dvswitch || sw.name == dvswitch
+          end
         end
 
         networks.first
