@@ -23,7 +23,6 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
     pools = find_pools_and_clusters(folder, target_pool)
     if target_pool && pools.empty?
       fatal_exit("Pool #{target_pool} not found")
-      return
     end
 
     pool_list = pools.map do |pool|
