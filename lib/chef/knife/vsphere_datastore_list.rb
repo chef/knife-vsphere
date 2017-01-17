@@ -43,8 +43,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
 
     pools = find_pools_and_clusters(folder, target_pool)
     if target_pool && pools.empty?
-      puts "Pool #{target_pool} not found"
-      return
+      fatal_exit("Pool #{target_pool} not found")
     end
 
     pool_info = pools.map do |pool|
