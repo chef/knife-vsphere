@@ -312,7 +312,7 @@ These options are related to the customization of the VM by the vSphere agent. T
 --cspec CUST_SPEC - The name of any customization specifications that are defined in vCenter to apply
 --ctz CUST_TIMEZONE - Timezone in valid 'Area/Location' format
 --cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
---disable-customization - By default customizations will be applied to the customization specification (see below).  Disable these convention with this switch
+--disable-customization - By default customizations will be applied to the customization specification (see below).  Disable these convention with this switch (default value is `false`)
 --random-vmname - Creates a random VMNAME starts with vm-XXXXXXXX
 --random-vmname-prefix - Change the VMNAME prefix
 ```
@@ -340,12 +340,12 @@ $ knife vsphere vm clone NewNode --template UbuntuTemplate --cspec StaticSpec \
 ```
 
 The customization specification defaults can be disabled using the
-`--disable-customization` switch. If you specify a `--cspec` with this option,
+`--disable-customization true` switch. If you specify a `--cspec` with this option,
 that spec will still be applied.
 
 NOTE: if you are specifying a `--cspec` and the cloning process appears to not
-be properly applying the spec as defined on vSphere, consider using the
-`--disable-customization` as the conventions described above could be
+be properly applying the spec as defined on vSphere, consider using
+`--disable-customization true` as the conventions described above could be
 erroneously interfering with the spec as defined on vSphere.
 
 Customization specifications can also be specified in code using the `--cplugin`
@@ -538,7 +538,7 @@ interfaces. Posible states are up/down.
 
 ## `knife vsphere vm network set`
 
-Set NETWORKNAME on first interface of VMNAME. Works for both standard and distributed switches. 
+Set NETWORKNAME on first interface of VMNAME. Works for both standard and distributed switches.
 
 ```bash
 --nic INTEGER     - NIC to change (optional, default 0)
