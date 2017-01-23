@@ -32,27 +32,40 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
          long: '--vlan VLAN',
          description: 'Require listed vlan available to datastore\'s parent'
 
+  option :pool,
+         long: '--pool pool',
+         description: 'Target pool'
+
   common_options
 
   def run
     $stdout.sync = true
+    if get_config(:vlan) && get_config(:pool)
+      fatal_exit('Please select either vlan or pool')
+    end
 
     vim_connection
-    dcname = get_config(:vsphere_dc)
     regex = /#{get_config(:regex)}/
-    dc = config[:vim].serviceInstance.find_datacenter(dcname) || abort('datacenter not found')
     max = nil
-    datastores = if get_config(:vlan)
-                   find_network(get_config(:vlan)).host.map(&:datastore).flatten
-                 else
-                   dc.datastore
-                 end
+    datastores = find_datastores
     datastores.each do |store|
       if regex.match(store.name) &&
          (max.nil? || max.summary[:freeSpace] < store.summary[:freeSpace])
         max = store
       end
     end
-    puts max ? max.name : ''
+    ui.output(max ? { 'Datastore' => max.name } : {})
+  end
+end
+
+private
+
+def find_datastores
+  if get_config(:vlan)
+    find_network(get_config(:vlan)).host.map(&:datastore).flatten
+  elsif get_config(:pool)
+    find_pools_and_clusters(datacenter.hostFolder, get_config(:pool)).map(&:datastore).flatten
+  else
+    datacenter.datastore
   end
 end
