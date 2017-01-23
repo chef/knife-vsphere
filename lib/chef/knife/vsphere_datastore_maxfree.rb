@@ -34,7 +34,7 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
 
   option :pool,
          long: '--pool pool',
-         description: 'Target pool'
+         description: 'Pool or Cluster to search for datastores in'
 
   common_options
 
