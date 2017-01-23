@@ -443,6 +443,8 @@ Gets the datastore with the most free space
 
 ```bash
 --regex           - Pattern to match the datastore name
+--vlan            - Require listed vlan available to datastore's parent
+--pool            - Pool or Cluster to search for datastores in
 ```
 
 ## `knife vsphere datastore file`
