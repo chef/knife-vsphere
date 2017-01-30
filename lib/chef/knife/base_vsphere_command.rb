@@ -227,9 +227,8 @@ class Chef
         dc = datacenter
         base_entity = dc.network
 
-        networks =
-          base_entity.select { |f| f.name == networkName } ||
-          abort("no such network #{networkName}")
+        networks = base_entity.select { |f| f.name == networkName }
+        abort("no such network #{networkName}") if networks.empty?
 
         if dvswitch && dvswitch != 'auto'
           return networks.find do |f|
