@@ -597,7 +597,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     if get_config(:customization_vlan)
       vlan_list = get_config(:customization_vlan).split(',')
-      networks = vlan_list.map { |vlan| find_network(vlan) }
+      sw_uuid   = get_config(:customization_sw_uuid)
+      networks  = vlan_list.map { |vlan| find_network(vlan, sw_uuid) }
 
       cards = src_config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
 

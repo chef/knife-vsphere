@@ -223,10 +223,21 @@ class Chef
         base_entity
       end
 
-      def find_network(networkName)
+      def find_network(networkName, dvswitch = nil)
         dc = datacenter
         base_entity = dc.network
-        base_entity.find { |f| f.name == networkName } || abort("no such network #{networkName}")
+
+        networks = base_entity.select { |f| f.name == networkName }
+        abort("no such network #{networkName}") if networks.empty?
+
+        if dvswitch && dvswitch != 'auto'
+          return networks.find do |f|
+            sw = f.config.distributedVirtualSwitch
+            sw.uuid == dvswitch || sw.name == dvswitch
+          end
+        end
+
+        networks.first
       end
 
       def find_pool(poolName)
