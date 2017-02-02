@@ -1,6 +1,12 @@
 knife-vsphere changelog
 ----------------------
+1.2.24  dhgwilliam - add support for filtering networks by dvswitch
+        warroyo    - add formatted output and ability to filter on pool/cluster
+				           - add proper exit codes
+        scotthain  - README corrections
+
 1.2.23  mheidenr - re-add accidentally reverted fix from '22
+
 1.2.22  warroyo  - Use presenters for cluster, host, datastore listings 
                    Means -f json and -f yaml work!
 		    zachsmorgan  - stop escaping regexps in datastore maxfree
