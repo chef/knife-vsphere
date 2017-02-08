@@ -54,7 +54,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       )
       summary = network.name
       backing = RbVmomi::VIM.VirtualEthernetCardDistributedVirtualPortBackingInfo(port: port)
-    when VIM::Network
+    when RbVmomi::VIM::Network
       summary = network.name
       backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: network.name)
     else fail
