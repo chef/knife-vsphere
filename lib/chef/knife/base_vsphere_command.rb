@@ -232,6 +232,7 @@ class Chef
 
         if dvswitch && dvswitch != 'auto'
           return networks.find do |f|
+            next unless f.respond_to?(:config)
             sw = f.config.distributedVirtualSwitch
             sw.uuid == dvswitch || sw.name == dvswitch
           end
