@@ -71,6 +71,10 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          long: '--hostname',
          description: 'show hostname'
 
+  option :host_name,
+         long: '--host_name',
+         description: 'show name of the VMs host'
+
   option :os,
          long: '--os',
          description: 'show os details'
@@ -166,6 +170,9 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
       print "#{ui.color('VM Name:', :cyan)} #{vmc.name}\t"
       if get_config(:hostname)
         print "#{ui.color('Hostname:', :cyan)} #{vmc.guest.hostName}\t"
+      end
+      if get_config(:host_name)
+        print "#{ui.color('Host_name:', :cyan)} #{vmc.summary.runtime.host.name}\t"
       end
 
       if get_config(:full_path)
