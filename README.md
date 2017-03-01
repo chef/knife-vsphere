@@ -183,6 +183,12 @@ is currently displayed.
 Search for Virtual Machines matching criteria in the specified pool and
 display selected fields
 
+Required arguments:
+
+```bash
+--pool POOL_NAME           -Name of the pool to search in
+```
+
 CRITERIA:
 ```bash
 --match-ip IP                match ip
@@ -200,6 +206,7 @@ FIELDS:
 --esx-disk                   Show esx disks
 --full-path                  Show full path
 --hostname                   show hostname
+--host_name                  Show name of the VM's host
 --ip                         Show primary ip
 --ips                        Show all ips assigned to VM with network (format: VLAN1:IP1,VLAN2:IP2)
 --os                         Show os details
