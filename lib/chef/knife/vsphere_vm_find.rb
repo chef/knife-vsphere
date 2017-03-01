@@ -172,7 +172,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
         print "#{ui.color('Hostname:', :cyan)} #{vmc.guest.hostName}\t"
       end
       if get_config(:host_name)
-	print "#{ui.color('Host_name:', :cyan)} #{vmc.summary.runtime.host.name}\t"
+        print "#{ui.color('Host_name:', :cyan)} #{vmc.summary.runtime.host.name}\t"
       end
 
       if get_config(:full_path)
