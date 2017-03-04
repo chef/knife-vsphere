@@ -189,6 +189,14 @@ Required arguments:
 --pool POOL_NAME           -Name of the pool to search in
 ```
 
+<<<<<<< HEAD
+OPTIONS:
+```bash
+--pool-path                  do not search for pool name,pool argument is an exact path
+```
+
+=======
+>>>>>>> 2cf4b7f... knife vsphere vm find --host_name (#350)
 CRITERIA:
 ```bash
 --match-ip IP                match ip
