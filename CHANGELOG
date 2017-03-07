@@ -1,5 +1,6 @@
 knife-vsphere changelog
 ----------------------
+1.2.25  warroyo    - more formatting, exit codes
 1.2.24  dhgwilliam - add support for filtering networks by dvswitch
         warroyo    - add formatted output and ability to filter on pool/cluster
 				           - add proper exit codes
