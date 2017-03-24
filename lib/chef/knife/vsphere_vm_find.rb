@@ -19,6 +19,10 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          short: '-h',
          description: 'Target pool'
 
+  option :poolpath,
+         long: '--pool-path',
+         description: 'Pool is full-path'
+
   option :esx_disk,
          long: '--esx-disk',
          description: 'Show esx disks'
@@ -121,9 +125,11 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
     vim_connection
     dc = datacenter
     folder = dc.hostFolder
-
-    pool = traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
-
+    pool = if get_config(:poolpath)
+             find_pool(poolname) || abort("Pool #{poolname} not found")
+           else
+             traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
+           end
     vm = if pool.class == RbVmomi::VIM::ResourcePool
            pool.vm
          else
