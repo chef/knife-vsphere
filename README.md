@@ -1,4 +1,4 @@
-# Knife vSphere
+# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
 [![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
@@ -189,14 +189,11 @@ Required arguments:
 --pool POOL_NAME           -Name of the pool to search in
 ```
 
-<<<<<<< HEAD
 OPTIONS:
 ```bash
 --pool-path                  do not search for pool name,pool argument is an exact path
 ```
 
-=======
->>>>>>> 2cf4b7f... knife vsphere vm find --host_name (#350)
 CRITERIA:
 ```bash
 --match-ip IP                match ip
@@ -695,7 +692,7 @@ Authors
 ```
 Copyright
   Copyright © 2011-2013 Ezra Pagel
-  Copyright © 2015-2016 Chef Software, Inc
+  Copyright © 2015-2017 Chef Software, Inc
 ```
 
 ```
