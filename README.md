@@ -239,7 +239,7 @@ Manage power state of a virtual machine, aka turn it off and on
 ```bash
 -s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended|reboot
 -w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
--g, --shutdown             - Guest OS shutdown
+-g, --shutdown             - Guest OS shutdown (format: -s off -g)
 -r, --recursive            - Recurse down through sub-folders to the specified folder to find the VM
 ```
 
