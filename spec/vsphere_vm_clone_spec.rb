@@ -37,6 +37,10 @@ describe Chef::Knife::VsphereVmClone do
       expect(subject).to receive(:vim_connection).and_raise ArgumentError
       expect { subject.run }.to raise_error ArgumentError
     end
+
+    it 'tests hound' do
+      expect(1).to eq(1)
+    end
   end
 
   context 'cloning to a specific host' do
