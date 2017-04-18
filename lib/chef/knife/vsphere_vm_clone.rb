@@ -127,8 +127,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          long: '--ccpu CUST_CPU_COUNT',
          description: 'Number of CPUs'
 
+  option :customization_corespersocket,
+         long: '--ccorespersocket CUST_CPU_CORES_PER_SOCKET',
+         description: 'Number of CPU Cores per Socket'
+
   option :customization_memory,
          long: '--cram CUST_MEMORY_GB',
+         description: 'Gigabytes of RAM'
+
+  option :customization_memory_reservation,
+         long: '--cram_reservation CUST_MEMORY_RESERVATION_GB',
          description: 'Gigabytes of RAM'
 
   option :power,
@@ -574,8 +582,16 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       clone_spec.config.numCPUs = get_config(:customization_cpucount)
     end
 
+    if get_config(:customization_corespersocket)
+      clone_spec.config.numCoresPerSocket = get_config(:customization_corespersocket)
+    end
+
     if get_config(:customization_memory)
       clone_spec.config.memoryMB = Integer(get_config(:customization_memory)) * 1024
+    end
+
+    if get_config(:customization_memory_reservation)
+      clone_spec.config.memoryAllocation = RbVmomi::VIM.ResourceAllocationInfo reservation: Integer(get_config(:customization_memory_reservation)) * 1024
     end
 
     mac_list = if get_config(:customization_macs) == AUTO_MAC
