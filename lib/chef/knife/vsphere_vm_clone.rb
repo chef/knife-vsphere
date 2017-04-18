@@ -136,8 +136,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: 'Gigabytes of RAM'
 
   option :customization_memory_reservation,
-         long: '--cram_reservation CUST_MEMORY_RESERVATION_GB',
-         description: 'Gigabytes of RAM'
+         long: '--cram_reservation CUST_MEMORY_RESERVATION_MB',
+         description: 'Megabytes of RAM'
 
   option :power,
          long: '--start',
@@ -591,7 +591,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:customization_memory_reservation)
-      clone_spec.config.memoryAllocation = RbVmomi::VIM.ResourceAllocationInfo reservation: Integer(get_config(:customization_memory_reservation)) * 1024
+      clone_spec.config.memoryAllocation = RbVmomi::VIM.ResourceAllocationInfo reservation: get_config(:customization_memory_reservation)
     end
 
     mac_list = if get_config(:customization_macs) == AUTO_MAC
