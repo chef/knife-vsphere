@@ -107,7 +107,9 @@ currently supports the following:
 
 * Destination folder
 * CPU core count
+* CPU cores per socket
 * Memory size
+* Memory reservation
 * DNS settings
 * Hostname / Domain name
 * IP addresses / default gateway
@@ -313,6 +315,7 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 These options are related to the customization of the VM by the vSphere agent. They include hardware settings and networking.
 ```bash
 --ccpu CUST_CPU_COUNT - Number of CPUs
+--ccorespersocket CUST_CPU_CORES_PER_SOCKET - Number of CPU Cores per Socket
 --cdomain CUST_DOMAIN - Domain name for customization
 --cgw CUST_GW - CIDR IP of gateway for customization
 --chostname CUST_HOSTNAME - Unqualified hostname for customization
@@ -321,6 +324,7 @@ These options are related to the customization of the VM by the vSphere agent. T
 --cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
 --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
 --cram CUST_MEMORY_GB - Gigabytes of RAM
+--cram_reservation CUST_MEMORY_RESERVATION_GB - Gigabytes of RAM
 --cspec CUST_SPEC - The name of any customization specifications that are defined in vCenter to apply
 --ctz CUST_TIMEZONE - Timezone in valid 'Area/Location' format
 --cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
