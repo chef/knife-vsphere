@@ -1,4 +1,4 @@
-# Knife vSphere
+# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
 [![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
@@ -107,7 +107,9 @@ currently supports the following:
 
 * Destination folder
 * CPU core count
+* CPU cores per socket
 * Memory size
+* Memory reservation
 * DNS settings
 * Hostname / Domain name
 * IP addresses / default gateway
@@ -189,6 +191,11 @@ Required arguments:
 --pool POOL_NAME           -Name of the pool to search in
 ```
 
+OPTIONS:
+```bash
+--pool-path                  do not search for pool name,pool argument is an exact path
+```
+
 CRITERIA:
 ```bash
 --match-ip IP                match ip
@@ -231,7 +238,7 @@ Manage power state of a virtual machine, aka turn it off and on
 ```bash
 -s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended|reboot
 -w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
--g, --shutdown             - Guest OS shutdown
+-g, --shutdown             - Guest OS shutdown (format: -s off -g)
 -r, --recursive            - Recurse down through sub-folders to the specified folder to find the VM
 ```
 
@@ -308,6 +315,7 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 These options are related to the customization of the VM by the vSphere agent. They include hardware settings and networking.
 ```bash
 --ccpu CUST_CPU_COUNT - Number of CPUs
+--ccorespersocket CUST_CPU_CORES_PER_SOCKET - Number of CPU Cores per Socket
 --cdomain CUST_DOMAIN - Domain name for customization
 --cgw CUST_GW - CIDR IP of gateway for customization
 --chostname CUST_HOSTNAME - Unqualified hostname for customization
@@ -316,6 +324,7 @@ These options are related to the customization of the VM by the vSphere agent. T
 --cplugin CUST_PLUGIN_PATH - Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm
 --cplugin-data CUST_PLUGIN_DATA - String of data to pass to the plugin.  Use any format you wish.
 --cram CUST_MEMORY_GB - Gigabytes of RAM
+--cram_reservation CUST_MEMORY_RESERVATION_GB - Gigabytes of RAM
 --cspec CUST_SPEC - The name of any customization specifications that are defined in vCenter to apply
 --ctz CUST_TIMEZONE - Timezone in valid 'Area/Location' format
 --cvlan CUST_VLANS - Comma-delimited list of VLAN names for the network adapters to join
@@ -687,7 +696,7 @@ Authors
 ```
 Copyright
   Copyright © 2011-2013 Ezra Pagel
-  Copyright © 2015-2016 Chef Software, Inc
+  Copyright © 2015-2017 Chef Software, Inc
 ```
 
 ```
