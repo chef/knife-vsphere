@@ -73,7 +73,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   option :hostname,
          long: '--hostname',
-         description: 'show hostname'
+         description: 'show hostname of the guest'
 
   option :host_name,
          long: '--host_name',
@@ -137,16 +137,8 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          end
 
     return if vm.nil?
-    vm.each do |vmc|
-      state = case vmc.runtime.powerState
-              when PS_ON
-                ui.color('on', :green)
-              when PS_OFF
-                ui.color('off', :red)
-              when PS_SUSPENDED
-                ui.color('suspended', :yellow)
-              end
-
+    output = vm.map do |vmc|
+      thisvm = {}
       if get_config(:matchname)
         next unless vmc.name.include? config[:matchname]
       end
@@ -155,9 +147,21 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
         next unless vmc.guest.toolsStatus == config[:matchtools]
       end
 
-      next if get_config(:soff) && (vmc.runtime.powerState == PS_ON)
+      power_state = vmc.runtime.powerState
 
-      next if get_config(:son) && (vmc.runtime.powerState == PS_OFF)
+      thisvm['state'] = case power_state
+                        when PS_ON
+                          'on'
+                        when PS_OFF
+                          'off'
+                        when PS_SUSPENDED
+                          'suspended'
+                        end
+
+
+      next if get_config(:soff) && (power_state == PS_ON)
+
+      next if get_config(:son) && (power_state == PS_OFF)
 
       if get_config(:matchip)
         if !vmc.guest.ipAddress.nil? && vmc.guest.ipAddress != ''
@@ -173,7 +177,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
         end
       end
 
-      print "#{ui.color('VM Name:', :cyan)} #{vmc.name}\t"
+      thisvm['name'] = vmc.name
       if get_config(:hostname)
         print "#{ui.color('Hostname:', :cyan)} #{vmc.guest.hostName}\t"
       end
@@ -194,7 +198,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
         print "\"\t"
 
       else
-        print "#{ui.color('Folder', :cyan)}: #{vmc.parent.name}\t"
+        thisvm['folder'] = vmc.parent.name
       end
 
       if get_config(:ip)
@@ -217,7 +221,6 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
       if get_config(:alarms)
         print "#{ui.color('Alarms:', :cyan)} #{vmc.summary.overallStatus}\t"
       end
-      print "#{ui.color('State:', :cyan)} #{state}\t"
       if get_config(:tools)
         print "#{ui.color('Tools:', :cyan)} #{vmc.guest.toolsStatus}\t"
       end
@@ -244,7 +247,8 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
           end
         end
       end
-      puts
+      thisvm
     end
+    ui.output(output.compact)
   end
 end
