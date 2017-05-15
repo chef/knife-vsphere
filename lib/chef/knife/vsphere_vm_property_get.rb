@@ -6,11 +6,14 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVMPropertyget extends the BaseVspherecommand
 class Chef::Knife::VsphereVmPropertyGet < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm property get VMNAME PROPERTY.  Gets a vApp Property on VMNAME.'
 
   common_options
 
+  # The main run method for vm_property_get
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

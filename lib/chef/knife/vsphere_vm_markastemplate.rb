@@ -13,6 +13,7 @@ require 'rbvmomi'
 # Clone an existing template into a new VM, optionally applying a customization specification.
 # usage:
 # knife vsphere vm markastemplate MyVM --folder /templates
+# Vspherevmmarkastemplate extends the Basevspherecommand
 class Chef::Knife::VsphereVmMarkastemplate < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm markastemplate VMNAME'
 
@@ -23,6 +24,8 @@ class Chef::Knife::VsphereVmMarkastemplate < Chef::Knife::BaseVsphereCommand
          description: 'The folder which contains the VM',
          default: ''
 
+  # The main run method for vm_markastemplate
+  #
   def run
     $stdout.sync = true
 

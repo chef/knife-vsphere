@@ -6,6 +6,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVMconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm config VMNAME PROPERTY VALUE.
           See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.vm.ConfigSpec.html\"
@@ -13,6 +14,8 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
 
   common_options
 
+  # The main run method in vm_config
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

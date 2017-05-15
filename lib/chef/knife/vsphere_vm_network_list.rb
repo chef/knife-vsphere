@@ -7,11 +7,14 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVmNetworklist extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm network list VMNAME'
 
   common_options
 
+  # The main run method for vm_network_list
+  #
   def run
     $stdout.sync = true
 

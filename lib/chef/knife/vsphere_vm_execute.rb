@@ -6,6 +6,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVMexecute extends the Basevspherecommand
 class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm execute VMNAME COMMAND ARGS'
 
@@ -25,6 +26,8 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
 
   common_options
 
+  # The main run method for vm_execute
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

@@ -1,11 +1,14 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
+# VsphereCpuratio extends the BaseVspherecommand
 class Chef::Knife::VsphereCpuRatio < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere cpu ratio [CLUSTER] [HOST]'
 
   common_options
 
+  # The main run method for cpu_ratio
+  #
   def run
     $stdout.sync = true
 
