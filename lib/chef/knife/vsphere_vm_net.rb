@@ -8,7 +8,6 @@ require 'chef/knife/base_vsphere_command'
 # Switch VM networking state up/down (on all network interfaces)
 # VsphereVmNet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
-
   banner 'knife vsphere vm net STATE VMNAME'
   common_options
 

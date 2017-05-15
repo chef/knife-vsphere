@@ -8,7 +8,6 @@ require 'chef/knife/base_vsphere_command'
 # Changes network on a certain VM
 # VsphereVmNetworkSet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
-
   banner 'knife vsphere vm network set VMNAME NETWORKNAME'
 
   common_options
