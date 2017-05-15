@@ -6,6 +6,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# Vspherevmtoolsconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm toolsconfig PROPERTY VALUE.
           See \"https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.ToolsConfigInfo.html\"
@@ -17,6 +18,8 @@ class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
          description: 'Allow empty string'
   common_options
 
+  # The main run method for vm_toolsconfig
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

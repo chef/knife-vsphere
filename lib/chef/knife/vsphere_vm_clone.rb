@@ -15,10 +15,13 @@ require 'chef/knife/winrm_base'
 require 'chef/knife/customization_helper'
 require 'ipaddr'
 
+# VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm clone VMNAME (options)'
 
+  # A AUTO_MAC for NIC?
   AUTO_MAC = 'auto'
+  # A NO IP for you to use!
   NO_IPS = ''
 
   include Chef::Knife::WinrmBase
@@ -770,7 +773,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   # Retrieves a CustomizationSpecItem that matches the supplied name
-  # @param vim [Connection] VI Connection to use
   # @param name [String] name of customization
   # @return [RbVmomi::VIM::CustomizationSpecItem]
   def find_customization(name)

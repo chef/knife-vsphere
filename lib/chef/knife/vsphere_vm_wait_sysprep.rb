@@ -30,6 +30,8 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
          description: 'The timeout in seconds before aborting. Default: 300 seconds',
          default: 300
 
+  # The main run method for vm_wait_sysprep.
+  #
   def run
     $stdout.sync = true
 

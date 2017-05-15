@@ -5,9 +5,11 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVmCdrom extends the BaseVspherecommand
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm cdrom VMNAME (options)'
 
+  # The empty device name.
   EMPTY_DEVICE_NAME = ''.freeze
 
   common_options

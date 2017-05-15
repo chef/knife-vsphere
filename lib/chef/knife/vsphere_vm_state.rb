@@ -9,7 +9,9 @@ require 'rbvmomi'
 require 'netaddr'
 
 # Manage power state of a virtual machine
+# VsphereVmState extends the BaseVspherecommand
 class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
+  # The Different power states that vSphere reports
   POWER_STATES = {
     PS_ON => 'powered on',
     PS_OFF => 'powered off',
@@ -40,6 +42,8 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
          long: '--recursive',
          description: 'Search all folders'
 
+  # The main run method for vm_state
+  #
   def run
     $stdout.sync = true
 
