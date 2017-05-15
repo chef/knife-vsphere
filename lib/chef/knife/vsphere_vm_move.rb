@@ -6,6 +6,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known virtual machines in the configured datacenter
+# VsphereVmMove extends the BaseVspherecommand
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm move'
 
@@ -35,6 +36,8 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
          boolean: true
 
   # Convert VM
+  #
+  # @param [Object] vm The VM object to convert the VM
   def convert_vm(vm)
     dc = datacenter
     hosts = find_all_in_folder(dc.hostFolder, RbVmomi::VIM::ComputeResource)
@@ -56,6 +59,8 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   end
 
   # Move VM
+  #
+  # @param [Object] vm The VM object to convert the VM
   def move_vm(vm)
     dest_name = config[:dest_name] || vm.name
     dest_folder = config[:dest_folder].nil? ? (vm.parent) : (find_folder(get_config(:dest_folder)))
@@ -64,6 +69,8 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     dest_folder.MoveIntoFolder_Task(list: [vm]).wait_for_completion unless vm.parent == dest_folder
   end
 
+  # The main run method for vm_move
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

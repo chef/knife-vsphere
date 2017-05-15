@@ -3,6 +3,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Upload or download a file from a datastore
+# VsphereDatastoreFile extends the BaseVspherecommand
 class Chef::Knife::VsphereDatastoreFile < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere datastore file'
 
@@ -28,6 +29,8 @@ class Chef::Knife::VsphereDatastoreFile < Chef::Knife::BaseVsphereCommand
          short: '-D',
          description: 'Download remote file to local'
 
+  # Main run method for datastore_file
+  #
   def run
     $stdout.sync = true
 

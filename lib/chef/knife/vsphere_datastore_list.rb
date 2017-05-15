@@ -19,6 +19,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known data stores in datacenter with sizes
+# VsphereDatastorelist extends the BaseVspherecommand
 class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere datastore list'
 
@@ -33,6 +34,8 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
          long: '--pool pool',
          description: 'Target pool'
 
+  # The main run method for datastore_list
+  #
   def run
     $stdout.sync = true
 

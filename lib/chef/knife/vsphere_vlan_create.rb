@@ -2,6 +2,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known data stores in datacenter with sizes
+# VsphereVlanCreate extends BaseVspherecommand
 class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vlan create NAME VID'
 
@@ -11,6 +12,8 @@ class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
          long: '--switch DVSNAME',
          description: 'The DVSwitch that will hold this VLAN'
 
+  # The main run method for vlan_create
+  #
   def run
     $stdout.sync = true
 

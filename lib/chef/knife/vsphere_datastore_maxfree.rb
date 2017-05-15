@@ -19,6 +19,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Gets the data store with the most free space in datacenter
+# VsphereDatastoreMaxfree extends the BaseVspherecommand
 class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere datastore maxfree'
 
@@ -38,6 +39,8 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
 
   common_options
 
+  # The main run method for datastore_maxfree
+  #
   def run
     $stdout.sync = true
     if get_config(:vlan) && get_config(:pool)

@@ -46,6 +46,8 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
          long: '--recursive',
          description: 'Search all folders'
 
+  # The main run method for vm_cdrom
+  #
   def run
     $stdout.sync = true
 

@@ -18,11 +18,14 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known data stores in datacenter with sizes
+# VsphereVlanlist extends the BaseVspherecommand
 class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vlan list'
 
   common_options
 
+  # The main run method for vlan_list
+  #
   def run
     $stdout.sync = true
 
