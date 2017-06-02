@@ -49,7 +49,11 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   option :ips,
          long: '--ips',
-         description: 'Show all ips, with networks'
+         description: 'Show all ips, with networks - DEPRECATED use --networks'
+
+  option :networks,
+         long: '--networks',
+         description: 'Show all networks with their IPs'
 
   option :soff,
          long: '--powered-off',
@@ -73,7 +77,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   option :hostname,
          long: '--hostname',
-         description: 'show hostname'
+         description: 'show hostname of the guest'
 
   option :host_name,
          long: '--host_name',
@@ -101,26 +105,33 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   $stdout.sync = true # smoother output from print
 
-  def traverse_folders_for_pool_clustercompute(folder, poolname)
+  # Find the given pool or compute resource
+  # @param folder [RbVmomi::VIM::Folder] the folder from which to start the search, most likely dc.hostFolder
+  # @param objectname [String] name of the object (pool or cluster/compute) to find
+  # @return [RbVmomi::VIM::ClusterComputeResource, RbVmomi::VIM::ComputeResource, RbVmomi::VIM::ResourcePool]
+  def traverse_folders_for_pool_clustercompute(folder, objectname)
     children = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
     children.each do |child|
       next unless child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ResourcePool
-      if child.name == poolname
+      if child.name == objectname
         return child
       elsif child.class == RbVmomi::VIM::Folder || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ResourcePool
-        pool = traverse_folders_for_pool_clustercompute(child, poolname)
+        pool = traverse_folders_for_pool_clustercompute(child, objectname)
       end
       return pool if pool
     end
     false
   end
 
+  # Main entry point to the command
   def run
     poolname = config[:pool]
     if poolname.nil?
       show_usage
       fatal_exit('You must specify a resource pool or cluster name (see knife vsphere pool list)')
     end
+
+    abort '--ips has been removed. Please use --networks' if get_config(:ips)
 
     vim_connection
     dc = datacenter
@@ -130,121 +141,135 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
            else
              traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
            end
-    vm = if pool.class == RbVmomi::VIM::ResourcePool
-           pool.vm
-         else
-           pool.resourcePool.vm
-         end
-
-    return if vm.nil?
-    vm.each do |vmc|
-      state = case vmc.runtime.powerState
-              when PS_ON
-                ui.color('on', :green)
-              when PS_OFF
-                ui.color('off', :red)
-              when PS_SUSPENDED
-                ui.color('suspended', :yellow)
+    vm_list = if pool.class == RbVmomi::VIM::ResourcePool
+                pool.vm
+              else
+                pool.resourcePool.vm
               end
 
+    return if vm_list.nil?
+
+    output = vm_list.map do |vm|
+      thisvm = {}
       if get_config(:matchname)
-        next unless vmc.name.include? config[:matchname]
+        next unless vm.name.include? config[:matchname]
       end
 
       if get_config(:matchtools)
-        next unless vmc.guest.toolsStatus == config[:matchtools]
+        next unless vm.guest.toolsStatus == config[:matchtools]
       end
 
-      next if get_config(:soff) && (vmc.runtime.powerState == PS_ON)
+      power_state = vm.runtime.powerState
 
-      next if get_config(:son) && (vmc.runtime.powerState == PS_OFF)
+      thisvm['state'] = case power_state
+                        when PS_ON
+                          'on'
+                        when PS_OFF
+                          'off'
+                        when PS_SUSPENDED
+                          'suspended'
+                        end
+
+
+      next if get_config(:soff) && (power_state == PS_ON)
+
+      next if get_config(:son) && (power_state == PS_OFF)
 
       if get_config(:matchip)
-        if !vmc.guest.ipAddress.nil? && vmc.guest.ipAddress != ''
-          next unless vmc.guest.ipAddress.include? config[:matchip]
+        if !vm.guest.ipAddress.nil? && vm.guest.ipAddress != ''
+          next unless vm.guest.ipAddress.include? config[:matchip]
         else
           next
         end
       end
 
-      unless vmc.guest.guestFullName.nil?
+      unless vm.guest.guestFullName.nil?
         if get_config(:matchos)
-          next unless vmc.guest.guestFullName.include? config[:matchos]
+          next unless vm.guest.guestFullName.include? config[:matchos]
         end
       end
 
-      print "#{ui.color('VM Name:', :cyan)} #{vmc.name}\t"
+      thisvm['name'] = vm.name
       if get_config(:hostname)
-        print "#{ui.color('Hostname:', :cyan)} #{vmc.guest.hostName}\t"
+        thisvm['hostname'] = vm.guest.hostName
       end
       if get_config(:host_name)
-        print "#{ui.color('Host_name:', :cyan)} #{vmc.summary.runtime.host.name}\t"
+        # TODO: Why vm.summary.runtime vs vm.runtime?
+        thisvm['host_name'] = vm.summary.runtime.host.name
       end
 
       if get_config(:full_path)
-        actualname = ''
-        vmcp = vmc
-        while !vmcp.parent.nil? && vmcp.parent.name != 'vm'
-          actualname.concat("#{vmcp.parent.name}/")
-          vmcp = vmcp.parent
-        end
-        print ui.color('Folder:', :cyan)
-        print '"'
-        print actualname.split('/').reverse.join('/')
-        print "\"\t"
+        fullpath = ''
+        iterator = vm
 
+        while iterator = iterator.parent
+          break if iterator.name == 'vm'
+          fullpath = fullpath.empty? ? iterator.name : "#{iterator.name}/#{fullpath}"
+        end
+        thisvm['folder'] = fullpath
       else
-        print "#{ui.color('Folder', :cyan)}: #{vmc.parent.name}\t"
+        thisvm['folder'] = vm.parent.name
       end
 
       if get_config(:ip)
-        print "#{ui.color('IP:', :cyan)} #{vmc.guest.ipAddress}\t"
+        thisvm['ip'] = vm.guest.ipAddress
       end
-      if get_config(:ips)
+
+      if get_config(:networks)
         ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
-        networks = vmc.guest.net.map { |net| "#{net.network}:" + net.ipConfig.ipAddress.select { |i| i.ipAddress[ipregex] }[0].ipAddress }
-        print "#{ui.color('IPS:', :cyan)} #{networks.join(',')}\t"
+        thisvm['networks'] = vm.guest.net.map do |net|
+          firstip = net.ipConfig.ipAddress.first { |i| i.ipAddress[ipregex] }
+
+          { 'name' => net.network,
+            'ip' => firstip.ipAddress,
+            'prefix' => firstip.prefixLength
+          }
+        end
       end
+
       if get_config(:os)
-        print "#{ui.color('OS:', :cyan)} #{vmc.guest.guestFullName}\t"
+        thisvm['os'] = vm.guest.guestFullName
       end
+
       if get_config(:ram)
-        print "#{ui.color('RAM:', :cyan)} #{vmc.summary.config.memorySizeMB}\t"
+        thisvm['ram'] = vm.summary.config.memorySizeMB
       end
+
       if get_config(:cpu)
-        print "#{ui.color('CPU:', :cyan)} #{vmc.summary.config.numCpu}\t"
+        thisvm['cpu'] = vm.summary.config.numCpu
       end
+
       if get_config(:alarms)
-        print "#{ui.color('Alarms:', :cyan)} #{vmc.summary.overallStatus}\t"
+        thisvm['alarms'] = vm.summary.overallStatus
       end
-      print "#{ui.color('State:', :cyan)} #{state}\t"
+
       if get_config(:tools)
-        print "#{ui.color('Tools:', :cyan)} #{vmc.guest.toolsStatus}\t"
+        thisvm['tools'] = vm.guest.toolsStatus
       end
 
       if get_config(:os_disk)
-        print ui.color('OS Disks:', :cyan)
-        vmc.guest.disk.each do |disc|
-          print "#{disc.diskPath} #{disc.capacity / 1024 / 1024}MB Free:#{disc.freeSpace / 1024 / 1024}MB |"
+        thisvm['disks'] = vm.guest.disk.map do |disk|
+          { 'name' => disk.diskPath,
+            'capacity' => disk.capacity / 1024 / 1024,
+            'free' => disk.freeSpace / 1024 / 1024
+          }
         end
       end
 
       if get_config(:esx_disk)
-        print ui.color('ESX Disks:', :cyan)
-        vmc.layout.disk.each do |dsc|
-          print "#{dsc.diskFile} | "
-        end
+        # TODO: https://www.vmware.com/support/developer/converter-sdk/conv55_apireference/vim.VirtualMachine.html#field_detail says this is deprecated
+        thisvm['esx_disks'] = vm.layout.disk.map(&:diskFile)
       end
 
       if get_config(:snapshots)
-        unless vmc.snapshot.nil?
-          print ui.color('Snapshots:', :cyan)
-          vmc.snapshot.rootSnapshotList.each do |snap|
-            print " #{snap.name}"
-          end
-        end
+        thisvm['snapshots'] = if vm.snapshot
+                                vm.snapshot.rootSnapshotList.map(&:name)
+                              else
+                                []
+                              end
       end
-      puts
+      thisvm
     end
+    ui.output(output.compact)
   end
 end

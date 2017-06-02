@@ -125,7 +125,7 @@ RSpec.shared_context 'basic_setup' do
     # It is difficult to mock this because the current implementation checks
     # for explicity RbVmomi class names
     allow(subject).to receive(:datacenter).and_return(datacenter)
-    allow(subject).to receive(:find_available_hosts).and_return([host])
+    allow(subject).to receive(:find_available_hosts).and_return([host]) if subject.respond_to? :find_available_hosts
 
     allow(subject).to receive(:find_in_folder).and_return(template)
     allow(service_content).to receive(:virtualDiskManager) # what does this call actually do?

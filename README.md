@@ -216,7 +216,7 @@ FIELDS:
 --hostname                   show hostname
 --host_name                  Show name of the VM's host
 --ip                         Show primary ip
---ips                        Show all ips assigned to VM with network (format: VLAN1:IP1,VLAN2:IP2)
+--networks                   Show all networks and IPs
 --os                         Show os details
 --os-disks                   Show os disks
 --ram                        Show ram
