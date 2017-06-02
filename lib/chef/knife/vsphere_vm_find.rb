@@ -106,14 +106,17 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
   $stdout.sync = true # smoother output from print
 
   # Find the given pool or compute resource
-  def traverse_folders_for_pool_clustercompute(folder, poolname)
+  # @param folder [RbVmomi::VIM::Folder] the folder from which to start the search, most likely dc.hostFolder
+  # @param objectname [String] name of the object (pool or cluster/compute) to find
+  # @return [RbVmomi::VIM::ClusterComputeResource, RbVmomi::VIM::ComputeResource, RbVmomi::VIM::ResourcePool]
+  def traverse_folders_for_pool_clustercompute(folder, objectname)
     children = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
     children.each do |child|
       next unless child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ResourcePool
-      if child.name == poolname
+      if child.name == objectname
         return child
       elsif child.class == RbVmomi::VIM::Folder || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ResourcePool
-        pool = traverse_folders_for_pool_clustercompute(child, poolname)
+        pool = traverse_folders_for_pool_clustercompute(child, objectname)
       end
       return pool if pool
     end
