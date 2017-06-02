@@ -12,6 +12,7 @@ require 'chef/node'
 require 'chef/api_client'
 
 # Delete a virtual machine from vCenter
+# VsphereVmDelete extends the BaseVspherecommand
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm delete VMNAME (options)'
 
@@ -33,12 +34,18 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   # flag (and also explicitly confirming the server destruction!)
   # the user is already making their intent known. It is not
   # necessary to make them confirm two more times.
+  #
+  # @param [Object] itemClass The class object
+  # @param [String] name The name of the VM that you need to delete
+  # @param [String] type_name The type_name of the thing that you need? TODO
   def destroy_item(itemClass, name, type_name)
     object = itemClass.load(name)
     object.destroy
     puts "Deleted #{type_name} #{name}"
   end
 
+  # The main run method from vm_delete
+  #
   def run
     $stdout.sync = true
 

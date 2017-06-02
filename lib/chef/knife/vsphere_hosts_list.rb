@@ -4,6 +4,7 @@ require 'rbvmomi'
 require 'netaddr'
 
 # list hosts belonging to pool
+# VsphereHostslist extends the BaseVspherecommand
 class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere hosts list'
 
@@ -13,6 +14,8 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
          short: '-h',
          description: 'Target pool'
 
+  # The main run method for hosts_list
+  #
   def run
     vim_connection
     dc = datacenter

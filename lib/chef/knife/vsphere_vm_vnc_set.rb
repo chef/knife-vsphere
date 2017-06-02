@@ -7,6 +7,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# Main class VsphereVMvncset extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm vncset VMNAME COMMAND ARGS'
 
@@ -22,6 +23,8 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
 
   common_options
 
+  # The main run method for vm_vnc_set
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

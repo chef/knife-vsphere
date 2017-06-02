@@ -6,6 +6,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Changes network on a certain VM
+# VsphereVmNetworkSet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm network set VMNAME NETWORKNAME'
 
@@ -16,6 +17,8 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
     description: 'Network interface to use when multiple NICs are present on the VM. (0,1..)',
     default: 0
 
+  # The main run method for vm_network_set
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

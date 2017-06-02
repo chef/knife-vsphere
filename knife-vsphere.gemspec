@@ -15,15 +15,17 @@ Gem::Specification.new do |s|
   s.email = 'ezra@cpan.org'
   s.files = Dir['lib/**/*']
   s.rubygems_version = '1.6.2'
-  s.homepage = 'http://github.com/ezrapagel/knife-vsphere'
+  s.homepage = 'http://github.com/chef-partners/knife-vsphere'
   s.license = 'Apache'
-  s.add_dependency('filesize', ['~> 0.1.1'])
+  s.add_dependency('knife-windows', ['~> 1.0'])
   s.add_dependency('netaddr', ['~> 1.5'])
   s.add_dependency('rbvmomi', ['~> 1.8'])
-  s.add_dependency('knife-windows', ['~> 1.0'])
+  s.add_dependency('filesize', ['~> 0.1.1'])
 
-  s.add_development_dependency('chef', ['>= 0.10.0'])
-  s.add_development_dependency('rspec')
-  s.add_development_dependency('rake')
   s.add_development_dependency('byebug')
+  s.add_development_dependency('chef', ['>= 0.10.0'])
+  s.add_development_dependency('rake')
+  s.add_development_dependency('rb-readline')
+  s.add_development_dependency('rspec')
+  s.add_development_dependency('yard')
 end

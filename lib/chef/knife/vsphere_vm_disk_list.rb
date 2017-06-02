@@ -2,11 +2,14 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # List the disks attached to a VM
+# VsphereVmdisklist extends the BaseVspherecommand
 class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm disk list VMNAME'
 
   common_options
 
+  # The main run method for vm_disk_list
+  #
   def run
     $stdout.sync = true
 

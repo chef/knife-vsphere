@@ -9,13 +9,18 @@ require 'rbvmomi'
 require 'base64'
 require 'filesize'
 
+# Power state on
 PS_ON ||= 'poweredOn'.freeze
+# Power state off
 PS_OFF ||= 'poweredOff'.freeze
+# Power state suspended
 PS_SUSPENDED ||= 'suspended'.freeze
 
 # Base class for vsphere knife commands
 class Chef
+  # Base class for knife
   class Knife
+    # Main knife vsphere that more or less everything in this gem is built off of
     class BaseVsphereCommand < Knife
       deps do
         require 'chef/knife/bootstrap'

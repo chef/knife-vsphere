@@ -4,10 +4,15 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+
 # Switch VM networking state up/down (on all network interfaces)
+# VsphereVmNet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm net STATE VMNAME'
   common_options
+
+  # The main run method for vm_net
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[1]

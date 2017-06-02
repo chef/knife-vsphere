@@ -13,3 +13,8 @@ tags
 bundle
 .bundle
 .envrc
+doc/
+.direnv/
+.ruby-version
+.yardoc/
+.chef/

@@ -6,6 +6,7 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVMPropertySet extends Basevspherecommand
 class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm property set VMNAME PROPERTY VALUE.  Sets a vApp Property on VMNAME.'
 
@@ -15,6 +16,8 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
          long: '--ovf-environment-transport STRING',
          description: 'Comma delimited string.  Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo.'
 
+  # The main run method for vm_property_set
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

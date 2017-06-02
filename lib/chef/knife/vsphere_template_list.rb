@@ -7,11 +7,14 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Lists all known VM templates in the configured datacenter
+# VsphereTemplatelist extends the BaseVspherecommand
 class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere template list'
 
   common_options
 
+  # The main run method for template_list
+  #
   def run
     $stdout.sync = true
     $stderr.sync = true

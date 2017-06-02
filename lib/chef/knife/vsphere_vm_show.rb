@@ -6,11 +6,14 @@ require 'chef/knife/base_vsphere_command'
 require 'rbvmomi'
 require 'netaddr'
 
+# VsphereVmShow extends the BaseVspherecommand
 class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm show VMNAME QUERY.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html\" for allowed QUERY values."
 
   common_options
 
+  # The main run method for vm_show
+  #
   def run
     $stdout.sync = true
     vmname = @name_args[0]

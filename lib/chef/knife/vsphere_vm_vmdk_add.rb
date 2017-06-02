@@ -6,6 +6,7 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 
 # Add a new disk to a virtual machine
+# VsphereVmvmdkadd extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm vmdk add VMNAME DISK_GB'
 
@@ -21,6 +22,8 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
          long: '--target-lun NAME',
          description: 'name of target LUN'
 
+  # The main run method for vm_vmdk_add
+  #
   def run
     $stdout.sync = true
 
