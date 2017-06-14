@@ -6,6 +6,8 @@
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
+<!-- Testing out PR -->
+
 * Documentation: <https://github.com/chef-partners/knife-vsphere/blob/master/README.md>
 * Source: <http://github.com/chef-partners/knife-vsphere/tree/master>
 * Issues: <https://github.com/chef-partners/knife-vsphere/issues>
