@@ -52,7 +52,7 @@ curl -L https://chef.io/chef/install.sh | sudo bash -s -- -P chefdk -c current''
                              sh 'chef exec bundle exec knife vsphere vm clone lin-knifevsphere-testing --template ubuntu16-template -f Linux --bootstrap --start --cips dhcp --dest-folder /  --cspec ubuntu --ssh-user admini --ssh-password admini --node-ssl-verify-mode none'
                                  },
                          "windows": {
-                             sh 'knife vsphere vm clone win-knifevsphere-testing --template windows2012R2 -f Windows --bootstrap --start --cips dhcp --dest-folder / --winrm-user "Administrator" --winrm-password "Admini@" --node-ssl-verify-mode none --disable-customization'
+                             sh 'chef exec bundle exec knife vsphere vm clone win-knifevsphere-testing --template windows2012R2 -f Windows --bootstrap --start --cips dhcp --dest-folder / --winrm-user "Administrator" --winrm-password "Admini@" --node-ssl-verify-mode none --disable-customization'
                                  }
                          )
                     }
