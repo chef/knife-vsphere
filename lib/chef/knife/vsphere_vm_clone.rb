@@ -392,8 +392,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     return unless get_config(:bootstrap)
 
-    connect_host = guest_address(vm)
-    Chef::Log.debug("Connect Host for Bootstrap: #{connect_host}")
     connect_port = get_config(:ssh_port)
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
@@ -406,10 +404,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         CustomizationHelper.wait_for_sysprep(vm, vim, Integer(get_config(:sysprep_timeout)), 10)
         puts 'Customization Complete'
       end
+      connect_host = guest_address(vm)
+      Chef::Log.debug("Connect Host for winrm Bootstrap: #{connect_host}")
       wait_for_access(connect_host, connect_port, protocol)
       ssh_override_winrm
       bootstrap_for_windows_node.run
     else
+      connect_host = guest_address(vm)
+      Chef::Log.debug("Connect Host for SSH Bootstrap: #{connect_host}")
       protocol ||= 'ssh'
       wait_for_access(connect_host, connect_port, protocol)
       ssh_override_winrm
