@@ -2,6 +2,25 @@ require 'spec_helper'
 require 'chef/knife/vsphere_vm_clone'
 require 'chef/knife/bootstrap'
 
+class Fakey
+  def initialize(data)
+    @data = data
+  end
+
+  def props
+    @data.keys
+  end
+
+  def method_missing(element)
+    desired = @data[element]
+    if desired.is_a? Hash
+      self.class.new(desired)
+    else
+      desired
+    end
+  end
+end
+
 describe Chef::Knife::VsphereVmClone do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
@@ -208,11 +227,63 @@ describe Chef::Knife::VsphereVmClone do
     end
 
     context 'windows clone' do
+      let(:csm) { double('CustomizationSpecManager', GetCustomizationSpec: server_spec) }
+      let(:server_spec) { double('Cspec', spec: spec) }
       let(:guest_id) { 'Windows 3.1' }
+      let(:spec) { double('Specification', identity: Fakey.new(identity)) }
+      let(:identity) { { identification: { joinWorkgroup: true },
+                         licenseFilePrintData: { autoMode: true },
+                         userData: { fullName: 'Chefy McChef' },
+                         guiUnattended: { autoLogon: true,
+                                          password: { plainText: 'plaintextpassword'} } }
+      }
+
 
       it 'provides an error message when called with no customization' do
         expect(subject).to receive(:fatal_exit).and_raise ArgumentError
         expect { subject.run }.to raise_error ArgumentError
+      end
+
+      context 'with a cspec' do
+        before do
+          subject.config[:customization_hostname] = 'myhost'
+          subject.config[:customization_spec] = 'cspec'
+          allow(service_content).to receive(:customizationSpecManager).and_return(csm)
+        end
+
+        it 'overrides the hostname and command list' do
+          expect(template).to receive(:CloneVM_Task).and_return(task)
+
+          expect(spec).to receive(:'identity=') do |args|
+            expect(args.guiRunOnce.commandList).to eq ['cust_spec.identity.guiUnattended.commandList']
+            expect(args.userData.computerName.name).to eq('myhost')
+          end
+          subject.run
+        end
+
+        it 'uses a sysprep identity' do
+          expect(template).to receive(:CloneVM_Task).and_return(task)
+          expect(spec).to receive(:'identity=') do |args|
+            expect(args).to be_a RbVmomi::VIM::CustomizationSysprep
+          end
+          subject.run
+        end
+
+        context 'that doesnt provide license data' do
+          let(:identity) { { identification: { joinWorkgroup: true },
+                             userData: { fullName: 'Chefy McChef' },
+                             guiUnattended: { autoLogon: true,
+                                              password: { plainText: 'plaintextpassword'} } }
+          }
+          it 'successfully clones' do
+            expect(template).to receive(:CloneVM_Task).and_return(task)
+
+            expect(spec).to receive(:'identity=') do |args|
+              expect(args.licenseFilePrintData).to be_nil
+            end
+            subject.run
+          end
+        end
       end
     end
 
