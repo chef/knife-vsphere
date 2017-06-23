@@ -690,7 +690,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         )
         license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
           autoMode: cust_spec.identity.licenseFilePrintData.autoMode
-        )
+        ) if cust_spec.identity.licenseFilePrintData # optional param
 
         user_data = RbVmomi::VIM.CustomizationUserData(
           fullName: cust_spec.identity.userData.fullName,
