@@ -1,3 +1,7 @@
+AllCops:
+  Exclude:
+    - 'spec/**/*'
+
 Metrics/MethodLength:
   Enabled: false
 Metrics/AbcSize:
