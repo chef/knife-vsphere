@@ -1,5 +1,11 @@
 knife-vsphere changelog
 ----------------------
+2.0.0   jjasghar   - YARD DOCS!
+                   - Jenkinsfile to let ppl test against a live env
+			             - Templates for issues and PRs
+			  swalberg   - Defer looking up the hostname (fixes #374)
+				           - Windows license is options (fixes #373)
+									 - Move `vsphere vm find` to Chef output format
 1.2.26  petericebear - Set CPUs per socket and reserved memory
 
 1.2.25  warroyo    - more formatting, exit codes
