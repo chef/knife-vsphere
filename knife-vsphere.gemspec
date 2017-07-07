@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency('filesize', ['~> 0.1.1'])
 
   s.add_development_dependency('byebug')
-  s.add_development_dependency('chef', ['>= 0.10.0'])
+  s.add_development_dependency('chef', ['>= 11.0'])
   s.add_development_dependency('rake')
   s.add_development_dependency('rb-readline')
   s.add_development_dependency('rspec')
