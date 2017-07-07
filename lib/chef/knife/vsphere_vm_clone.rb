@@ -687,22 +687,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         # We should get here with the customizations set, either by a plugin or a --cspec
         fatal_exit 'Windows clones need a customization identity. Try passing a --cspec or making a --cplugin' if cust_spec.identity.props.empty?
 
-        # If --cdomain matches what is in --cspec then use identification from the --cspec, else use --cdomain
-        domain = get_config(:customization_domain)
-        if domain
-          if domain == cust_spec.identity.identification.joinDomain
-            identification = cust_spec.identity.identification
-          else
-            identification = RbVmomi::VIM.CustomizationIdentification(
-              joinDomain: domain
-            )
-          end
-        else
-          # Fall back to original behavior of using joinWorkgroup from the --cspec
-          identification = RbVmomi::VIM.CustomizationIdentification(
-            joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
-          )
-        end
+        identification = identification_for_spec(cust_spec)
 
         license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
           autoMode: cust_spec.identity.licenseFilePrintData.autoMode
@@ -996,5 +981,22 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def bootstrap_nic_index
     Integer(get_config(:bootstrap_nic))
+  end
+
+  def identification_for_spec(cust_spec)
+    # If --cdomain matches what is in --cspec then use identification from the --cspec, else use --cdomain
+    case domain = get_config(:customization_domain)
+    when nil?
+      # Fall back to original behavior of using joinWorkgroup from the --cspec
+      RbVmomi::VIM.CustomizationIdentification(
+        joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
+      )
+    when cust_spec.identity.identification.joinDomain
+      cust_spec.identity.identification
+    else
+      RbVmomi::VIM.CustomizationIdentification(
+        joinDomain: domain
+      )
+    end
   end
 end
