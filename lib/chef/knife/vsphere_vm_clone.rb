@@ -687,9 +687,23 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         # We should get here with the customizations set, either by a plugin or a --cspec
         fatal_exit 'Windows clones need a customization identity. Try passing a --cspec or making a --cplugin' if cust_spec.identity.props.empty?
 
-        identification = RbVmomi::VIM.CustomizationIdentification(
-          joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
-        )
+        # If --cdomain matches what is in --cspec then use identification from the --cspec, else use --cdomain
+        domain = get_config(:customization_domain)
+        if domain
+          if domain == cust_spec.identity.identification.joinDomain
+            identification = cust_spec.identity.identification
+          else
+            identification = RbVmomi::VIM.CustomizationIdentification(
+              joinDomain: domain
+            )
+          end
+        else
+          # Fall back to original behavior of using joinWorkgroup from the --cspec
+          identification = RbVmomi::VIM.CustomizationIdentification(
+            joinWorkgroup: cust_spec.identity.identification.joinWorkgroup
+          )
+        end
+
         license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
           autoMode: cust_spec.identity.licenseFilePrintData.autoMode
         ) if cust_spec.identity.licenseFilePrintData # optional param
