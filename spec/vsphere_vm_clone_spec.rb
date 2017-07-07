@@ -284,6 +284,46 @@ describe Chef::Knife::VsphereVmClone do
             subject.run
           end
         end
+
+        context 'that provides customization domain' do
+          before do
+            subject.config[:customization_domain] = 'example.com'
+          end
+
+          context 'matching customization spec' do
+            let(:identity) { { identification: { joinDomain: 'example.com' },
+                               licenseFilePrintData: { autoMode: true },
+                               userData: { fullName: 'Chefy McChef' },
+                               guiUnattended: { autoLogon: true,
+                                                password: { plainText: 'plaintextpassword'} } }
+            }
+
+            it 'successfully clones with joinDomain set to customization domain' do
+              expect(template).to receive(:CloneVM_Task).and_return(task)
+              expect(spec).to receive(:'identity=') do |args|
+                expect(args.identification.joinDomain).to eq('example.com')
+              end
+              subject.run
+            end
+          end
+
+          context 'not matching customization spec' do
+            let(:identity) { { identification: { joinDomain: 'example2.com' },
+                               licenseFilePrintData: { autoMode: true },
+                               userData: { fullName: 'Chefy McChef' },
+                               guiUnattended: { autoLogon: true,
+                                                password: { plainText: 'plaintextpassword'} } }
+            }
+
+            it 'successfully clones with joinDomain set to customization domain' do
+              expect(template).to receive(:CloneVM_Task).and_return(task)
+              expect(spec).to receive(:'identity=') do |args|
+                expect(args.identification.joinDomain).to eq('example.com')
+              end
+              subject.run
+            end
+          end
+        end
       end
     end
 
