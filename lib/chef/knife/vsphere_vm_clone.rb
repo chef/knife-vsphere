@@ -424,7 +424,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     # Multiple reboots occur during guest customization in which a link-local
     # address is assigned. As such, we need to wait until a routable IP address
     # becomes available. This is most commonly an issue with Windows instances.
-    sleep 2 while vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
+    sleep 2 while (vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.nil? || vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer')
     vm.guest.net[bootstrap_nic_index].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
   end
 
