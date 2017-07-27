@@ -23,6 +23,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   AUTO_MAC = 'auto'
   # A NO IP for you to use!
   NO_IPS = ''
+  # a linklayer origin is an actual nic
+  ORIGIN_IS_REAL_NIC = 'linklayer'.freeze
 
   include Chef::Knife::WinrmBase
   include CustomizationHelper
@@ -424,8 +426,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     # Multiple reboots occur during guest customization in which a link-local
     # address is assigned. As such, we need to wait until a routable IP address
     # becomes available. This is most commonly an issue with Windows instances.
-    sleep 2 while vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }.origin == 'linklayer'
+    sleep 2 while vm_is_waiting_for_ip?(vm)
     vm.guest.net[bootstrap_nic_index].ipAddress.detect { |addr| IPAddr.new(addr).ipv4? }
+  end
+
+  def vm_is_waiting_for_ip?(vm)
+    first_ip_address = vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect { |addr| IPAddr.new(addr.ipAddress).ipv4? }
+    first_ip_address.nil? || first_ip_address.origin == ORIGIN_IS_REAL_NIC
   end
 
   def guest_address(vm)
