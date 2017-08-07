@@ -27,8 +27,9 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
     end
 
     disks.each do |disk|
-      puts '%3d %20s %s' % [disk.unitNumber,
+      puts '%3d %20s %20s %s' % [disk.unitNumber,
                             disk.deviceInfo.label,
+                            disk.backing.datastore.name,
                             Filesize.from("#{disk.capacityInKB} KiB").pretty]
     end
   end
