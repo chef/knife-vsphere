@@ -1,5 +1,12 @@
 knife-vsphere changelog
 ----------------------
+2.0.1   petermccool - Add datastore output to disk list
+			  mheidenr    - Fix vm migrate and refactor
+				scotthain   - Error checking when looking up address in clone
+				tas50       - Require a more recent Chef release
+				mattkasa    - Fix issue where --cdomain is ignored on Windows
+				jjasghar    - Update Jenkinsfile
+
 2.0.0   jjasghar   - YARD DOCS!
                    - Jenkinsfile to let ppl test against a live env
 			             - Templates for issues and PRs
