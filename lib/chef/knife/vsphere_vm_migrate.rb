@@ -28,21 +28,13 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
          long: '--resource-pool POOL',
          description: 'The resource pool into which to put the VM'
 
-  def traverse_folders_for_pool(folder, poolname)
-    children = folder.children.find_all
-    children.each do |child|
-      if child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ResourcePool
-        return child if child.name == poolname
-      elsif child.class == RbVmomi::VIM::Folder
-        pool = traverse_folders_for_pool(child, poolname)
-        return pool if pool
+  def find_host_folder(folder, name)
+    folder.childEntity.each do |cluster|
+      cluster.host.each do |host|
+        return host if host.name == name
       end
     end
-    false
-  end
-
-  def find_host_folder(folder, _type, name)
-    folder.host.find { |o| o.name == name }
+    nil
   end
 
   def run
@@ -62,12 +54,9 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
     priority = config[:priority]
     dest_host = config[:dest_host]
     ndc = find_datastore(config[:dest_datastore]) || abort('dest-datastore not found')
-    npool = find_pool(config[:resource_pool])
-    folderd = dc.hostFolder
-    pool = traverse_folders_for_pool(folderd, config[:resource_pool]) || abort("Pool #{poolname} not found")
-    h = find_host_folder(pool, RbVmomi::VIM::HostSystem, dest_host)
-    migrate_spec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: ndc, pool: npool, host: h)
-    # puts migrate_spec.host.name
+    pool = find_pool(config[:resource_pool]) if config[:resource_pool]
+    dest_host = find_host_folder(dc.hostFolder, dest_host)
+    migrate_spec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: ndc, pool: pool, host: dest_host)
     vm.RelocateVM_Task(spec: migrate_spec, priority: priority).wait_for_completion
   end
 end

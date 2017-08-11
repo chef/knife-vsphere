@@ -246,6 +246,19 @@ class Chef
         networks.first
       end
 
+      def find_pool_folder(folderName)
+        dc = datacenter
+        base_entity = dc.hostFolder
+        entity_array = folderName.split('/')
+        entity_array.each do |entityArrItem|
+          if entityArrItem != ''
+            base_entity = base_entity.childEntity.grep(RbVmomi::VIM::ManagedObject).find { |f| f.name == entityArrItem } ||
+                          abort("no such folder #{folderName} while looking for #{entityArrItem}")
+          end
+        end
+        base_entity
+      end
+
       def find_pool(poolName)
         dc = datacenter
         base_entity = dc.hostFolder
