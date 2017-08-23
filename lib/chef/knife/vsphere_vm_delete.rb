@@ -70,8 +70,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
       vmname = config[:chef_node_name] if config[:chef_node_name]
       destroy_item(Chef::Node, vmname, 'node')
       destroy_item(Chef::ApiClient, vmname, 'client')
-    else
-      puts "Corresponding node and client for the #{vmname} server were not deleted and remain registered with the Chef Server"
+      puts "Corresponding node and client for the #{vmname} server were deleted and unregistered with the Chef Server"
     end
   end
 end
