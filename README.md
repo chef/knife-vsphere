@@ -380,6 +380,18 @@ $  knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
     --start true --bootstrap true \
     --bootstrap-vault-json '{"passwords":"default","appvault":"credentials"}'
 ```
+## `knife vsphere vm config VMNAME PROPERTY VALUE`
+
+Sets a vSphere property, such as CPU or disk, on a VM
+
+See "http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.vm.ConfigSpec.html"
+          for allowed PROPERTY values (any property of type xs:string or numeric is supported)."
+
+Examples:
+
+```bash
+$ knife vsphere vm config myvirtualmachine memoryMB 4096
+```
 
 ## `knife vsphere vm toolsconfig`
 
