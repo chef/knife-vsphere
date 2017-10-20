@@ -376,7 +376,17 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     pp clone_spec if log_verbose?
 
-    task.wait_for_completion
+    begin
+      task.wait_for_completion
+    rescue RbVmomi::Fault => e
+      fault = e.fault
+      if fault.class == RbVmomi::VIM::NicSettingMismatch
+        abort "There is a mismatch in the number of NICs on the template (#{fault.numberOfNicsInVM}) and what you've passed on the command line with --cips (#{fault.numberOfNicsInSpec}). The VM has been cloned but not customized."
+      else
+        raise e
+      end
+    end
+
     puts "Finished creating virtual machine #{vmname}"
 
     if customization_plugin && customization_plugin.respond_to?(:reconfig_vm)
