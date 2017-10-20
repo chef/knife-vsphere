@@ -126,6 +126,22 @@ describe Chef::Knife::VsphereVmClone do
     end
   end
 
+  context 'error handling' do
+    include_context 'basic_setup'
+
+    context 'user attempts to clone a box with the wrong number of nics configured' do
+      it 'should provide a helpful message' do
+        expect(template).to receive(:CloneVM_Task).and_return(task)
+        expect(task).to receive(:wait_for_completion) {
+          fault = RbVmomi::VIM::NicSettingMismatch.new(numberOfNicsInVM: 1, numberOfNicsInSpec: 2)
+          raise RbVmomi::Fault.new('fault.NicSettingMismatch.summary', fault)
+        }
+        expect { subject.run }.to raise_error SystemExit
+
+      end
+    end
+  end
+
   context 'customizations' do
     include_context 'basic_setup'
 
