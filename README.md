@@ -308,6 +308,14 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 --ssh-port PORT - SSH port
 --ssh-user USERNAME - SSH username
 --sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
+--winrm-authentication-protocol AUTHENTICATION_PROTOCOL. The authentication protocol used during WinRM communication. The supported protocols are basic,negotiate,kerberos. Default is 'negotiate'.
+--winrm-codepage Codepage    The codepage to use for the winrm cmd shell
+--winrm-password PASSWORD    The WinRM password
+--winrm-port PORT            The WinRM port, by default this is '5985' for 'plaintext' and '5986' for 'ssl' winrm transport
+--winrm-shell SHELL          The WinRM shell type. Valid choices are [cmd, powershell, elevated]. 'elevated' runs powershell in a scheduled task
+--winrm-ssl-verify-mode SSL_VERIFY_MODE   The WinRM peer verification mode. Valid choices are [verify_peer, verify_none]
+--winrm-transport TRANSPORT  The WinRM transport type. Valid choices are [ssl, plaintext]
+--winrm-user USERNAME        The WinRM username
 --tags TAG1,TAG2 - Tag the node with the given list of tags
 ```
 
