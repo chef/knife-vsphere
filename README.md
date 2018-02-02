@@ -14,24 +14,24 @@ Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
 ## Installation
 
-If you're using [ChefDK](https://downloads.chef.io/chef-dk/), simply install the
+If you're using [ChefDK](https://downloads.chef.io/chef-dk/), install the
 Gem:
 
 ```bash
 $ chef gem install knife-vsphere
 ```
 
-If you're using bundler, simply add Chef and `knife-vsphere` to your `Gemfile`:
-
-```ruby
-gem 'chef'
-gem 'knife-vsphere
-```
-
 This plugin is distributed as a Ruby Gem. To install it, run:
 
 ```bash
 $ gem install knife-vsphere
+```
+
+If you're using bundler as part of a project, add Chef and `knife-vsphere` to your `Gemfile`:
+
+```ruby
+gem 'chef'
+gem 'knife-vsphere
 ```
 
 Depending on your system's configuration, you may need to run this command with root privileges.
@@ -70,7 +70,7 @@ knife[:vsphere_insecure] = true
 ```
 
 Credentials can also be specified on the command line for multiple vSphere
-servers/data centers
+servers/data centers, or see [dealing with multiple datacenters](https://github.com/chef-partners/knife-vsphere/wiki/Dealing-with-multiple-datacenters).
 
 ## Description:
 
