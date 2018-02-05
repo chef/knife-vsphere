@@ -151,9 +151,9 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     out = ''
     out << '+--' * shift
     if node.snapshot == current
-      out << "#{ui.color(descr.to_s, :cyan)}" << "\n"
+      out << ui.color(descr, :cyan) << "\n"
     else
-      out << "#{descr.to_s}" << "\n"
+      out << descr << "\n"
     end
     unless node.childSnapshotList.empty?
       node.childSnapshotList.each { |item| out << display_node(item, current, shift + 1) }
