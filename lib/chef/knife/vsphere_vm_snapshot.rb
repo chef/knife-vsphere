@@ -59,12 +59,12 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          boolean: true,
          description: 'Quiesce the VM prior to snapshotting',
          default: false
-         
+
   option :snapshot_description,
-    	 long: '--snapshot-descr DESCR',
+         long: '--snapshot-descr DESCR',
          description: 'Snapshot description',
          default: ' '
-       
+
   def run
     $stdout.sync = true
 
@@ -147,13 +147,13 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   end
 
   def display_node(node, current, shift = 1)
-    descr = node.name + " " + node.createTime.iso8601()	
+    descr = node.name + ' ' + node.createTime.iso8601
     out = ''
     out << '+--' * shift
     if node.snapshot == current
-      out << "#{ui.color(descr, :cyan)}" << "\n"
+      out << "#{ui.color(descr.to_s, :cyan)}" << "\n"
     else
-      out << "#{descr}" << "\n"
+      out << "#{descr.to_s}" << "\n"
     end
     unless node.childSnapshotList.empty?
       node.childSnapshotList.each { |item| out << display_node(item, current, shift + 1) }
