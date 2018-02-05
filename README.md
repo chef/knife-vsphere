@@ -1,4 +1,4 @@
-# knife vSphere
+﻿# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
 [![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
@@ -434,7 +434,7 @@ Manages the snapshots for an existing VM, allowing for creation, removal, and
 reverting of snapshots.
 
 ```bash
---list            - List the current tree of snapshots
+--list            - List the current tree of snapshots and include snapshot creation timestamp
 --create SNAPSHOT - Create a new snapshot off of the current snapshot
 --remove SNAPSHOT - Remove a named snapshot.
 --revert SNAPSHOT - Revert to a named snapshot.
@@ -444,6 +444,7 @@ reverting of snapshots.
 --find            - Find the VM instead of specifying the folder with -F
 --dump-memory     - Dump the memory when creating the snapshot (default: false)
 --quiesce         - Quiesce the VM before snapshotting (default: false)
+--snapshot-descr DESCR - Include a description when creating a snapshot 
 ```
 
 ## `knife vsphere vm cdrom`
