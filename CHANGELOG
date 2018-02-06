@@ -1,8 +1,8 @@
 knife-vsphere changelog
 ----------------------
-2.0.2   bseeto  - Add snapshot creation timestamp to snapshot listing.
-                - Add option "--snapshot-descr DESCR" to allow users to add a
-				  description when creating a snapshot.
+2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
+                   - Add option "--snapshot-descr DESCR" to allow users to add a 
+				   description when creating a snapshot.
 2.0.1   petermccool - Add datastore output to disk list
 			  mheidenr    - Fix vm migrate and refactor
 				scotthain   - Error checking when looking up address in clone

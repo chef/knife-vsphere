@@ -63,7 +63,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   option :snapshot_description,
          long: '--snapshot-descr DESCR',
          description: 'Snapshot description',
-         default: ' '
+         default: ''
 
   def run
     $stdout.sync = true
@@ -151,9 +151,9 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     out = ''
     out << '+--' * shift
     if node.snapshot == current
-      out << ui.color(descr, :cyan) << "\n"
+      out << ui.color(descr, :cyan) << '\n'
     else
-      out << descr << "\n"
+      out << descr << '\n'
     end
     unless node.childSnapshotList.empty?
       node.childSnapshotList.each { |item| out << display_node(item, current, shift + 1) }
