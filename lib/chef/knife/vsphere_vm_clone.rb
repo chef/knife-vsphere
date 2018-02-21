@@ -383,7 +383,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       if fault.class == RbVmomi::VIM::NicSettingMismatch
         abort "There is a mismatch in the number of NICs on the template (#{fault.numberOfNicsInVM}) and what you've passed on the command line with --cips (#{fault.numberOfNicsInSpec}). The VM has been cloned but not customized."
       elsif fault.class == RbVmomi::VIM::DuplicateName
-        ui.info "VM already exists, proceeding to bootstrap"
+        ui.info 'VM already exists, proceeding to bootstrap'
       else
         raise e
       end
