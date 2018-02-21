@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency('netaddr', ['~> 1.5'])
   s.add_dependency('rbvmomi', ['~> 1.8'])
   s.add_dependency('filesize', ['~> 0.1.1'])
+  s.add_dependency('chef-vault', ['>= 2.6.0'])
 
   s.add_development_dependency('byebug')
   s.add_development_dependency('chef', ['>= 11.0'])
