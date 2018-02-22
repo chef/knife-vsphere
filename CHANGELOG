@@ -1,5 +1,7 @@
 knife-vsphere changelog
 ----------------------
+2.0.3   swalberg   - If the node exists prior to clone, move to bootstrap
+
 2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
                    - Add option "--snapshot-descr DESCR" to allow users to add a 
                      description when creating a snapshot.
