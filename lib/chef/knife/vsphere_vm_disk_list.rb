@@ -1,9 +1,12 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # List the disks attached to a VM
 # VsphereVmdisklist extends the BaseVspherecommand
 class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
+
   banner 'knife vsphere vm disk list VMNAME'
 
   common_options
@@ -18,9 +21,7 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
       fatal_exit 'You must specify a virtual machine name'
     end
 
-    vim_connection
-    vm = get_vm(vmname)
-    fatal_exit "Could not find #{vmname}" unless vm
+    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
 
     disks = vm.config.hardware.device.select do |device|
       device.is_a? RbVmomi::VIM::VirtualDisk
