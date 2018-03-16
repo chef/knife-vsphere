@@ -94,7 +94,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     if get_config(:list) && vm.snapshot
       puts 'Current snapshot tree: '
       puts "#{vmname}"
-      snapshot_list.each { |i| puts display_node(i, current_snapshot) }
+      snapshot_list.each { |i| ui.output(display_node(i, current_snapshot)) }
     end
 
     if get_config(:create_new_snapshot)
@@ -147,17 +147,23 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   end
 
   def display_node(node, current, shift = 1)
-    descr = node.name + ' ' + node.createTime.iso8601
-    out = ''
-    out << '+--' * shift
+    snapshotTree = {}
+	children = []
+	unless node.childSnapshotList.empty?
+      node.childSnapshotList.each { |item| children << display_node(item, current, shift + 1) }
+    end
     if node.snapshot == current
-      out << ui.color(descr, :cyan) << '\n'
+      snapshotTree = {'SnapshotName' => node.name,
+	                  'SnapshotDescription' => node.description,
+					  'SnapshotCreationDate' => node.createTime.iso8601,
+					  'IsCurrentSnapshot' => true,
+					  'Children' => children}
     else
-      out << descr << '\n'
+      snapshotTree = {'SnapshotName' => node.name,
+	                  'SnapshotDescription' => node.description,
+					  'SnapshotCreationDate' => node.createTime.iso8601,
+					  'Children' => children}
     end
-    unless node.childSnapshotList.empty?
-      node.childSnapshotList.each { |item| out << display_node(item, current, shift + 1) }
-    end
-    out
+    return snapshotTree
   end
 end
