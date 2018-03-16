@@ -3,8 +3,7 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVMPropertySet extends Basevspherecommand
 class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
@@ -42,9 +41,8 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
     vim_connection
 
     dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
 
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
 
     if vm.config.vAppConfig && vm.config.vAppConfig.property
       existing_property = vm.config.vAppConfig.property.find { |p| p.props[:id] == property_name.to_s  }
