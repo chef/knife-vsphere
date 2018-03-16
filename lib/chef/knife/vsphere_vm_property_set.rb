@@ -7,6 +7,7 @@ require 'chef/knife/search_helper'
 
 # VsphereVMPropertySet extends Basevspherecommand
 class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm property set VMNAME PROPERTY VALUE.  Sets a vApp Property on VMNAME.'
 
   common_options

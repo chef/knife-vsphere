@@ -3,11 +3,11 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVMconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner "knife vsphere vm config VMNAME PROPERTY VALUE.
           See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.vm.ConfigSpec.html\"
           for allowed ATTRIBUTE values (any property of type xs:string is supported)."
@@ -39,10 +39,7 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
 
     properties = {}
     properties[property_name] = property_value
