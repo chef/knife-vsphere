@@ -382,6 +382,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       fault = e.fault
       if fault.class == RbVmomi::VIM::NicSettingMismatch
         abort "There is a mismatch in the number of NICs on the template (#{fault.numberOfNicsInVM}) and what you've passed on the command line with --cips (#{fault.numberOfNicsInSpec}). The VM has been cloned but not customized."
+      elsif fault.class == RbVmomi::VIM::DuplicateName
+        ui.info 'VM already exists, proceeding to bootstrap'
       else
         raise e
       end
@@ -398,7 +400,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     if get_config(:power) || get_config(:bootstrap)
       vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) ||
            fatal_exit("VM #{vmname} not found")
-      vm.PowerOnVM_Task.wait_for_completion
+      begin
+        vm.PowerOnVM_Task.wait_for_completion
+      rescue RbVmomi::Fault => e
+        raise e unless e.fault.class == RbVmomi::VIM::InvalidPowerState # Ignore if it's already turned on
+      end
       puts "Powered on virtual machine #{vmname}"
     end
 

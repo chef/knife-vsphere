@@ -148,21 +148,21 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
   def display_node(node, current, shift = 1)
     snapshotTree = {}
-	children = []
-	unless node.childSnapshotList.empty?
+	  children = []
+	  unless node.childSnapshotList.empty?
       node.childSnapshotList.each { |item| children << display_node(item, current, shift + 1) }
     end
     if node.snapshot == current
       snapshotTree = {'SnapshotName' => node.name,
-	                  'SnapshotDescription' => node.description,
-					  'SnapshotCreationDate' => node.createTime.iso8601,
-					  'IsCurrentSnapshot' => true,
-					  'Children' => children}
+	                    'SnapshotDescription' => node.description,
+					            'SnapshotCreationDate' => node.createTime.iso8601,
+					            'IsCurrentSnapshot' => true,
+					            'Children' => children}
     else
       snapshotTree = {'SnapshotName' => node.name,
-	                  'SnapshotDescription' => node.description,
-					  'SnapshotCreationDate' => node.createTime.iso8601,
-					  'Children' => children}
+	                    'SnapshotDescription' => node.description,
+			          		  'SnapshotCreationDate' => node.createTime.iso8601,
+					            'Children' => children}
     end
     return snapshotTree
   end
