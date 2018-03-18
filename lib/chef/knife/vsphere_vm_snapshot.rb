@@ -92,9 +92,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:list) && vm.snapshot
-      puts 'Current snapshot tree: '
-      puts "#{vmname}"
-      snapshot_list.each { |i| ui.output(display_node(i, current_snapshot)) }
+      ui.output(snapshot_list.map { |i| display_node(i, current_snapshot) })
     end
 
     if get_config(:create_new_snapshot)
@@ -146,24 +144,13 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     snapshot
   end
 
-  def display_node(node, current, shift = 1)
-    snapshot_tree = {}
-    children = []
-    unless node.childSnapshotList.empty?
-      node.childSnapshotList.each { |item| children << display_node(item, current, shift + 1) }
-    end
-    if node.snapshot == current
-      snapshot_tree = { 'SnapshotName' => node.name,
-                       'SnapshotDescription' => node.description,
-                       'SnapshotCreationDate' => node.createTime.iso8601,
-                       'IsCurrentSnapshot' => true,
-                       'Children' => children }
-    else
-      snapshot_tree = { 'SnapshotName' => node.name,
-                       'SnapshotDescription' => node.description,
-                       'SnapshotCreationDate' => node.createTime.iso8601,
-                       'Children' => children }
-    end
-    return snapshot_tree
+  def display_node(node, current)
+    children = node.childSnapshotList.map { |item| display_node(item, current) }
+	snapshot_tree = { 'SnapshotName' => node.name,
+                      'SnapshotDescription' => node.description,
+                      'SnapshotCreationDate' => node.createTime.iso8601,
+                      'Children' => children }
+	snapshot_tree.merge!( {'IsCurrentSnapshot' => true} ) if node.snapshot == current
+    snapshot_tree
   end
 end
