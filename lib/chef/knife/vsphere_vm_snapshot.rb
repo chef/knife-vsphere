@@ -150,7 +150,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
                       'SnapshotDescription' => node.description,
                       'SnapshotCreationDate' => node.createTime.iso8601,
                       'Children' => children }
-	snapshot_tree.merge!( {'IsCurrentSnapshot' => true} ) if node.snapshot == current
+    snapshot_tree.merge!({ 'IsCurrentSnapshot' => true }) if node.snapshot == current
     snapshot_tree
   end
 end
