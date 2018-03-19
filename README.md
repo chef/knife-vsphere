@@ -118,7 +118,7 @@ currently supports the following:
 * datastore
 * resource pool
 
-Note: For Windows guests we can run sysprep
+Note: For Windows guests we can run FIELDS
 
 ## Basic Examples:
 
@@ -211,6 +211,7 @@ FIELDS:
 ```bash
 --alarms                     show alarm status
 --cpu                        Show cpu
+--cpu-hot-add-enabled        Show cpu hot add enabled flag
 --esx-disk                   Show esx disks
 --full-path                  Show full path
 --hostname                   show hostname
@@ -220,6 +221,7 @@ FIELDS:
 --os                         Show os details
 --os-disks                   Show os disks
 --ram                        Show ram
+--memory-hot-add-enabled     Show memory hot add enabled flag
 --snapshots                  Show snapshots
 --tools                      show tools status
 ```
