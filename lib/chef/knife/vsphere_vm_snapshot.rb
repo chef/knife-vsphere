@@ -4,11 +4,11 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # Manage snapshots of a virtual machine
 class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm snapshot VMNAME (options)'
 
   common_options
@@ -44,7 +44,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
          description: 'Indicates whether to wait for creation/removal to complete',
          boolean: false
 
-  option :find,
+  option :find, # imma deprecate this
          long: '--find',
          description: 'Finds the virtual machine by searching all folders'
 
@@ -77,14 +77,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    vm = if get_config(:find)
-           puts "No folder entered, searching for #{vmname}"
-           src_folder = find_folder(get_config(:folder))
-           traverse_folders_for_vm(src_folder, vmname)
-         else
-           base_folder = find_folder get_config(:folder)
-           find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
-         end
+    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList
