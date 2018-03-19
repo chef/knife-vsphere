@@ -5,12 +5,12 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # Manage power state of a virtual machine
 # VsphereVmState extends the BaseVspherecommand
 class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   # The Different power states that vSphere reports
   POWER_STATES = {
     PS_ON => 'powered on',
@@ -56,18 +56,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    if get_config(:recursive)
-      vms = get_vms(vmname)
-      if vms.length > 1
-        abort "More than one VM with name #{vmname} found:\n" + vms.map { |vm| get_path_to_object(vm) }.join("\n")
-      end
-      abort "VM #{vmname} not found" if vms.length == 0
-      vm = vms[0]
-    else
-      base_folder = find_folder(get_config(:folder))
-
-      vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
-    end
+    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
 
     state = vm.runtime.powerState
 
