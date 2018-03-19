@@ -5,6 +5,8 @@ knife-vsphere changelog
 					           formats using ui.output.
 				           - Add additional snapshot information to the tree hierarchy
                    - Add cpu and memory hot add enabled flags to vsphere_vm_find.rb
+				swalberg   - Introduce a faster way of finding a VM to some commands
+
 2.0.3   swalberg   - If the node exists prior to clone, move to bootstrap
 
 2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
