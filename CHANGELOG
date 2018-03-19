@@ -3,7 +3,8 @@ knife-vsphere changelog
 2.0.4   nammiesgal - Refactored display_node method in vsphere_vm_snapshot.rb to output
                      list of snapshots in a tree hierarchy that can be output in various
 					           formats using ui.output.
-				           - Add additional snapshot information to the tree hierarchy 
+				           - Add additional snapshot information to the tree hierarchy
+                   - Add cpu and memory hot add enabled flags to vsphere_vm_find.rb
 2.0.3   swalberg   - If the node exists prior to clone, move to bootstrap
 
 2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
