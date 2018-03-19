@@ -39,6 +39,14 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          long: '--cpu',
          description: 'Show cpu'
 
+  option :cpu_hot_add_enabled,
+         long: '--cpu_hot_add_enabled',
+         description: 'Show cpu hot add enabled'
+
+  option :memory_hot_add_enabled,
+         long: '--memory_hot_add_enabled',
+         description: 'Show memory hot add enabled'
+
   option :ram,
          long: '--ram',
          description: 'Show ram'
@@ -233,6 +241,14 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
       if get_config(:ram)
         thisvm['ram'] = vm.summary.config.memorySizeMB
+      end
+
+      if get_config(:cpu_hot_add_enabled)
+        thisvm['cpu_hot_add_enabled'] = vm.config.cpuHotAddEnabled
+      end
+
+      if get_config(:memory_hot_add_enabled)
+        thisvm['memory_hot_add_enabled'] = vm.config.memoryHotAddEnabled
       end
 
       if get_config(:cpu)

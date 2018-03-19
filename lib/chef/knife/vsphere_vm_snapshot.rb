@@ -147,6 +147,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   def display_node(node, current)
     children = node.childSnapshotList.map { |item| display_node(item, current) }
     snapshot_tree = { 'SnapshotName' => node.name,
+                      'SnapshotId' => node.id,
                       'SnapshotDescription' => node.description,
                       'SnapshotCreationDate' => node.createTime.iso8601,
                       'Children' => children }
