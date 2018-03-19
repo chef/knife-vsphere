@@ -1,5 +1,9 @@
 knife-vsphere changelog
 ----------------------
+2.0.4   nammiesgal - Refactored display_node method in vsphere_vm_snapshot.rb to output
+                     list of snapshots in a tree hierarchy that can be output in various
+					           formats using ui.output.
+				           - Add additional snapshot information to the tree hierarchy 
 2.0.3   swalberg   - If the node exists prior to clone, move to bootstrap
 
 2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
@@ -8,7 +12,6 @@ knife-vsphere changelog
 			  swalberg   - doc updates
 				           - Handle the nicsettingmismatch error on clone
 		    benpoliquin- Fix misleading output in vm delete
-
 2.0.1   petermccool - Add datastore output to disk list
 			  mheidenr    - Fix vm migrate and refactor
 				scotthain   - Error checking when looking up address in clone
