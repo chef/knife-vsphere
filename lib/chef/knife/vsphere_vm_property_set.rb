@@ -43,7 +43,7 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
 
     dc = datacenter
 
-    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     if vm.config.vAppConfig && vm.config.vAppConfig.property
       existing_property = vm.config.vAppConfig.property.find { |p| p.props[:id] == property_name.to_s  }

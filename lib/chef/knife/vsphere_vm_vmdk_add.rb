@@ -4,10 +4,12 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # Add a new disk to a virtual machine
 # VsphereVmvmdkadd extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm vmdk add VMNAME DISK_GB'
 
   common_options
@@ -43,7 +45,8 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
     vim = vim_connection
     vdm = vim.serviceContent.virtualDiskManager
-    vm = get_vm(vmname)
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
+
     fatal_exit "Could not find #{vmname}" unless vm
 
     target_lun = get_config(:target_lun) unless get_config(:target_lun).nil?

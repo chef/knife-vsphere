@@ -3,11 +3,11 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # Vspherevmtoolsconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner "knife vsphere vm toolsconfig PROPERTY VALUE.
           See \"https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.ToolsConfigInfo.html\"
           for available properties and types."
@@ -42,12 +42,7 @@ class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
 
     value = '' if get_config(:empty)
 
-    vim_connection
-
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     vm_config_spec = RbVmomi::VIM.VirtualMachineConfigSpec(tools: RbVmomi::VIM.ToolsConfigInfo(property => value))
     vm.ReconfigVM_Task(spec: vm_config_spec)

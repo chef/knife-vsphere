@@ -31,15 +31,4 @@ describe Chef::Knife::VsphereVmVmdkAdd do
       expect { subject.run }.to raise_error ArgumentError
     end
   end
-
-  context 'finding a vm' do
-    it 'exits if the vm is not found' do
-      subject.name_args = ['foo', 42]
-      expect(subject).to receive(:vim_connection).and_return(vim)
-
-      expect(subject).to receive(:get_vm).with('foo').and_return(false)
-
-      expect { subject.run }.to raise_error SystemExit
-    end
-  end
 end

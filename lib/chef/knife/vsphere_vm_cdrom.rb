@@ -2,11 +2,11 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVmCdrom extends the BaseVspherecommand
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm cdrom VMNAME (options)'
 
   # The empty device name.
@@ -64,20 +64,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
     fatal_exit 'You must specify the name and path of an ISO with --iso' if get_config(:attach) && !get_config(:iso)
     fatal_exit 'You must specify the datastore containing the ISO with --datastore' if get_config(:attach) && !get_config(:datastore)
 
-    vim_connection
-
-    if get_config(:recursive)
-      vms = get_vms(vmname)
-      if vms.length > 1
-        fatal_exit "More than one VM with name #{vmname} found:\n" + vms.map { |vm| get_path_to_object(vm) }.join("\n")
-      end
-      fatal_exit "VM #{vmname} not found" if vms.empty?
-      vm = vms[0]
-    else
-      base_folder = find_folder(get_config(:folder))
-
-      vm = find_in_folder(base_folder, RbVmomi::VIM::VirtualMachine, vmname) || fatal_exit("VM #{vmname} not found")
-    end
+    vm = get_vm_by_name(vmname, config[:folder]) || fatal_exit("Could not find #{vmname}")
 
     cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
     fatal_exit 'Could not find a cd drive' unless cdrom_obj

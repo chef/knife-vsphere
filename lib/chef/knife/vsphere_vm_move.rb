@@ -4,10 +4,12 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # Lists all known virtual machines in the configured datacenter
 # VsphereVmMove extends the BaseVspherecommand
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm move'
 
   common_options
@@ -79,12 +81,7 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    vim = vim_connection
-    dcname = get_config(:vsphere_dc)
-    dc = vim.serviceInstance.find_datacenter(dcname) || abort('datacenter not found')
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     if get_config(:thin_provision) || get_config(:thick_provision)
       convert_vm(vm)

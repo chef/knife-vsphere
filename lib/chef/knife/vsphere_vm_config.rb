@@ -39,7 +39,7 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     properties = {}
     properties[property_name] = property_value

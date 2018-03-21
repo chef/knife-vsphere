@@ -3,11 +3,11 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVmShow extends the BaseVspherecommand
 class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner "knife vsphere vm show VMNAME QUERY.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html\" for allowed QUERY values."
 
   common_options
@@ -30,10 +30,7 @@ class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     # split QUERY by dots, and walk the object model
     query = query_string.split '.'
