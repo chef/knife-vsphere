@@ -23,9 +23,10 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
 
     vim_connection
 
-    vms = get_all_vm_objects(folder: get_config(:folder),
-                             properties: ['name', 'config.template']
-                            ).select { |vm| vm['config.template'] == true }
+    vms = get_all_vm_objects(
+      folder: get_config(:folder),
+      properties: ['name', 'config.template']
+    ).select { |vm| vm['config.template'] == true }
 
     vm_list = vms.map do |vm|
       { 'Template Name' => vm['name'] }
