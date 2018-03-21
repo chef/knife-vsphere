@@ -7,8 +7,8 @@ require 'chef/knife/base_vsphere_command'
 require 'chef/knife/search_helper'
 
 # Main class VsphereVMvncset extends the BaseVspherecommand
-# include SearchHelper
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm vncset VMNAME COMMAND ARGS'
 
   option :vnc_port,

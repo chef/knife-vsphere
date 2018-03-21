@@ -53,7 +53,7 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
     dest_host = config[:dest_host]
     ndc = find_datastore(config[:dest_datastore]) || abort('dest-datastore not found')
     pool = find_pool(config[:resource_pool]) if config[:resource_pool]
-    dest_host = find_host_folder(dc.hostFolder, dest_host)
+    dest_host = find_host_folder(datacenter.hostFolder, dest_host)
     migrate_spec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: ndc, pool: pool, host: dest_host)
     vm.RelocateVM_Task(spec: migrate_spec, priority: priority).wait_for_completion
   end
