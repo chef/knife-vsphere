@@ -6,7 +6,7 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
+require 'chef/knife/search_helper'
 require 'chef/knife/customization_helper'
 
 # Wait for vm finishing Sysprep.
@@ -14,6 +14,7 @@ require 'chef/knife/customization_helper'
 # knife vsphere vm wait sysprep somemachine --sleep 30 \
 #     --timeout 600
 class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   include CustomizationHelper
 
   banner 'knife vsphere vm wait sysprep VMNAME (options)'
@@ -47,10 +48,8 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
     sleep_timeout = get_config(:timeout).to_i
 
     vim = vim_connection
-    dc = datacenter
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM could not be found in #{folder}")
 
     CustomizationHelper.wait_for_sysprep(vm, vim, sleep_timeout, sleep_time)
   end

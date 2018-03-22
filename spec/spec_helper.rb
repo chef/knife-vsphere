@@ -94,6 +94,13 @@ RSpec.configure do |config|
   #   Kernel.srand config.seed
 end
 
+RSpec.shared_context 'stub_vm_search' do
+
+  before do
+    allow(subject).to receive(:get_vm_by_name).and_return(vm)
+  end
+end
+
 RSpec.shared_context 'existing_vm' do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }

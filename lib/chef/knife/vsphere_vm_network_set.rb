@@ -4,10 +4,12 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # Changes network on a certain VM
 # VsphereVmNetworkSet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm network set VMNAME NETWORKNAME'
 
   common_options
@@ -33,7 +35,7 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
     end
 
     network = find_network(networkname)
-    vm = get_vm(vmname) || abort('VM not found')
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
     nic = vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard)[Integer(get_config(:nic))]
     if network.is_a? RbVmomi::VIM::DistributedVirtualPortgroup
       port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(switchUuid: network.config.distributedVirtualSwitch.uuid, portgroupKey: network.key)

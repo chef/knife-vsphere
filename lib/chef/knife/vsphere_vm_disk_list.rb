@@ -21,7 +21,7 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
       fatal_exit 'You must specify a virtual machine name'
     end
 
-    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     disks = vm.config.hardware.device.select do |device|
       device.is_a? RbVmomi::VIM::VirtualDisk

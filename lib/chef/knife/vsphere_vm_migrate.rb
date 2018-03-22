@@ -4,9 +4,11 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # migrate vm to specified resource pool , datastore and host
 class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   # migrate --resource-pool --dest-host --dest-datastore
   banner 'knife vsphere vm migrate (options)'
 
@@ -45,17 +47,13 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    vim_connection
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     priority = config[:priority]
     dest_host = config[:dest_host]
     ndc = find_datastore(config[:dest_datastore]) || abort('dest-datastore not found')
     pool = find_pool(config[:resource_pool]) if config[:resource_pool]
-    dest_host = find_host_folder(dc.hostFolder, dest_host)
+    dest_host = find_host_folder(datacenter.hostFolder, dest_host)
     migrate_spec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: ndc, pool: pool, host: dest_host)
     vm.RelocateVM_Task(spec: migrate_spec, priority: priority).wait_for_completion
   end

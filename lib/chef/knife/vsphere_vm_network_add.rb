@@ -4,10 +4,11 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
+require 'chef/knife/search_helper'
 require 'netaddr'
 
 class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm network add VMNAME NETWORKNAME'
 
   option :adapter_type,
@@ -37,11 +38,8 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify the network name')
     end
 
-    vim_connection
 
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     network = find_network(networkname)
 

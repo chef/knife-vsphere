@@ -2,7 +2,9 @@ require 'spec_helper'
 require 'chef/knife/vsphere_vm_cdrom'
 
 describe Chef::Knife::VsphereVmCdrom do
-  include_context 'existing_vm'
+  include_context 'stub_vm_search'
+
+  let(:vm) { double('VM') }
 
   let(:config) { double('Config', hardware: hardware) }
   let(:hardware) { double('Hardware', device: devices) }

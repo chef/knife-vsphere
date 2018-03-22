@@ -4,10 +4,10 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm network delete VMNAME NICNAME'
 
   common_options
@@ -27,8 +27,7 @@ class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify the name of the NIC to delete')
     end
 
-    vim_connection
-    vm = get_vm(vmname) || abort('VM not found')
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     cards = vm.config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard)
     card = cards.detect { |c| c.deviceInfo.label == nicname }

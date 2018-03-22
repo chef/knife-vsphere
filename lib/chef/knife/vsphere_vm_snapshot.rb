@@ -75,9 +75,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
       exit 1
     end
 
-    vim_connection
-
-    vm = get_vm_by_name(vmname) || fatal_exit("Could not find #{vmname}")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     if vm.snapshot
       snapshot_list = vm.snapshot.rootSnapshotList

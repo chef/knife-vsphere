@@ -4,11 +4,11 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # Main class VsphereVMvncset extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm vncset VMNAME COMMAND ARGS'
 
   option :vnc_port,
@@ -33,12 +33,7 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    vim_connection
-
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     extra_config, = vm.collect('config.extraConfig')
 

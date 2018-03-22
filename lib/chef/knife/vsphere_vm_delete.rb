@@ -5,6 +5,7 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 require 'rbvmomi'
 
 # These two are needed for the '--purge' deletion case
@@ -14,6 +15,7 @@ require 'chef/api_client'
 # Delete a virtual machine from vCenter
 # VsphereVmDelete extends the BaseVspherecommand
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm delete VMNAME (options)'
 
   option :purge,
@@ -56,11 +58,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    vim_connection
-
-    base_folder = find_folder(get_config(:folder))
-
-    vm = traverse_folders_for_vm(base_folder, vmname) || fatal_exit("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == 'poweredOff'
     vm.Destroy_Task.wait_for_completion

@@ -1,7 +1,5 @@
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
 
 # VsphereVmQuery extends the BaseVspherecommand
 class Chef::Knife::VsphereVmQuery < Chef::Knife::BaseVsphereCommand

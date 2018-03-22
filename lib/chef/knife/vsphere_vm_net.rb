@@ -4,10 +4,12 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
+require 'chef/knife/search_helper'
 
 # Switch VM networking state up/down (on all network interfaces)
 # VsphereVmNet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm net STATE VMNAME'
   common_options
 
@@ -32,11 +34,9 @@ class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
     elsif state == 'down'
       if_state = false
     end
-    vim_connection
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) ||
-         abort("VM #{vmname} not found")
+
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
+
     vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard) do |a|
       backing = a.backing
       key = a.key

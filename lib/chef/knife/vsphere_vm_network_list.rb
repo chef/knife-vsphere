@@ -4,11 +4,11 @@
 #
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVmNetworklist extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm network list VMNAME'
 
   common_options
@@ -24,15 +24,14 @@ class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    vim_connection
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
     dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-    vm = traverse_folders_for_vm(folder, vmname) || abort("VM #{vmname} not found")
 
     vm.config.hardware.device.each.grep(RbVmomi::VIM::VirtualEthernetCard).map do |nic|
-      dc.network.each.grep(RbVmomi::VIM::DistributedVirtualPortgroup) do |net|
+      dc.network.grep(RbVmomi::VIM::DistributedVirtualPortgroup) do |net|
         if nic.backing.port.portgroupKey.eql?(net.key)
           puts "NIC: #{nic.deviceInfo.label} VLAN: #{net.name}"
+          break
         end
       end
     end

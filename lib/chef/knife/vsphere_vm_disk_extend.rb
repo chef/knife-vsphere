@@ -5,9 +5,10 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
+require 'chef/knife/search_helper'
 
 class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm disk extend VMNAME SIZE. Extends the disk of vm VMNAME to SIZE kilobytes.'
 
   common_options
@@ -36,9 +37,7 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
 
     dc = datacenter
 
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     disks = vm.config.hardware.device.select do |device|
       device.is_a?(RbVmomi::VIM::VirtualDisk) && (disk_name.nil? || device.deviceInfo.label == disk_name)

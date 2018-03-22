@@ -126,31 +126,6 @@ class Chef
         @password ||= ui.ask('Enter your password: ') { |q| q.echo = false }
       end
 
-      def get_vm(vmname)
-        vim_connection
-        base_folder = find_folder(get_config(:folder))
-        traverse_folders_for_vm(base_folder, vmname)
-      end
-
-      def get_vms(vmname)
-        vim_connection
-        base_folder = find_folder(get_config(:folder))
-        traverse_folders_for_vms(base_folder, vmname)
-      end
-
-      def traverse_folders_for_vm(folder, vmname)
-        children = folder.children.find_all
-        children.each do |child|
-          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
-            return child
-          elsif child.class == RbVmomi::VIM::Folder
-            vm = traverse_folders_for_vm(child, vmname)
-            return vm if vm
-          end
-        end
-        false
-      end
-
       def traverse_folders_for_pools(folder)
         retval = []
         children = folder.children.find_all
@@ -172,19 +147,6 @@ class Chef
             retval << child
           elsif child.class == RbVmomi::VIM::Folder
             retval.concat(traverse_folders_for_computeresources(child))
-          end
-        end
-        retval
-      end
-
-      def traverse_folders_for_vms(folder, vmname)
-        retval = []
-        children = folder.children.find_all
-        children.each do |child|
-          if child.class == RbVmomi::VIM::VirtualMachine && child.name == vmname
-            retval << child
-          elsif child.class == RbVmomi::VIM::Folder
-            retval.concat(traverse_folders_for_vms(child, vmname))
           end
         end
         retval
