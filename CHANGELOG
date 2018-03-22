@@ -1,5 +1,12 @@
 knife-vsphere changelog
 ----------------------
+2.0.5   swalberg   - Better search. Such fast. Much wow
+									   - Fixed all knife vsphere vm * commands to use search
+										 helper with folder option
+										 - Updated vm network list to be a bit faster
+										 - Updated template list to use the search helper
+										 - Remove dead code.
+
 2.0.4   nammiesgal - Refactored display_node method in vsphere_vm_snapshot.rb to output
                      list of snapshots in a tree hierarchy that can be output in various
 					           formats using ui.output.
