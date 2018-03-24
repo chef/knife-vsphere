@@ -1,24 +1,26 @@
-#
 # Author:: Raducu Deaconu (<rhadoo_io@yahoo.com>)
 # License:: Apache License, Version 2.0
 #
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # find vms belonging to pool that match criteria, display specified fields
 class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
   banner 'knife vsphere vm find'
+
+  VMFOLDER = 'vm'.freeze
 
   common_options
 
+  # Deprecating
   option :pool,
          long: '--pool pool',
          short: '-h',
          description: 'Target pool'
-
+  # Deprecating
   option :poolpath,
          long: '--pool-path',
          description: 'Pool is full-path'
@@ -55,10 +57,6 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          long: '--ip',
          description: 'Show primary ip'
 
-  option :ips,
-         long: '--ips',
-         description: 'Show all ips, with networks - DEPRECATED use --networks'
-
   option :networks,
          long: '--networks',
          description: 'Show all networks with their IPs'
@@ -83,6 +81,10 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          long: '--match-name VMNAME',
          description: 'match name'
 
+  option :matchtools,
+         long: '--match-tools TOOLSSTATE',
+         description: 'match tools state'
+
   option :hostname,
          long: '--hostname',
          description: 'show hostname of the guest'
@@ -103,189 +105,145 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
          long: '--tools',
          description: 'show tools status'
 
-  option :matchtools,
-         long: '--match-tools TOOLSSTATE',
-         description: 'match tools state'
-
   option :full_path,
          long: '--full-path',
-         description: 'Show full path'
+         description: 'Show full folder path to the VM'
+
+  option :short_path,
+         long: '--short-path',
+         description: 'Show the VM\'s enclosing folder name'
 
   $stdout.sync = true # smoother output from print
 
-  # Find the given pool or compute resource
-  # @param folder [RbVmomi::VIM::Folder] the folder from which to start the search, most likely dc.hostFolder
-  # @param objectname [String] name of the object (pool or cluster/compute) to find
-  # @return [RbVmomi::VIM::ClusterComputeResource, RbVmomi::VIM::ComputeResource, RbVmomi::VIM::ResourcePool]
-  def traverse_folders_for_pool_clustercompute(folder, objectname)
-    children = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject)
-    children.each do |child|
-      next unless child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ResourcePool
-      if child.name == objectname
-        return child
-      elsif child.class == RbVmomi::VIM::Folder || child.class == RbVmomi::VIM::ComputeResource || child.class == RbVmomi::VIM::ClusterComputeResource || child.class == RbVmomi::VIM::ResourcePool
-        pool = traverse_folders_for_pool_clustercompute(child, objectname)
-      end
-      return pool if pool
-    end
-    false
-  end
-
   # Main entry point to the command
   def run
-    poolname = config[:pool]
-    if poolname.nil?
-      show_usage
-      fatal_exit('You must specify a resource pool or cluster name (see knife vsphere pool list)')
+    property_map('name' => 'name')
+    property_map('runtime.powerState' => 'state') { |value| state_to_english(value) }
+
+    property_map('config.cpuHotAddEnabled' => 'cpu_hot_add_enabled') if get_config(:cpu_hot_add_enabled)
+    property_map('config.memoryHotAddEnabled' => 'memory_hot_add_enabled') if get_config(:memory_hot_add_enabled)
+    property_map('guest.guestFullName' => 'os') if get_config(:matchos) || get_config(:os)
+    property_map('guest.hostName' => 'hostname') if get_config(:hostname)
+    property_map('guest.ipAddress' => 'ip') if get_config(:matchip) || get_config(:ip)
+    property_map('guest.toolsStatus' => 'tools') if get_config(:matchtools) || get_config(:tools)
+    property_map('summary.config.memorySizeMB' => 'ram') if get_config(:ram)
+    property_map('summary.config.numCpu' => 'cpu') if get_config(:cpu)
+    property_map('summary.overallStatus' => 'alarms') if get_config(:alarms)
+    property_map('summary.runtime.host' => 'host_name', &:name) if get_config(:host_name)
+
+    # TODO: https://www.vmware.com/support/developer/converter-sdk/conv55_apireference/vim.VirtualMachine.html#field_detail says this is deprecated
+    property_map('layout.disk' => 'esx_disk') { |disks| disks.map(&:diskFile) } if get_config(:esx_disk)
+    property_map('snapshot.rootSnapshotList' => 'snapshots') { |snapshots| Array(snapshots).map(&:name) } if get_config(:snapshots)
+
+    if get_config(:networks)
+      property_map('guest.net' => 'networks') do |nets|
+        ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
+        nets.map do |net|
+          firstip = net.ipConfig.ipAddress.first { |i| i.ipAddress[ipregex] }
+          { 'name' => net.network, 'ip' => firstip.ipAddress, 'prefix' => firstip.prefixLength }
+        end
+      end
     end
 
-    abort '--ips has been removed. Please use --networks' if get_config(:ips)
-
-    vim_connection
-    dc = datacenter
-    folder = dc.hostFolder
-    pool = if get_config(:poolpath)
-             find_pool(poolname) || abort("Pool #{poolname} not found")
-           else
-             traverse_folders_for_pool_clustercompute(folder, poolname) || abort("Pool #{poolname} not found")
-           end
-    vm_list = if pool.class == RbVmomi::VIM::ResourcePool
-                pool.vm
-              else
-                pool.resourcePool.vm
-              end
-
-    return if vm_list.nil?
-
-    output = vm_list.map do |vm|
-      thisvm = {}
-      if get_config(:matchname)
-        next unless vm.name.include? config[:matchname]
-      end
-
-      if get_config(:matchtools)
-        next unless vm.guest.toolsStatus == config[:matchtools]
-      end
-
-      power_state = vm.runtime.powerState
-
-      thisvm['state'] = case power_state
-                        when PS_ON
-                          'on'
-                        when PS_OFF
-                          'off'
-                        when PS_SUSPENDED
-                          'suspended'
-                        end
-
-
-      next if get_config(:soff) && (power_state == PS_ON)
-
-      next if get_config(:son) && (power_state == PS_OFF)
-
-      if get_config(:matchip)
-        if !vm.guest.ipAddress.nil? && vm.guest.ipAddress != ''
-          next unless vm.guest.ipAddress.include? config[:matchip]
-        else
-          next
-        end
-      end
-
-      unless vm.guest.guestFullName.nil?
-        if get_config(:matchos)
-          next unless vm.guest.guestFullName.include? config[:matchos]
-        end
-      end
-
-      thisvm['name'] = vm.name
-      if get_config(:hostname)
-        thisvm['hostname'] = vm.guest.hostName
-      end
-      if get_config(:host_name)
-        # TODO: Why vm.summary.runtime vs vm.runtime?
-        thisvm['host_name'] = vm.summary.runtime.host.name
-      end
-
-      if get_config(:full_path)
-        fullpath = ''
-        iterator = vm
-
-        while iterator = iterator.parent
-          break if iterator.name == 'vm'
-          fullpath = fullpath.empty? ? iterator.name : "#{iterator.name}/#{fullpath}"
-        end
-        thisvm['folder'] = fullpath
-      else
-        thisvm['folder'] = vm.parent.name
-      end
-
-      if get_config(:ip)
-        thisvm['ip'] = vm.guest.ipAddress
-      end
-
-      if get_config(:networks)
-        ipregex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
-        thisvm['networks'] = vm.guest.net.map do |net|
-          firstip = net.ipConfig.ipAddress.first { |i| i.ipAddress[ipregex] }
-
-          { 'name' => net.network,
-            'ip' => firstip.ipAddress,
-            'prefix' => firstip.prefixLength
-          }
-        end
-      end
-
-      if get_config(:os)
-        thisvm['os'] = vm.guest.guestFullName
-      end
-
-      if get_config(:ram)
-        thisvm['ram'] = vm.summary.config.memorySizeMB
-      end
-
-      if get_config(:cpu_hot_add_enabled)
-        thisvm['cpu_hot_add_enabled'] = vm.config.cpuHotAddEnabled
-      end
-
-      if get_config(:memory_hot_add_enabled)
-        thisvm['memory_hot_add_enabled'] = vm.config.memoryHotAddEnabled
-      end
-
-      if get_config(:cpu)
-        thisvm['cpu'] = vm.summary.config.numCpu
-      end
-
-      if get_config(:alarms)
-        thisvm['alarms'] = vm.summary.overallStatus
-      end
-
-      if get_config(:tools)
-        thisvm['tools'] = vm.guest.toolsStatus
-      end
-
-      if get_config(:os_disk)
-        thisvm['disks'] = vm.guest.disk.map do |disk|
+    if get_config(:os_disk)
+      property_map('guest.disk' => 'disks') do |disks|
+        disks.map do |disk|
           { 'name' => disk.diskPath,
             'capacity' => disk.capacity / 1024 / 1024,
-            'free' => disk.freeSpace / 1024 / 1024
-          }
+            'free' => disk.freeSpace / 1024 / 1024 }
         end
       end
+    end
 
-      if get_config(:esx_disk)
-        # TODO: https://www.vmware.com/support/developer/converter-sdk/conv55_apireference/vim.VirtualMachine.html#field_detail says this is deprecated
-        thisvm['esx_disks'] = vm.layout.disk.map(&:diskFile)
+    output = matched_vms.map do |vm|
+      thisvm = {}
+      @output_pairs.each do |property, out_key|
+        thisvm[out_key] = if @blocks[out_key]
+                            @blocks[out_key].call(vm[property])
+                          else
+                            vm[property]
+                          end
       end
 
-      if get_config(:snapshots)
-        thisvm['snapshots'] = if vm.snapshot
-                                vm.snapshot.rootSnapshotList.map(&:name)
-                              else
-                                []
-                              end
-      end
+      thisvm['folder'] = full_path_to(vm) if get_config(:full_path)
+      thisvm['folder'] = vm.obj.parent.name if get_config(:short_path)
+
       thisvm
     end
     ui.output(output.compact)
+  end
+
+  private
+
+  # property_map sets up the things we'll ask from vmware, and how they'll be displayed
+  # If it's passed a Hash then we'll request the key from vmware and the output will appear
+  # in the item specified by key.
+  # If you pass a block, then the result from vsphere will be passed to the block and that value used instead
+  def property_map(property_pair, &block)
+    @properties ||= []
+    @output_pairs ||= {}
+    @blocks ||= {}
+
+    (prop, out_key) = property_pair.first
+    @properties << prop
+    @output_pairs[prop] = out_key
+    @blocks[out_key] = block if block
+  end
+
+  def matched_vms
+    get_all_vm_objects(properties: @properties).select { |vm| match_vm? vm }
+  end
+
+  def match_vm?(vm)
+    match_name?(vm['name']) &&
+      match_tools?(vm['guest.toolsStatus']) &&
+      match_power_state?(vm['runtime.powerState']) &&
+      match_ip?(vm['guest.ipAddress']) &&
+      match_os?(vm['guest.guestFullName'])
+  end
+
+  def match_name?(name)
+    !get_config(:matchname) || name.include?(get_config(:matchname))
+  end
+
+  def match_tools?(tools)
+    !get_config(:matchtools) || tools == get_config(:matchtools)
+  end
+
+  def match_power_state?(power_state)
+    !(get_config(:son) || get_config(:soff)) ||
+      get_config(:son) && power_state == PS_ON ||
+      get_config(:soff) && power_state == PS_OFF
+  end
+
+  def match_ip?(ip)
+    ip ||= 'NOTANIP'
+    !get_config(:matchip) || ip.include?(get_config(:matchip))
+  end
+
+  def match_os?(os)
+    !get_config(:matchos) || (os && os.include?(get_config(:matchos)))
+  end
+
+  def state_to_english(power_state)
+    case power_state
+    when PS_ON
+      'on'
+    when PS_OFF
+      'off'
+    when PS_SUSPENDED
+      'suspended'
+    end
+  end
+
+  def full_path_to(vm)
+    path = []
+    iterator = vm.obj
+    while (iterator = iterator.parent)
+      break if iterator.name == VMFOLDER
+      path.unshift iterator.name
+    end
+
+    path.join '/'
   end
 end
