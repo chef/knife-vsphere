@@ -8,12 +8,12 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
+require 'chef/knife/customization_helper'
+require 'chef/knife/search_helper'
+require 'chef/knife/winrm_base'
+require 'ipaddr'
 require 'netaddr'
 require 'securerandom'
-require 'chef/knife/winrm_base'
-require 'chef/knife/customization_helper'
-require 'ipaddr'
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
@@ -28,6 +28,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   include Chef::Knife::WinrmBase
   include CustomizationHelper
+  include SearchHelper
   deps do
     require 'chef/json_compat'
     require 'chef/knife/bootstrap'
@@ -351,17 +352,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     config[:chef_node_name] = vmname unless get_config(:chef_node_name)
-    config[:vmname] = vmname
 
     vim = vim_connection
     vim.serviceContent.virtualDiskManager
 
     dc = datacenter
 
-    src_folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    src_vm = find_in_folder(src_folder, RbVmomi::VIM::VirtualMachine, config[:source_vm]) ||
-             abort('VM/Template not found')
+    src_vm = get_vm_by_name(get_config(:source_vm), get_config(:folder)) || fatal_exit("Could not find template #{vmname}")
 
     create_delta_disk(src_vm) if get_config(:linked_clone)
 
@@ -372,7 +369,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     dest_folder = cust_folder.nil? ? src_vm.vmFolder : find_folder(cust_folder)
 
     task = src_vm.CloneVM_Task(folder: dest_folder, name: vmname, spec: clone_spec)
-    puts "Cloning template #{config[:source_vm]} to new VM #{vmname}"
+    puts "Cloning template #{get_config(:source_vm)} to new VM #{vmname}"
 
     pp clone_spec if log_verbose?
 
@@ -398,8 +395,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     return if get_config(:mark_as_template)
     if get_config(:power) || get_config(:bootstrap)
-      vm = find_in_folder(dest_folder, RbVmomi::VIM::VirtualMachine, vmname) ||
-           fatal_exit("VM #{vmname} not found")
+      vm = get_vm_by_name(vmname, cust_folder) || fatal_exit("VM #{vmname} not found")
       begin
         vm.PowerOnVM_Task.wait_for_completion
       rescue RbVmomi::Fault => e
@@ -704,7 +700,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     # TODO: How could we not take this? Only if the identity were empty, but that's statically defined as empty above
     if use_ident
-      hostname = config[:customization_hostname] || config[:vmname]
+      hostname = config[:customization_hostname] || vmname
 
       if windows?(src_config)
         # We should get here with the customizations set, either by a plugin or a --cspec

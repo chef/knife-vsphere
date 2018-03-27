@@ -42,8 +42,6 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
       fatal_exit('You must specify a virtual machine name')
     end
 
-    config[:vmname] = vmname
-
     sleep_time = get_config(:sleep).to_i
     sleep_timeout = get_config(:timeout).to_i
 
