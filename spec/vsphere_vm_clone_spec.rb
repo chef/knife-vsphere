@@ -25,7 +25,7 @@ describe Chef::Knife::VsphereVmClone do
   let(:datacenter) { double('Datacenter', vmFolder: empty_folder, hostFolder: empty_folder) }
   let(:empty_folder) { double('Folder', childEntity: [], children: []) }
   let(:host) { double('Host', resourcePool: double('ResourcePool')) }
-  let(:root_folder) { double('RootFolder', children: []) }
+  #let(:root_folder) { double('RootFolder', children: []) }
   let(:service_content) { double('ServiceContent') }
   let(:task) { double('Task', wait_for_completion: 'done') }
   let(:template) { double('Template', config: double(guestId: 'Linux')) }
@@ -40,6 +40,7 @@ describe Chef::Knife::VsphereVmClone do
     subject.config[:verbosity] = 0
     subject.config[:customization_ips] = Chef::Knife::VsphereVmClone::NO_IPS
     subject.config[:customization_macs] = Chef::Knife::VsphereVmClone::AUTO_MAC
+    allow(subject).to receive(:get_vm_by_name).with('my_template', '').and_return(template)
   end
 
   context 'input handling' do
@@ -359,8 +360,9 @@ describe Chef::Knife::VsphereVmClone do
 
     before do
       subject.config[:bootstrap] = true
-      allow(template).to receive(:PowerOnVM_Task).and_return(task)
-      allow(template).to receive(:guest).and_return(guest)
+      allow(subject).to receive(:get_vm_by_name).with('foo', '').and_return(guest)
+      allow(guest).to receive(:PowerOnVM_Task).and_return(task)
+      allow(guest).to receive(:guest).and_return(guest)
       allow(subject).to receive(:tcp_test_ssh).with('foo.bar', 22).and_return(true) # cheat
 
       expect(Chef::Knife::Bootstrap).to receive(:new).and_return(chef)

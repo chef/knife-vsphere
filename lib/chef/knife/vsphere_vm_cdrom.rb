@@ -64,7 +64,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
     fatal_exit 'You must specify the name and path of an ISO with --iso' if get_config(:attach) && !get_config(:iso)
     fatal_exit 'You must specify the datastore containing the ISO with --datastore' if get_config(:attach) && !get_config(:datastore)
 
-    vm = get_vm_by_name(vmname, config[:folder]) || fatal_exit("Could not find #{vmname}")
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
     fatal_exit 'Could not find a cd drive' unless cdrom_obj
