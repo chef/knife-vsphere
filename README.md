@@ -183,21 +183,11 @@ is currently displayed.
 
 ## `knife vsphere vm find`
 
-Search for Virtual Machines matching criteria in the specified pool and
-display selected fields
-
-Required arguments:
-
-```bash
---pool POOL_NAME           -Name of the pool to search in
-```
-
-OPTIONS:
-```bash
---pool-path                  do not search for pool name,pool argument is an exact path
-```
+Search for Virtual Machines matching criteria and display selected fields
 
 CRITERIA:
+Note that _all_ criteria must be satisfied for the VM to be returned
+
 ```bash
 --match-ip IP                match ip
 --match-name VMNAME          match name
@@ -213,7 +203,8 @@ FIELDS:
 --cpu                        Show cpu
 --cpu-hot-add-enabled        Show cpu hot add enabled flag
 --esx-disk                   Show esx disks
---full-path                  Show full path
+--full-path                  Show full folder path to the VM
+--short-path                 Show the enclosing folder name
 --hostname                   show hostname
 --host_name                  Show name of the VM's host
 --ip                         Show primary ip
@@ -229,7 +220,7 @@ FIELDS:
 Example:
 
 ```bash
-$ knife vsphere vm find --snapshots --full-path --pool XXX-YYYY --cpu --ram --esx-disk \
+$ knife vsphere vm find --snapshots --full-path --cpu --ram --esx-disk \
     --os-disk --os --match-name my_machine_1 --alarms --tools --ip --ips \
     --match-ip 123 --match-tools toolsOk
 ```
