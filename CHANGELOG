@@ -1,5 +1,13 @@
 knife-vsphere changelog
 ----------------------
+
+2.1.0   swalberg   - Update find and clone to use SearchHelper
+									
+BREAKING CHANGE: knife vsphere vm find has some subtle changes:
+* Previously you'd need to specify a pool to search within. Now it searches
+  everything from the root folder
+* The enclosing folder name used to come by default, now you need --short-path
+
 2.0.5   swalberg   - Better search. Such fast. Much wow
 									   - Fixed all knife vsphere vm * commands to use search
 										 helper with folder option
