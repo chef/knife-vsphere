@@ -2,76 +2,77 @@ knife-vsphere changelog
 ----------------------
 
 2.1.0   swalberg   - Update find and clone to use SearchHelper
-									
+
 BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 * Previously you'd need to specify a pool to search within. Now it searches
   everything from the root folder
 * The enclosing folder name used to come by default, now you need --short-path
 
 2.0.5   swalberg   - Better search. Such fast. Much wow
-									   - Fixed all knife vsphere vm * commands to use search
-										 helper with folder option
-										 - Updated vm network list to be a bit faster
-										 - Updated template list to use the search helper
-										 - Remove dead code.
+                   - Fixed all knife vsphere vm * commands to use search
+                     helper with folder option
+                   - Updated vm network list to be a bit faster
+                   - Updated template list to use the search helper
+                   - Remove dead code.
 
 2.0.4   nammiesgal - Refactored display_node method in vsphere_vm_snapshot.rb to output
                      list of snapshots in a tree hierarchy that can be output in various
-					           formats using ui.output.
-				           - Add additional snapshot information to the tree hierarchy
+                     formats using ui.output.
+                   - Add additional snapshot information to the tree hierarchy
                    - Add cpu and memory hot add enabled flags to vsphere_vm_find.rb
-				swalberg   - Introduce a faster way of finding a VM to some commands
+        swalberg   - Introduce a faster way of finding a VM to some commands
 
 2.0.3   swalberg   - If the node exists prior to clone, move to bootstrap
 
 2.0.2   nammiesgal - Add snapshot creation timestamp to snapshot listing.
                    - Add option "--snapshot-descr DESCR" to allow users to add a 
                      description when creating a snapshot.
-			  swalberg   - doc updates
-				           - Handle the nicsettingmismatch error on clone
-		    benpoliquin- Fix misleading output in vm delete
+        swalberg   - doc updates
+                   - Handle the nicsettingmismatch error on clone
+        benpoliquin- Fix misleading output in vm delete
+
 2.0.1   petermccool - Add datastore output to disk list
-			  mheidenr    - Fix vm migrate and refactor
-				scotthain   - Error checking when looking up address in clone
-				tas50       - Require a more recent Chef release
-				mattkasa    - Fix issue where --cdomain is ignored on Windows
-				jjasghar    - Update Jenkinsfile
+        mheidenr    - Fix vm migrate and refactor
+        scotthain   - Error checking when looking up address in clone
+        tas50       - Require a more recent Chef release
+        mattkasa    - Fix issue where --cdomain is ignored on Windows
+        jjasghar    - Update Jenkinsfile
 
 2.0.0   jjasghar   - YARD DOCS!
                    - Jenkinsfile to let ppl test against a live env
-			             - Templates for issues and PRs
-			  swalberg   - Defer looking up the hostname (fixes #374)
-				           - Windows license is options (fixes #373)
-									 - Move `vsphere vm find` to Chef output format
+                   - Templates for issues and PRs
+        swalberg   - Defer looking up the hostname (fixes #374)
+                   - Windows license is options (fixes #373)
+                   - Move `vsphere vm find` to Chef output format
 1.2.26  petericebear - Set CPUs per socket and reserved memory
 
 1.2.25  warroyo    - more formatting, exit codes
 
 1.2.24  dhgwilliam - add support for filtering networks by dvswitch
         warroyo    - add formatted output and ability to filter on pool/cluster
-				           - add proper exit codes
+                   - add proper exit codes
         scotthain  - README corrections
 
 1.2.23  mheidenr - re-add accidentally reverted fix from '22
 
 1.2.22  warroyo  - Use presenters for cluster, host, datastore listings 
                    Means -f json and -f yaml work!
-		    zachsmorgan  - stop escaping regexps in datastore maxfree
-				swalberg - Clone to specific host (thanks to @jjashgar for help)
+        zachsmorgan  - stop escaping regexps in datastore maxfree
+        swalberg - Clone to specific host (thanks to @jjashgar for help)
         mheidenr - check if config[:customization_ips] is still the default NO_IPS
 
 1.2.21  coda4096 - Set MAC and NIC type in vm network add
 
 1.2.20  coda4096 - Delete a NIC
                  - List networks on a VM
-			  swalberg - Cleanup of mounting CD
+        swalberg - Cleanup of mounting CD
 
 1.2.19  coda4096 - Enable VNC on a VM
                  - Add a NIC to an existing VM <3 <3
 
 1.2.18  omgroves - knife vsphere vm network set (change nic)
         swalberg - support tagging during bootstrap
-				         - provide sane error message for common windows clone failure
+                 - provide sane error message for common windows clone failure
 
 1.2.17  martinmosegaard - Add --node-ssl-verify-mode
         jjasghar - doc improvements
@@ -82,15 +83,15 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 
 1.2.15  swalberg - Add --bootstrap-msi-url (#289, #272)
                  - Refactoring clone to add tests
-								 - --disable-customization now makes a nil customization
-								   unless used with --cspec. Its use is to restrict the
-									 customizations done to the VM
-								 - Doc updates
-								 - Travis fixes (remove Gemfile.lock, bump Ruby)
-								 - Final fix(?) for that mac and ip interaction
-								 - Refactor LocationSpec creation and fix thin-provision
-			  jjasghar - Doc updates
-				         - Pass sudo password to Boostrap when needed
+                 - --disable-customization now makes a nil customization
+                   unless used with --cspec. Its use is to restrict the
+                   customizations done to the VM
+                 - Doc updates
+                 - Travis fixes (remove Gemfile.lock, bump Ruby)
+                 - Final fix(?) for that mac and ip interaction
+                 - Refactor LocationSpec creation and fix thin-provision
+        jjasghar - Doc updates
+                 - Pass sudo password to Boostrap when needed
  martinmosegaard - VM clone with resource pool and linked clone (
 
 1.2.14  swalberg - Bugfix from 1.2.12
@@ -111,7 +112,7 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 1.2.10  swalberg - Fix get_config to allow falsey values
 
 1.2.9   swalberg - Bump knife-windows to fix gem conflict with em-winrm
-				         - Handle missing VM case in vmdk add
+                 - Handle missing VM case in vmdk add
         dliscomb - Fix casting problem in sysprep-timeout
 
 1.2.8   swalberg - Add find, quiesce, memory to snapshot h/t tcicone
@@ -131,11 +132,11 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 
 1.2.4   swalberg - Fix dependencies h/t adamedx
         kbrowns  - Add --folders-only for vm list
-				           markastemplate fix to not require a folder
-									 customization fixes
+                   markastemplate fix to not require a folder
+                   customization fixes
         nbrisebois mount CDRoms
-				           datastore file up/download
-			  tim95030 - correct default port for winrm
+                   datastore file up/download
+        tim95030 - correct default port for winrm
 
 1.2.3   mheidenr - Set identity in spec when not using --cspec
 
@@ -170,8 +171,8 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 
 
 1.0
-	rhadoo - add hosts list option
-	rhadoo - add vm networking on/off support
+        rhadoo - add hosts list option
+        rhadoo - add vm networking on/off support
         rhadoo - add vm migrate support
         ezrapagel - by default, show hosts from all pools
         ezrapagel - report back resource pools during pool list
@@ -189,10 +190,10 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 
 1.0.0.pre.3 *
         jrosen - added ability to clone into template
-	bellpeterm - allow :source_vm to be set in knife.rb
-	jeremymv2 - cplugin example in readme
-	mheidenr - vm clone can now clone and customize windows vms
-	chenhaiq - fix undef method when cloning
+        bellpeterm - allow :source_vm to be set in knife.rb
+        jeremymv2 - cplugin example in readme
+        mheidenr - vm clone can now clone and customize windows vms
+        chenhaiq - fix undef method when cloning
 
 1.0.0.pre.2 *
         bdupras - added property subcommand
@@ -212,10 +213,10 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
         tim95030 - added option to allow linked clones
 
 0.9.8 * chenhaiq - fixed bug in datastore max free
-	andrewfraley - vsphere pool query command to query resource pools and host clusters
-	micolous - formatting fix
-	andrewfraley - Added support for VMs in subfolders when doing vm query
-	mheidenr - datastore cluster max free space commands
+        andrewfraley - vsphere pool query command to query resource pools and host clusters
+        micolous - formatting fix
+        andrewfraley - Added support for VMs in subfolders when doing vm query
+        mheidenr - datastore cluster max free space commands
 
 0.9.6 * mheidenr - added command to get the datastore with the most free space
         mheidenr - moved REGEX parameter to maxfree command
@@ -224,20 +225,20 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
         dcondomitti - add proxy support
 
 0.9.5 * bdupras - added command vm config PROPERTY VALUE
-	mdkent -  handle parent class of ClusterComputeResource
-	alastair - update readme to reflect behavior of vm.destroy_task and --purge option
+  mdkent -  handle parent class of ClusterComputeResource
+  alastair - update readme to reflect behavior of vm.destroy_task and --purge option
 
 0.9.0 * bdupras - adds optional --shutdown parameter for guest os
                 - added vm query VMNAME QUERY sub-command to query the named properties
                 - modified vm state --wait-port to use vm.guest.ipAddress
                 - added secret-file option for bootstrapping
-	kirtfitzpatrick - removed the default distro parameter
+        kirtfitzpatrick - removed the default distro parameter
 
 0.8.1 * Bethany Erskine - specify chef-client log level when using --bootstrap
 
 0.8.0 * Adrian Stanila added --annotation option (fixes #39)
         Ian Delahorne - VM state in vsphere vm list
-	Yvonne Lam - vm clone` does not accept --vmname option.
+        Yvonne Lam - vm clone` does not accept --vmname option.
 
 0.7.0 * James White - added a ton of LUN selection support, corresponding automatic
           LSILogic adapter creation
@@ -245,19 +246,19 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 0.6.0 * Greg Swallow - fixed a rake break.
         Mark Malone - added vm snapshot support!
 
-0.5.0 * kirtfitzpatrick - Added plugin support to vm clone; Brian Flad - Added
-	  --wait-port option to vm state command, Add command to add VMDK to VM
-	Troy Ready - add password query prompt
+0.5.0 * kirtfitzpatrick - Added plugin support to vm clone;
+        Brian Flad - Added --wait-port option to vm state command, Add command to add VMDK to VM
+        Troy Ready - add password query prompt
 
 0.4.0 * Bethany Erskine - add support for --json-attribute option, json string
-          for use w/ --bootstrap
-	Adrian Stanila - option to disable customizations
+        for use w/ --bootstrap
+        Adrian Stanila - option to disable customizations
 
 0.3.0 * Ian Delahorne - added support for tools script execution
-	jcam - bootstrap dhcp nodes
+  jcam - bootstrap dhcp nodes
 
 0.2.3 * leeor - Fix --cvlan handling when VC is not using a distributed switch
-	jcam - Added pool list command, updated readme, fixed chef version constraint
+  jcam - Added pool list command, updated readme, fixed chef version constraint
 
 0.2.2 * jcam - add pool list subcommand, adjust gemspec to support chef 10.x.x
 
@@ -272,7 +273,7 @@ BREAKING CHANGE: knife vsphere vm find has some subtle changes:
 0.1.7 * rev'd changelog/readme, formatting cleanup
 
 0.1.6 * merged in changes from Jesse Campbell, supporting VLAN/resource
-	pool/folder/data store selection, run list support, and much more
+        pool/folder/data store selection, run list support, and much more
 
 0.1.5 * support customized hostname, post-clone poweron
 
