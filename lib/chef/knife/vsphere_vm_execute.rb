@@ -3,11 +3,12 @@
 
 require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require 'chef/knife/search_helper'
 
 # VsphereVMexecute extends the Basevspherecommand
 class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
+  include SearchHelper
+
   banner 'knife vsphere vm execute VMNAME COMMAND ARGS'
 
   option :exec_user,
@@ -30,34 +31,29 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
   #
   def run
     $stdout.sync = true
-    vmname = @name_args[0]
+    vmname = @name_args.shift
     if vmname.nil?
       show_usage
       fatal_exit('You must specify a virtual machine name')
     end
-    command = @name_args[1]
+    command = @name_args.shift
     if command.nil?
       show_usage
       fatal_exit('You must specify a command to execute')
     end
 
-    args = @name_args[2]
-    args = '' if args.nil?
+    args = @name_args
+    args = '' if args.nil? || args.empty?
 
-    vim = vim_connection
+    vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    dc = datacenter
-    folder = find_folder(get_config(:folder)) || dc.vmFolder
-
-    vm = find_in_folder(folder, RbVmomi::VIM::VirtualMachine, vmname) || abort("VM #{vmname} not found")
-
-    gom = vim.serviceContent.guestOperationsManager
+    gom = vim_connection.serviceContent.guestOperationsManager
 
     guest_auth = RbVmomi::VIM::NamePasswordAuthentication(interactiveSession: false,
                                                           username: config[:exec_user],
                                                           password: config[:exec_passwd])
     prog_spec = RbVmomi::VIM::GuestProgramSpec(programPath: command,
-                                               arguments: args,
+                                               arguments: args.join(' '),
                                                workingDirectory: get_config(:exec_dir))
 
     gom.processManager.StartProgramInGuest(vm: vm, auth: guest_auth, spec: prog_spec)
