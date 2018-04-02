@@ -8,7 +8,7 @@ require 'chef/knife/search_helper'
 # VsphereVMconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner "knife vsphere vm config VMNAME PROPERTY VALUE.
+  banner "knife vsphere vm config VMNAME PROPERTY VALUE (PROPERTY VALUE)...
           See \"https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.vm.ConfigSpec.html\"
           for allowed ATTRIBUTE values (any property of type xs:string is supported)."
 
@@ -18,31 +18,19 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
   #
   def run
     $stdout.sync = true
-    vmname = @name_args[0]
+    vmname = @name_args.shift
     if vmname.nil?
       show_usage
       fatal_exit('You must specify a virtual machine name')
     end
 
-    property_name = @name_args[1]
-    if property_name.nil?
-      show_usage
-      fatal_exit('You must specify a PROPERTY name (e.g. annotation)')
+    unless @name_args.length > 0 && @name_args.length % 2 == 0
+      fatal_exit('You must specify a series of PROPERTY name (e.g. annotation) followed by a value')
     end
-    property_name = property_name.to_sym
-
-    property_value = @name_args[2]
-    if property_value.nil?
-      show_usage
-      fatal_exit('You must specify a PROPERTY value')
-    end
-
-    vim_connection
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    properties = {}
-    properties[property_name] = property_value
+    properties = @name_args.each_slice(2).map { |prop, val| [prop.to_sym, val] }.to_h
     vm.ReconfigVM_Task(spec: RbVmomi::VIM.VirtualMachineConfigSpec(properties)).wait_for_completion
   end
 end
