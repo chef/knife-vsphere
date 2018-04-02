@@ -9,7 +9,7 @@ require 'chef/knife/search_helper'
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   banner "knife vsphere vm config VMNAME PROPERTY VALUE.
-          See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.vm.ConfigSpec.html\"
+          See \"https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.vm.ConfigSpec.html\"
           for allowed ATTRIBUTE values (any property of type xs:string is supported)."
 
   common_options
