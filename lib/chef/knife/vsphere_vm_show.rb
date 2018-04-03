@@ -16,33 +16,33 @@ class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
   #
   def run
     $stdout.sync = true
-    vmname = @name_args[0]
+    vmname = @name_args.shift
     if vmname.nil?
       show_usage
       fatal_exit('You must specify a virtual machine name')
     end
 
-    query_string = @name_args[1]
-    if query_string.nil?
+    if @name_args.empty?
       show_usage
       fatal_exit('You must specify a QUERY value (e.g. guest.ipAddress or network[0].name)')
     end
 
-    vim_connection
-
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    # split QUERY by dots, and walk the object model
-    query = query_string.split '.'
-    result = vm
-    query.each do |part|
-      message, index = part.split(/[\[\]]/)
-      unless result.respond_to? message.to_sym
-        fatal_exit("\"#{query_string}\" not recognized.")
+    out = @name_args.map do |query_string|
+      # split QUERY by dots, and walk the object model
+      query = query_string.split '.'
+      result = vm
+      query.each do |part|
+        message, index = part.split(/[\[\]]/)
+        unless result.respond_to? message.to_sym
+          fatal_exit("\"#{query_string}\" not recognized.")
+        end
+        result = index ? result.send(message)[index.to_i] : result.send(message)
       end
 
-      result = index ? result.send(message)[index.to_i] : result.send(message)
+      { query_string => result }
     end
-    puts result
+  ui.output out
   end
 end
