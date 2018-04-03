@@ -534,6 +534,11 @@ Arguments are optional, and allow for redirection in Linux and Solaris.
 --exec-dir DIRECTORY - Optional: Working directory to execute in. Will default to $HOME of user.
 ```
 
+Example:
+```bash
+knife vsphere vm execute myvirtualmachine --exec-user root --exec-passwd 'password' -- /sbin/iptables -F
+```
+
 ## `knife vsphere vm vncset`
 
 Enable VNC remote console.

@@ -1,6 +1,14 @@
 knife-vsphere changelog
 ----------------------
 
+2.1.1   swalberg   - Allow vsphere vm config to handle multiple settings per
+                     invocation
+									 - Kill off vsphere vm query
+									 - Update vsphere vm show to show multiple items and use
+									   ui.output
+									 - vsphere vm execute handles multiple args and uses faster
+									   find
+
 2.1.0   swalberg   - Update find and clone to use SearchHelper
 
 BREAKING CHANGE: knife vsphere vm find has some subtle changes:
