@@ -381,6 +381,23 @@ $  knife vsphere vm clone NewNode UbuntuTemplate --cspec StaticSpec \
     --start true --bootstrap true \
     --bootstrap-vault-json '{"passwords":"default","appvault":"credentials"}'
 ```
+## `knife vsphere vm show VMNAME PROPERTY (PROPERTY)`
+
+Shows one or more properties of the VM.
+
+See "http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html" for allowed values.
+
+Please note that this command starts at the vm object, where the corresponding `knife vsphere vm config` command
+focuses entirely on a customization specification. This gives you more flexibility in what you can query, but means
+you need to do some translations if you want to read old values and make a change. For example, you would query
+`config.hardware.numCPU` with this command but set `numCPUs`.
+
+Examples:
+
+```bash
+knife vsphere vm show myvirtualmachine config.hardware.memoryMB config.hardware.numCPU -F json
+```
+
 ## `knife vsphere vm config VMNAME PROPERTY VALUE (PROPERTY VALUE)`
 
 Sets a vSphere property (or series of properties), such as CPU or disk, on a VM
