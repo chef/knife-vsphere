@@ -17,7 +17,6 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   option :vmdk_type,
          long: '--vmdk-type TYPE',
          description: 'Type of VMDK',
-         # this is a bad idea as it will let you overcommit SAN by 400% or more. thick is a more "sane" default
          default: 'thin'
 
   option :target_lun,
@@ -36,8 +35,8 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       exit 1
     end
 
-    size = @name_args[1]
-    if size.nil?
+    size_gb = @name_args[1]
+    if size_gb.nil?
       ui.fatal 'You need a VMDK size!'
       show_usage
       exit 1
@@ -50,15 +49,15 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     fatal_exit "Could not find #{vmname}" unless vm
 
     target_lun = get_config(:target_lun) unless get_config(:target_lun).nil?
-    vmdk_size_kb = size.to_i * 1024 * 1024
+    vmdk_size_kb = size_gb.to_i * 1024 * 1024
 
     if target_lun.nil?
-      vmdk_datastore = choose_datastore(vm.datastore, size)
-      exit(-1) if vmdk_datastore.nil?
+      vmdk_datastore = choose_datastore(vm.datastore, thin_provisioning? ? 1 : size_gb)
+      fatal_exit('Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target.') if vmdk_datastore.nil?
     else
       vmdk_datastores = find_datastores_regex(target_lun)
-      vmdk_datastore = choose_datastore(vmdk_datastores, size)
-      exit(-1) if vmdk_datastore.nil?
+      vmdk_datastore = choose_datastore(vmdk_datastores, thin_provisioning? ? 1 : size_gb)
+      fatal_exit('Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target.') if vmdk_datastore.nil?
       vmdk_dir = "[#{vmdk_datastore.name}] #{vmname}"
       # create the vm folder on the LUN or subsequent operations will fail.
       unless vmdk_datastore.exists? vmname
@@ -104,7 +103,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         diskType: vmdk_type
       )
       ui.info 'Creating VMDK'
-      ui.info "#{ui.color 'Capacity:', :cyan} #{size} GB"
+      ui.info "#{ui.color 'Capacity:', :cyan} #{size_gb} GB"
       ui.info "#{ui.color 'Disk:', :cyan} #{vmdk_name}"
 
       if get_config(:noop)
@@ -242,4 +241,44 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       vm.ReconfigVM_Task(spec: vm_config_spec).wait_for_completion
     end
   end
+
+  private
+  def thin_provisioning?
+    get_config(:vmdk_type) == 'thin'
+  end
+
+  def choose_datastore(dstores, minfree_gb)
+    minfree_b = minfree_gb.to_i * 1024 * 1024 * 1024
+
+    candidates = dstores.select do |store|
+      avail = number_to_human_size(store.summary[:freeSpace])
+      cap = number_to_human_size(store.summary[:capacity])
+      puts "#{ui.color('Datastore', :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"
+
+      # vm's can span multiple datastores, so instead of grabbing the first one
+      # let's find the first datastore with the available space on a LUN the vm
+      # is already using, or use a specified LUN (if given)
+
+      (store.summary[:freeSpace] - minfree_b) > 0
+    end
+    candidates.first
+    if candidates.length > 0
+      vmdk_datastore = candidates[0]
+    else
+      vmdk_datastore = nil
+    end
+    vmdk_datastore
+  end
+
+  def find_datastores_regex(regex)
+    stores = []
+    puts "Looking for all datastores that match /#{regex}/"
+    dc = datacenter
+    base_entity = dc.datastore
+    base_entity.each do |ds|
+      stores.push ds if ds.name.match(/#{regex}/)
+    end
+    stores
+  end
+
 end

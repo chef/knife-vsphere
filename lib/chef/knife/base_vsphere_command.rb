@@ -245,44 +245,6 @@ class Chef
         base_entity
       end
 
-      def choose_datastore(dstores, size)
-        vmdk_size_b = size.to_i * 1024 * 1024 * 1024
-
-        candidates = []
-        dstores.each do |store|
-          avail = number_to_human_size(store.summary[:freeSpace])
-          cap = number_to_human_size(store.summary[:capacity])
-          puts "#{ui.color('Datastore', :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"
-
-          # vm's can span multiple datastores, so instead of grabbing the first one
-          # let's find the first datastore with the available space on a LUN the vm
-          # is already using, or use a specified LUN (if given)
-
-          next unless (store.summary[:freeSpace] - vmdk_size_b) > 0
-          # also let's not use more than 90% of total space to save room for snapshots.
-          cap_remains = 100 * ((store.summary[:freeSpace].to_f - vmdk_size_b.to_f) / store.summary[:capacity].to_f)
-          candidates.push(store) if cap_remains.to_i > 10
-        end
-        if candidates.length > 0
-          vmdk_datastore = candidates[0]
-        else
-          puts 'Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target.'
-          vmdk_datastore = nil
-        end
-        vmdk_datastore
-      end
-
-      def find_datastores_regex(regex)
-        stores = []
-        puts "Looking for all datastores that match /#{regex}/"
-        dc = datacenter
-        base_entity = dc.datastore
-        base_entity.each do |ds|
-          stores.push ds if ds.name.match(/#{regex}/)
-        end
-        stores
-      end
-
       def find_datastore(dsName)
         dc = datacenter
         base_entity = dc.datastore
