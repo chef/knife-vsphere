@@ -72,6 +72,26 @@ knife[:vsphere_insecure] = true
 Credentials can also be specified on the command line for multiple vSphere
 servers/data centers, or see [dealing with multiple datacenters](https://github.com/chef-partners/knife-vsphere/wiki/Dealing-with-multiple-datacenters).
 
+### vCenter Permissions
+
+You need the following permissions (at minimum) on your user to be able to use `knife-vsphere`.
+
+* Datastore
+    * Allocate space :ballot_box_with_check:
+    * Browse datastore :ballot_box_with_check:
+* Host
+    * Local Operations
+         * Create virtual machine :ballot_box_with_check:
+         * Delete virtual machine :ballot_box_with_check:
+         * Manage user groups :ballot_box_with_check:
+         * Reconfigure virtual machine :ballot_box_with_check:
+ * Network
+    * Assign Network :ballot_box_with_check:
+ * Resource
+    * Assign virtual machine to resource pool :ballot_box_with_check:
+ * Virtual Machine :ballot_box_with_check:
+
+
 ## Description:
 
 This is an Chef Knife plugin to interact with VMware's vSphere. This plugin
@@ -454,7 +474,7 @@ reverting of snapshots.
 --find            - Find the VM instead of specifying the folder with -F
 --dump-memory     - Dump the memory when creating the snapshot (default: false)
 --quiesce         - Quiesce the VM before snapshotting (default: false)
---snapshot-descr DESCR - Include a description when creating a snapshot 
+--snapshot-descr DESCR - Include a description when creating a snapshot
 ```
 
 ## `knife vsphere vm cdrom`
