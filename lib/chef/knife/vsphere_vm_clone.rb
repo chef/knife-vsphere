@@ -358,7 +358,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     dc = datacenter
 
-    src_vm = get_vm_by_name(get_config(:source_vm), get_config(:folder)) || fatal_exit("Could not find template #{vmname}")
+    src_vm = get_vm_by_name(get_config(:source_vm), get_config(:folder)) || fatal_exit("Could not find template #{get_config(:source_vm)}")
 
     create_delta_disk(src_vm) if get_config(:linked_clone)
 
