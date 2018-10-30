@@ -6,11 +6,11 @@ require 'chef/knife'
 require 'chef/knife/base_vsphere_command'
 require 'chef/knife/search_helper'
 
-# Lists all known virtual machines in the configured datacenter
+# Moves the VM to another folder or datastore
 # VsphereVmMove extends the BaseVspherecommand
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm move'
+  banner 'knife vsphere vm move VMNAME'
 
   common_options
 

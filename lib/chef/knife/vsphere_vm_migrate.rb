@@ -10,7 +10,7 @@ require 'chef/knife/search_helper'
 class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   # migrate --resource-pool --dest-host --dest-datastore
-  banner 'knife vsphere vm migrate (options)'
+  banner 'knife vsphere vm migrate VMNAME (options)'
 
   common_options
 
