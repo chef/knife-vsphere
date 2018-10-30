@@ -245,7 +245,7 @@ $ knife vsphere vm find --snapshots --full-path --cpu --ram --esx-disk \
     --match-ip 123 --match-tools toolsOk
 ```
 
-## `knife vsphere vm state`
+## `knife vsphere vm state VMNAME`
 
 Manage power state of a virtual machine, aka turn it off and on
 
@@ -431,7 +431,7 @@ Examples:
 $ knife vsphere vm config myvirtualmachine memoryMB 4096
 ```
 
-## `knife vsphere vm toolsconfig`
+## `knife vsphere vm toolsconfig VMNAME PROPERTY VALUE`
 
 ```bash
 --empty           - allows clearing string properties
@@ -458,7 +458,7 @@ disk, optionally deleting it from Chef as well.
 -N                - Specify the name of the node and client to delete if it differs from NAME (requires -P)
 ```
 
-## `knife vsphere vm snapshot`
+## `knife vsphere vm snapshot VMNAME`
 
 Manages the snapshots for an existing VM, allowing for creation, removal, and
 reverting of snapshots.
@@ -538,7 +538,7 @@ Gets the datastorecluster with the most free space
 --regex           - Pattern to match the datastore name
 ```
 
-## `knife vsphere vm execute`
+## `knife vsphere vm execute VMNAME COMMAND ARGS`
 
 Executes a program on the guest. Requires vCenter 5.0 or higher.
 
@@ -559,7 +559,7 @@ Example:
 knife vsphere vm execute myvirtualmachine --exec-user root --exec-passwd 'password' -- /sbin/iptables -F
 ```
 
-## `knife vsphere vm vncset`
+## `knife vsphere vm vnc set VMNAME`
 
 Enable VNC remote console.
 
@@ -570,9 +570,9 @@ Required arguments:
 --vnc-password PASSWORD   -Password for connecting to VNC
 ```
 
-## `knife vsphere vm vmdk`
+## `knife vsphere vm vmdk add VMNAME DISKSIZE_GB`
 
-Adds VMDK to VM.
+Adds VMDK to VMNAME, given a disk size in Gigabytes.
 
 Optional arguments
 
@@ -580,10 +580,10 @@ Optional arguments
 --vmdk-type TYPE - VMDK type, "thick" or "thin", defaults to "thin"
 ```
 
-## `knife vsphere vm markastemplate`
+## `knife vsphere vm markastemplate VMNAME`
 
-Will traverse the folder tree looking for the VM by name.  By default the
-folder inspected with be the root folder.  `--folder` should be specified if
+Will mark the VM as a template rather than a runnable VM.
+By default the search will start at the root folder.  `--folder` should be specified if
 traversing should be in some other folder than the root.  Once found the VM
 will be converted into a template.  This means the VM will become a template
 and no longer be available as a Virtual Machine.  The name given to the
@@ -593,25 +593,25 @@ template will be the name of VM from which it was created.
 
 Lists all hosts in given Pool
 
-## `knife vsphere vm migrate`
+## `knife vsphere vm migrate VMNAME`
 
 Migrate VM to resource pool/datastore/host. Resource pool and datastore are
 mandatory.
 
 ```bash
---folder FOLDER                   - folder in which to search for VM
+--folder FOLDER             - folder in which to search for VM
 --resource-pool POOL        - destination resource pool
 --dest-host HOST            - destination host (optional)
 --dest-datastore DATASTORE  - destination datastore, accesible to HOST
 --priority PRIORITY         - migration priority (optional, default defaultPriority )
 ```
 
-## `knife vsphere vm net`
+## `knife vsphere vm net STATE VMNAME`
 
 Set networking state for VMNAME by connecting/disconnecting network
-interfaces. Posible states are up/down.
+interfaces. Possible states are `up` and `down`.
 
-## `knife vsphere vm network set`
+## `knife vsphere vm network set VMNAME NETWORKNAME`
 
 Set NETWORKNAME on first interface of VMNAME. Works for both standard and distributed switches.
 
@@ -641,7 +641,7 @@ List the network cards and their VLAN that are connected to a VM.
 Delete a network card from a VM.
 
 
-## `knife vsphere vm wait sysprep`
+## `knife vsphere vm wait sysprep VMNAME`
 
 Wait for vm finishing Sysprep
 
@@ -669,11 +669,48 @@ host4.domain.com: 1.8125
 host5.domain.com: 2.40625
 ```
 
+## `knife vsphere vm move VMNAME`
+
+Moves the VM to other datastores or to rename it.
+
+```bash
+--dest-name NAME      - Destination name of the VM or template
+--dest-folder FOLDER  - The destination folder into which the VM or template should be moved
+--datastore STORE     - The datastore into which to put the cloned VM
+--thin-provision      - Indicates whether disk should be thin provisioned.
+--thick-provision     - Indicates whether disk should be thick provisioned.
+```
+
+Recursively prints all the folders in the datacenter.
+
+## `knife vsphere vm property get VMNAME PROPERTY`
+
+Gets a vApp property on VMNAME
+
+## `knife vsphere vm property set VMNAME PROPERTY VALUE`
+
+Sets a vApp property on VMNAME to the given value
+
+```bash
+--ovf-environment-transport STRING  - Comma delimited string.  Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo.
+````
+
+## `knife vsphere folder list`
+
+Recursively prints all the folders in the datacenter.
+
+## `knife vsphere pool show POOLNAME QUERY`
+
+Shows information (hosts, networks, resources) about a pool/compute resource.
+
+See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.ComputeResource.html\" for allowed QUERY values.".
+
+
 ## `knife vsphere vlan list`
 
 Lists all the VLANs in the datacenter
 
-## `knife vsphere vlan create`
+## `knife vsphere vlan create NAME VID`
 
 Creates a vlan (port group on a distributed virtual switch) with the given
 name and VLAN ID. If you have multiple distributed switches then use the

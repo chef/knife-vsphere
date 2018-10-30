@@ -8,7 +8,7 @@ require 'chef/knife/search_helper'
 # Vspherevmtoolsconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner "knife vsphere vm toolsconfig PROPERTY VALUE.
+  banner "knife vsphere vm toolsconfig VMNAME PROPERTY VALUE
           See \"https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.ToolsConfigInfo.html\"
           for available properties and types."
 
