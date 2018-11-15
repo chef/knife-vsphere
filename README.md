@@ -3,6 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
 [![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
 [![Inline docs](http://inch-ci.org/github/chef-partners/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef-partners/knife-vsphere)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
