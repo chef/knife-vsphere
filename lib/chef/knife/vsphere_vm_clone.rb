@@ -238,7 +238,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          short: "-d DISTRO",
          long: "--distro DISTRO",
          description: "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-               proc: Proc.new { |v|
+         proc: Proc.new { |v|
                  Chef::Log.fatal("[DEPRECATED] -d / --distro option is deprecated. Use --bootstrap-template option instead.")
                  v
                }
