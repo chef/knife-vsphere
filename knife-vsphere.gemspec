@@ -8,8 +8,6 @@ Gem::Specification.new do |s|
   s.version = KnifeVsphere::VERSION
   s.summary = 'vSphere Support for Knife'
 
-  s.required_rubygems_version = Gem::Requirement.new('>= 0') if s.respond_to? :required_rubygems_version=
-
   s.authors = 'Ezra Pagel'
   s.description = "VMware vSphere Support for Chef's Knife Command"
   s.email = 'ezra@cpan.org'
