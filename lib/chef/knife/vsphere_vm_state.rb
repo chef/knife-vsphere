@@ -3,9 +3,9 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Manage power state of a virtual machine
 # VsphereVmState extends the BaseVspherecommand
@@ -13,34 +13,34 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   # The Different power states that vSphere reports
   POWER_STATES = {
-    PS_ON => 'powered on',
-    PS_OFF => 'powered off',
-    PS_SUSPENDED => 'suspended'
-  }
+    PS_ON => "powered on",
+    PS_OFF => "powered off",
+    PS_SUSPENDED => "suspended",
+  }.freeze
 
-  banner 'knife vsphere vm state VMNAME (options)'
+  banner "knife vsphere vm state VMNAME (options)"
 
   common_options
 
   option :state,
-         short: '-s STATE',
-         long: '--state STATE',
-         description: 'The power state to transition the VM into; one of on|off|suspended|reboot'
+         short: "-s STATE",
+         long: "--state STATE",
+         description: "The power state to transition the VM into; one of on|off|suspended|reboot"
 
   option :wait_port,
-         short: '-w PORT',
-         long: '--wait-port PORT',
-         description: 'Wait for VM to be accessible on a port'
+         short: "-w PORT",
+         long: "--wait-port PORT",
+         description: "Wait for VM to be accessible on a port"
 
   option :shutdown,
-         short: '-g',
-         long: '--shutdown',
-         description: 'Guest OS shutdown'
+         short: "-g",
+         long: "--shutdown",
+         description: "Guest OS shutdown"
 
   option :recursive,
-         short: '-r',
-         long: '--recursive',
-         description: 'Search all folders'
+         short: "-r",
+         long: "--recursive",
+         description: "Search all folders"
 
   # The main run method for vm_state
   #
@@ -50,7 +50,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      ui.fatal('You must specify a virtual machine name')
+      ui.fatal("You must specify a virtual machine name")
       exit 1
     end
 
@@ -65,14 +65,14 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
     else
 
       case config[:state]
-      when 'on'
+      when "on"
         if state == PS_ON
           puts "Virtual machine #{vmname} was already powered on"
         else
           vm.PowerOnVM_Task.wait_for_completion
           puts "Powered on virtual machine #{vmname}"
         end
-      when 'off'
+      when "off"
         if state == PS_OFF
           puts "Virtual machine #{vmname} was already powered off"
         else
@@ -81,33 +81,33 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
             print "Waiting for virtual machine #{vmname} to shut down..."
             until vm.runtime.powerState == PS_OFF
               sleep 2
-              print '.'
+              print "."
             end
-            puts 'done'
+            puts "done"
           else
             vm.PowerOffVM_Task.wait_for_completion
             puts "Powered off virtual machine #{vmname}"
           end
         end
-      when 'suspend'
-        if state == POWER_STATES['suspended']
+      when "suspend"
+        if state == POWER_STATES["suspended"]
           puts "Virtual machine #{vmname} was already suspended"
         else
           vm.SuspendVM_Task.wait_for_completion
           puts "Suspended virtual machine #{vmname}"
         end
-      when 'reset'
+      when "reset"
         vm.ResetVM_Task.wait_for_completion
         puts "Reset virtual machine #{vmname}"
-      when 'reboot'
+      when "reboot"
         vm.RebootGuest
         puts "Reboot virtual machine #{vmname}"
       end
 
       if get_config(:wait_port)
         print "Waiting for port #{get_config(:wait_port)}..."
-        print '.' until tcp_test_port_vm(vm, get_config(:wait_port))
-        puts 'done'
+        print "." until tcp_test_port_vm(vm, get_config(:wait_port))
+        puts "done"
       end
     end
   end

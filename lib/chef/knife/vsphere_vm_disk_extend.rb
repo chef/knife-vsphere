@@ -3,32 +3,32 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm disk extend VMNAME SIZE. Extends the disk of vm VMNAME to SIZE kilobytes.'
+  banner "knife vsphere vm disk extend VMNAME SIZE. Extends the disk of vm VMNAME to SIZE kilobytes."
 
   common_options
 
   option :diskname,
-         long: '--diskname DISKNAME',
-         description: 'The name of the disk that will be extended'
+         long: "--diskname DISKNAME",
+         description: "The name of the disk that will be extended"
 
   def run
     $stdout.sync = true
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
     size = @name_args[1]
     if size.nil? || !size.match(/^\d+$/)
       show_usage
-      fatal_exit('You must specify the new disk size')
+      fatal_exit("You must specify the new disk size")
     end
 
     disk_name = get_config(:diskname) unless get_config(:diskname).nil?
@@ -47,7 +47,7 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
       names = disks.map { |disk| disk.deviceInfo.label }
       abort("More than 1 disk found: #{names}, please use --diskname DISKNAME")
     elsif disks.length == 0
-      abort('No disk found')
+      abort("No disk found")
     end
 
     disk = disks[0]
@@ -57,9 +57,9 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
       RbVmomi::VIM::VirtualMachineConfigSpec(
         deviceChange: [RbVmomi::VIM::VirtualDeviceConfigSpec(
           device: disk,
-          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation('edit'))]
+          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation("edit"))]
       )).wait_for_completion
 
-    puts 'Disk resized successfully'
+    puts "Disk resized successfully"
   end
 end

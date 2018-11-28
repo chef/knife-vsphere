@@ -2,27 +2,27 @@
 # Author:: Brian Flad (<bflad417@gmail.com>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Add a new disk to a virtual machine
 # VsphereVmvmdkadd extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm vmdk add VMNAME DISK_GB'
+  banner "knife vsphere vm vmdk add VMNAME DISK_GB"
 
   common_options
 
   option :vmdk_type,
-         long: '--vmdk-type TYPE',
-         description: 'Type of VMDK',
+         long: "--vmdk-type TYPE",
+         description: "Type of VMDK",
          # this is a bad idea as it will let you overcommit SAN by 400% or more. thick is a more "sane" default
-         default: 'thin'
+         default: "thin"
 
   option :target_lun,
-         long: '--target-lun NAME',
-         description: 'name of target LUN'
+         long: "--target-lun NAME",
+         description: "name of target LUN"
 
   # The main run method for vm_vmdk_add
   #
@@ -32,13 +32,13 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      ui.fatal('You must specify a virtual machine name')
+      ui.fatal("You must specify a virtual machine name")
       exit 1
     end
 
     size = @name_args[1]
     if size.nil?
-      ui.fatal 'You need a VMDK size!'
+      ui.fatal "You need a VMDK size!"
       show_usage
       exit 1
     end
@@ -81,10 +81,10 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     next_vmdk = 1
     pc = vmdk_datastore._connection.serviceContent.propertyCollector
     vms = vmdk_datastore.vm
-    vm_files = pc.collectMultiple vms, 'layoutEx.file'
+    vm_files = pc.collectMultiple vms, "layoutEx.file"
     vm_files.keys.each do |vmFile|
-      vm_files[vmFile]['layoutEx.file'].each do |layout|
-        if layout.name.match(/^\[#{vmdk_datastore.name}\] #{vmname}\/#{vmname}_([0-9]+).vmdk/)
+      vm_files[vmFile]["layoutEx.file"].each do |layout|
+        if layout.name =~ /^\[#{vmdk_datastore.name}\] #{vmname}\/#{vmname}_([0-9]+).vmdk/
           num = Regexp.last_match(1)
           next_vmdk = num.to_i + 1 if next_vmdk <= num.to_i
         end
@@ -93,17 +93,17 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vmdk_file_name = "#{vmname}/#{vmname}_#{next_vmdk}.vmdk"
     vmdk_name = "[#{vmdk_datastore.name}] #{vmdk_file_name}"
     vmdk_type = get_config(:vmdk_type)
-    vmdk_type = 'preallocated' if vmdk_type == 'thick'
+    vmdk_type = "preallocated" if vmdk_type == "thick"
     puts "Next vmdk name is => #{vmdk_name}"
 
     # create the disk
     unless vmdk_datastore.exists? vmdk_file_name
       vmdk_spec = RbVmomi::VIM::FileBackedVirtualDiskSpec(
-        adapterType: 'lsiLogic',
+        adapterType: "lsiLogic",
         capacityKb: vmdk_size_kb,
         diskType: vmdk_type
       )
-      ui.info 'Creating VMDK'
+      ui.info "Creating VMDK"
       ui.info "#{ui.color 'Capacity:', :cyan} #{size} GB"
       ui.info "#{ui.color 'Disk:', :cyan} #{vmdk_name}"
 
@@ -127,20 +127,20 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       if device.is_a? RbVmomi::VIM::VirtualSCSIController
         if scsi_tree[device.controllerKey].nil?
           scsi_tree[device.key] = {}
-          scsi_tree[device.key]['children'] = []
+          scsi_tree[device.key]["children"] = []
         end
-        scsi_tree[device.key]['device'] = device
+        scsi_tree[device.key]["device"] = device
       end
       next unless device.class == RbVmomi::VIM::VirtualDisk
       if scsi_tree[device.controllerKey].nil?
         scsi_tree[device.controllerKey] = {}
-        scsi_tree[device.controllerKey]['children'] = []
+        scsi_tree[device.controllerKey]["children"] = []
       end
-      scsi_tree[device.controllerKey]['children'].push(device)
+      scsi_tree[device.controllerKey]["children"].push(device)
     end
     scsi_tree.keys.sort.each do |controller|
-      if scsi_tree[controller]['children'].length < 15
-        available_controllers.push(scsi_tree[controller]['device'].deviceInfo.label)
+      if scsi_tree[controller]["children"].length < 15
+        available_controllers.push(scsi_tree[controller]["device"].deviceInfo.label)
       end
     end
 
@@ -152,9 +152,9 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
       if scsi_tree.keys.length < 4
 
         # Add a controller if none are available
-        puts 'no controllers available. Will attempt to create'
+        puts "no controllers available. Will attempt to create"
         new_scsi_key = scsi_tree.keys.sort[scsi_tree.length - 1] + 1
-        new_scsi_bus_number = scsi_tree[scsi_tree.keys.sort[scsi_tree.length - 1]]['device'].busNumber + 1
+        new_scsi_bus_number = scsi_tree[scsi_tree.keys.sort[scsi_tree.length - 1]]["device"].busNumber + 1
 
         controller_device = RbVmomi::VIM::VirtualLsiLogicController(
           key: new_scsi_key,
@@ -164,7 +164,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
         device_config_spec = RbVmomi::VIM::VirtualDeviceConfigSpec(
           device: controller_device,
-          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation('add')
+          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation("add")
         )
 
         vm_config_spec = RbVmomi::VIM::VirtualMachineConfigSpec(
@@ -177,7 +177,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
           vm.ReconfigVM_Task(spec: vm_config_spec).wait_for_completion
         end
       else
-        ui.info 'Controllers maxed out at 4.'
+        ui.info "Controllers maxed out at 4."
         exit(-1)
       end
     end
@@ -194,9 +194,9 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
     used_unit_numbers = []
     scsi_tree.keys.sort.each do |c|
-      next unless controller.key == scsi_tree[c]['device'].key
-      used_unit_numbers.push(scsi_tree[c]['device'].scsiCtlrUnitNumber)
-      scsi_tree[c]['children'].each do |disk|
+      next unless controller.key == scsi_tree[c]["device"].key
+      used_unit_numbers.push(scsi_tree[c]["device"].scsiCtlrUnitNumber)
+      scsi_tree[c]["children"].each do |disk|
         used_unit_numbers.push(disk.unitNumber)
       end
     end
@@ -215,7 +215,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
     vmdk_backing = RbVmomi::VIM::VirtualDiskFlatVer2BackingInfo(
       datastore: vmdk_datastore,
-      diskMode: 'persistent',
+      diskMode: "persistent",
       fileName: vmdk_name
     )
 
@@ -229,7 +229,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
 
     device_config_spec = RbVmomi::VIM::VirtualDeviceConfigSpec(
       device: device,
-      operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation('add')
+      operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation("add")
     )
 
     vm_config_spec = RbVmomi::VIM::VirtualMachineConfigSpec(

@@ -1,9 +1,9 @@
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # VsphereCpuratio extends the BaseVspherecommand
 class Chef::Knife::VsphereCpuRatio < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere cpu ratio [CLUSTER] [HOST]'
+  banner "knife vsphere cpu ratio [CLUSTER] [HOST]"
 
   common_options
 
@@ -38,7 +38,7 @@ class Chef::Knife::VsphereCpuRatio < Chef::Knife::BaseVsphereCommand
 
         puts "#{h.name}: #{ratio}"
       end
-      puts ''
+      puts ""
     end
   end
 end

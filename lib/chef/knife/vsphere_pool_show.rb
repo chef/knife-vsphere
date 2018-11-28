@@ -1,10 +1,10 @@
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'rbvmomi'
-require 'netaddr'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "rbvmomi"
+require "netaddr"
 
 class Chef::Knife::VspherePoolShow < Chef::Knife::BaseVsphereCommand
-  banner "knife vsphere pool show POOLNAME QUERY.  See \"http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.ComputeResource.html\" for allowed QUERY values."
+  banner 'knife vsphere pool show POOLNAME QUERY.  See "http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.ComputeResource.html" for allowed QUERY values.'
 
   common_options
 
@@ -26,13 +26,13 @@ class Chef::Knife::VspherePoolShow < Chef::Knife::BaseVsphereCommand
     poolname = @name_args[0]
     if poolname.nil?
       show_usage
-      fatal_exit('You must specify a resource poor or cluster name (see knife vsphere pool list)')
+      fatal_exit("You must specify a resource poor or cluster name (see knife vsphere pool list)")
     end
 
     query_string = @name_args[1]
     if query_string.nil?
       show_usage
-      fatal_exit('You must specify a QUERY value (e.g. summary.overallStatus )')
+      fatal_exit("You must specify a QUERY value (e.g. summary.overallStatus )")
     end
 
     vim_connection
@@ -43,7 +43,7 @@ class Chef::Knife::VspherePoolShow < Chef::Knife::BaseVsphereCommand
     pool = traverse_folders_for_pool(folder, poolname) || abort("Pool #{poolname} not found")
 
     # split QUERY by dots, and walk the object model
-    query = query_string.split '.'
+    query = query_string.split "."
     result = pool
     query.each do |part|
       message, index = part.split(/[\[\]]/)

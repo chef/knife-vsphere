@@ -15,27 +15,27 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Gets the data store with the most free space in datacenter
 # VsphereDatastoreMaxfree extends the BaseVspherecommand
 class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere datastore maxfree'
+  banner "knife vsphere datastore maxfree"
 
   option :regex,
-         short: '-r REGEX',
-         long: '--regex REGEX',
-         description: 'Regex to match the datastore name',
-         default: ''
+         short: "-r REGEX",
+         long: "--regex REGEX",
+         description: "Regex to match the datastore name",
+         default: ""
 
   option :vlan,
-         long: '--vlan VLAN',
-         description: 'Require listed vlan available to datastore\'s parent'
+         long: "--vlan VLAN",
+         description: "Require listed vlan available to datastore's parent"
 
   option :pool,
-         long: '--pool pool',
-         description: 'Pool or Cluster to search for datastores in'
+         long: "--pool pool",
+         description: "Pool or Cluster to search for datastores in"
 
   common_options
 
@@ -44,7 +44,7 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
   def run
     $stdout.sync = true
     if get_config(:vlan) && get_config(:pool)
-      fatal_exit('Please select either vlan or pool')
+      fatal_exit("Please select either vlan or pool")
     end
 
     vim_connection
@@ -53,11 +53,11 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
     datastores = find_datastores
     datastores.each do |store|
       if regex.match(store.name) &&
-         (max.nil? || max.summary[:freeSpace] < store.summary[:freeSpace])
+          (max.nil? || max.summary[:freeSpace] < store.summary[:freeSpace])
         max = store
       end
     end
-    ui.output(max ? { 'Datastore' => max.name } : {})
+    ui.output(max ? { "Datastore" => max.name } : {})
   end
 end
 

@@ -2,23 +2,23 @@
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all known virtual machines in the configured datacenter
 class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vm list'
+  banner "knife vsphere vm list"
 
   common_options
 
   option :recursive,
-         long: '--recursive',
-         short: '-r',
-         description: 'Recurse into sub-folders'
+         long: "--recursive",
+         short: "-r",
+         description: "Recurse into sub-folders"
 
   option :onlyfolders,
-         long: '--only-folders',
-         description: 'List only the folders found',
+         long: "--only-folders",
+         description: "List only the folders found",
          boolean: false
 
   def traverse_folders(folder, is_top = false, recurse = false, only_folders = false)
@@ -44,11 +44,11 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   def print_vm(vm)
     state = case vm.runtime.powerState
             when PS_ON
-              ui.color('on', :green)
+              ui.color("on", :green)
             when PS_OFF
-              ui.color('off', :red)
+              ui.color("off", :red)
             when PS_SUSPENDED
-              ui.color('suspended', :yellow)
+              ui.color("suspended", :yellow)
             end
     puts "\t#{ui.color('VM Name:', :cyan)} #{vm.name}"
     puts "\t\t#{ui.color('IP:', :magenta)} #{vm.guest.ipAddress}"
@@ -57,7 +57,7 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   end
 
   def print_folder(folder)
-    puts "#{ui.color('Folder', :cyan)}: " + (folder.path[3..-1].map { |x| x[1] }.* '/')
+    puts "#{ui.color('Folder', :cyan)}: " + (folder.path[3..-1].map { |x| x[1] }.* "/")
   end
 
   def run

@@ -15,24 +15,24 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all known data stores in datacenter with sizes
 # VsphereDatastorelist extends the BaseVspherecommand
 class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere datastore list'
+  banner "knife vsphere datastore list"
 
   common_options
 
   option :list,
-         long: '--list',
-         short: '-L',
+         long: "--list",
+         short: "-L",
          description: "Indicates whether to list VM's in datastore",
          boolean: true
   option :pool,
-         long: '--pool pool',
-         description: 'Target pool'
+         long: "--pool pool",
+         description: "Target pool"
 
   # The main run method for datastore_list
   #
@@ -51,7 +51,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
 
     pool_info = pools.map do |pool|
       datastores = list_ds(pool)
-      { 'Pool' => pool.name, 'Datastores' => datastores }
+      { "Pool" => pool.name, "Datastores" => datastores }
     end
     ui.output(pool_info)
   end
@@ -63,7 +63,7 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
       host_name = vm.guest[:hostName]
       guest_full_name = vm.guest[:guest_full_name]
       guest_state = vm.guest[:guest_state]
-      { 'VM Name' => host_name, 'OS' => guest_full_name, 'State' => guest_state }
+      { "VM Name" => host_name, "OS" => guest_full_name, "State" => guest_state }
     end
   end
 
@@ -71,8 +71,8 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
     pool.datastore.map do |store|
       avail = number_to_human_size(store.summary[:freeSpace])
       cap = number_to_human_size(store.summary[:capacity])
-      ds_info = { 'Datastore' => store.name, 'Free' => avail, 'Capacity' => cap }
-      ds_info['Vms'] = list_vms(store) if get_config(:list)
+      ds_info = { "Datastore" => store.name, "Free" => avail, "Capacity" => cap }
+      ds_info["Vms"] = list_vms(store) if get_config(:list)
       ds_info
     end
   end

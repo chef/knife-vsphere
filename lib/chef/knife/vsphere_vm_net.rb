@@ -2,15 +2,15 @@
 # Author:: Raducu Deaconu (<rhadoo_io@yahoo.com>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Switch VM networking state up/down (on all network interfaces)
 # VsphereVmNet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm net STATE VMNAME'
+  banner "knife vsphere vm net STATE VMNAME"
   common_options
 
   # The main run method for vm_net
@@ -20,18 +20,18 @@ class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[1]
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
     state = @name_args[0]
     if state.nil?
       show_usage
-      fatal_exit('You must specify networking state up/down')
+      fatal_exit("You must specify networking state up/down")
     end
 
-    if state == 'up'
+    if state == "up"
       if_state = true
-    elsif state == 'down'
+    elsif state == "down"
       if_state = false
     end
 

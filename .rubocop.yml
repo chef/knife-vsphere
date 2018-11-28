@@ -1,35 +1,37 @@
-AllCops:
+# Offense count: 1
+Lint/AmbiguousBlockAssociation:
   Exclude:
-    - 'spec/**/*'
+    - 'lib/chef/knife/vsphere_vm_vnc_set.rb'
 
-Metrics/MethodLength:
-  Enabled: false
-Metrics/AbcSize:
-  Enabled: false
-Metrics/PerceivedComplexity:
-  Enabled: false
-Metrics/ClassLength:
-  Enabled: false
-Metrics/CyclomaticComplexity:
-  Enabled: false
-Metrics/BlockNesting:
-  Enabled: false
-Metrics/LineLength:
-  Max: 160
-# Apparently this is a Ruby 3.0 thing?
-Style/FrozenStringLiteralComment:
-    Enabled: false
-Style/ClassAndModuleChildren:
-  Enabled: false
-Style/Documentation:
-  Enabled: false
-Style/SafeNavigation:
-  Enabled: false
+# Offense count: 1
+# Configuration parameters: AllowSafeAssignment.
+Lint/AssignmentInCondition:
+  Exclude:
+    - 'lib/chef/knife/vsphere_vm_disk_list.rb'
 
-Style/StringLiterals:
-  Description: Checks if uses of quotes match the configured preference.
-  Enabled: true
-  EnforcedStyle: single_quotes
-  SupportedStyles:
-  - single_quotes
-  - double_quotes
+# Offense count: 1
+Lint/EmptyWhen:
+  Exclude:
+    - 'lib/chef/knife/vsphere_vm_network_add.rb'
+
+# Offense count: 1
+Lint/ShadowingOuterLocalVariable:
+  Exclude:
+    - 'lib/chef/knife/vsphere_vm_clone.rb'
+
+# Offense count: 3
+Lint/UselessAssignment:
+  Exclude:
+    - 'lib/chef/knife/vsphere_vm_clone.rb'
+    - 'lib/chef/knife/vsphere_vm_disk_extend.rb'
+    - 'lib/chef/knife/vsphere_vm_property_set.rb'
+
+# Offense count: 14
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: snake_case, camelCase
+Naming/VariableName:
+  Exclude:
+    - 'lib/chef/knife/base_vsphere_command.rb'
+    - 'lib/chef/knife/vsphere_cluster_list.rb'
+    - 'lib/chef/knife/vsphere_vm_delete.rb'
+    - 'lib/chef/knife/vsphere_vm_vmdk_add.rb'
