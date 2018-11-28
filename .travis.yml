@@ -1,18 +1,23 @@
+sudo: false
 language: ruby
 cache: bundler
-sudo: false
 distro: xenial
 
-rvm:
-  - 2.4.5
-  - 2.5.3
-  - 2.6
-  - ruby-head
+matrix:
+  include:
+    - rvm: 2.4.5
+    - rvm: 2.5.3
+    - rvm: 2.6
+    - rvm: ruby-head
+  allow_failures:
+    - rvm: ruby-head
 
 branches:
   only:
     - master
 
+bundler_args: --jobs 7 --without docs
+
 script:
+  - bundle exec rake style
   - bundle exec rake spec
-  - bundle exec rake yard
