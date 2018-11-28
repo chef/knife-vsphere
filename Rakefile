@@ -1,7 +1,7 @@
 require 'bundler'
 require 'bundler/gem_tasks'
 require 'rake/clean'
-require "yard"
+require 'yard'
 
 begin
   require 'rspec/core/rake_task'
@@ -11,8 +11,8 @@ end
 CLEAN.include('pkg')
 
 YARD::Rake::YardocTask.new do |t|
-  t.files = ["lib/**/*.rb"] # optional
-  t.stats_options = ["--list-undoc"] # optional
+  t.files = ['lib/**/*.rb'] # optional
+  t.stats_options = ['--list-undoc'] # optional
 end
 
 task default: :spec
