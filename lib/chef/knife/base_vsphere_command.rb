@@ -4,17 +4,17 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'rbvmomi'
-require 'base64'
-require 'filesize'
+require "chef/knife"
+require "rbvmomi"
+require "base64"
+require "filesize"
 
 # Power state on
-PS_ON ||= 'poweredOn'.freeze
+PS_ON ||= "poweredOn".freeze
 # Power state off
-PS_OFF ||= 'poweredOff'.freeze
+PS_OFF ||= "poweredOff".freeze
 # Power state suspended
-PS_SUSPENDED ||= 'suspended'.freeze
+PS_SUSPENDED ||= "suspended".freeze
 
 # Base class for vsphere knife commands
 class Chef
@@ -23,65 +23,65 @@ class Chef
     # Main knife vsphere that more or less everything in this gem is built off of
     class BaseVsphereCommand < Knife
       deps do
-        require 'chef/knife/bootstrap'
+        require "chef/knife/bootstrap"
         Chef::Knife::Bootstrap.load_deps
-        require 'socket'
-        require 'net/ssh/multi'
-        require 'readline'
-        require 'chef/json_compat'
+        require "socket"
+        require "net/ssh/multi"
+        require "readline"
+        require "chef/json_compat"
       end
 
       def self.common_options
         option :vsphere_user,
-               short: '-u USERNAME',
-               long: '--vsuser USERNAME',
-               description: 'The username for vsphere'
+               short: "-u USERNAME",
+               long: "--vsuser USERNAME",
+               description: "The username for vsphere"
 
         option :vsphere_pass,
-               short: '-p PASSWORD',
-               long: '--vspass PASSWORD',
-               description: 'The password for vsphere'
+               short: "-p PASSWORD",
+               long: "--vspass PASSWORD",
+               description: "The password for vsphere"
 
         option :vsphere_host,
-               long: '--vshost HOST',
-               description: 'The vsphere host'
+               long: "--vshost HOST",
+               description: "The vsphere host"
 
         option :vsphere_dc,
-               short: '-D DATACENTER',
-               long: '--vsdc DATACENTER',
-               description: 'The Datacenter for vsphere'
+               short: "-D DATACENTER",
+               long: "--vsdc DATACENTER",
+               description: "The Datacenter for vsphere"
 
         option :vsphere_path,
-               long: '--vspath SOAP_PATH',
-               description: 'The vsphere SOAP endpoint path',
-               default: '/sdk'
+               long: "--vspath SOAP_PATH",
+               description: "The vsphere SOAP endpoint path",
+               default: "/sdk"
 
         option :vsphere_port,
-               long: '--vsport PORT',
-               description: 'The VI SDK port number to use',
-               default: '443'
+               long: "--vsport PORT",
+               description: "The VI SDK port number to use",
+               default: "443"
 
         option :vsphere_nossl,
-               long: '--vsnossl',
-               description: 'Disable SSL connectivity'
+               long: "--vsnossl",
+               description: "Disable SSL connectivity"
 
         option :vsphere_insecure,
-               long: '--vsinsecure',
-               description: 'Disable SSL certificate verification'
+               long: "--vsinsecure",
+               description: "Disable SSL certificate verification"
 
         option :folder,
-               short: '-f FOLDER',
-               long: '--folder FOLDER',
-               description: 'The folder to get VMs from',
-               default: ''
+               short: "-f FOLDER",
+               long: "--folder FOLDER",
+               description: "The folder to get VMs from",
+               default: ""
 
         option :proxy_host,
-               long: '--proxyhost PROXY_HOSTNAME',
-               description: 'Proxy hostname'
+               long: "--proxyhost PROXY_HOSTNAME",
+               description: "Proxy hostname"
 
         option :proxy_port,
-               long: '--proxyport PROXY_PORT',
-               description: 'Proxy port'
+               long: "--proxyport PROXY_PORT",
+               description: "Proxy port"
       end
 
       def get_config(key)
@@ -96,7 +96,7 @@ class Chef
           # Password is not in the config file - grab it
           # from the command line
           get_password_from_stdin
-        elsif get_config(:vsphere_pass).start_with?('base64:')
+        elsif get_config(:vsphere_pass).start_with?("base64:")
           Base64.decode64(get_config(:vsphere_pass)[7..-1]).chomp
         else
           get_config(:vsphere_pass)
@@ -113,7 +113,7 @@ class Chef
           password: password,
           insecure: get_config(:vsphere_insecure),
           proxyHost: get_config(:proxy_host),
-          proxyPort: get_config(:proxy_port)
+          proxyPort: get_config(:proxy_port),
         }
       end
 
@@ -122,7 +122,7 @@ class Chef
       end
 
       def get_password_from_stdin
-        @password ||= ui.ask('Enter your password: ') { |q| q.echo = false }
+        @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
       end
 
       def traverse_folders_for_pools(folder)
@@ -173,17 +173,17 @@ class Chef
 
       def datacenter
         dcname = get_config(:vsphere_dc)
-        traverse_folders_for_dc(vim_connection.rootFolder, dcname) || abort('datacenter not found')
+        traverse_folders_for_dc(vim_connection.rootFolder, dcname) || abort("datacenter not found")
       end
 
       def find_folder(folderName)
         dc = datacenter
         base_entity = dc.vmFolder
-        entity_array = folderName.split('/')
+        entity_array = folderName.split("/")
         entity_array.each do |entityArrItem|
-          if entityArrItem != ''
+          if entityArrItem != ""
             base_entity = base_entity.childEntity.grep(RbVmomi::VIM::Folder).find { |f| f.name == entityArrItem } ||
-                          abort("no such folder #{folderName} while looking for #{entityArrItem}")
+              abort("no such folder #{folderName} while looking for #{entityArrItem}")
           end
         end
         base_entity
@@ -196,7 +196,7 @@ class Chef
         networks = base_entity.select { |f| f.name == networkName }
         abort("no such network #{networkName}") if networks.empty?
 
-        if dvswitch && dvswitch != 'auto'
+        if dvswitch && dvswitch != "auto"
           return networks.find do |f|
             next unless f.respond_to?(:config)
             sw = f.config.distributedVirtualSwitch
@@ -210,11 +210,11 @@ class Chef
       def find_pool_folder(folderName)
         dc = datacenter
         base_entity = dc.hostFolder
-        entity_array = folderName.split('/')
+        entity_array = folderName.split("/")
         entity_array.each do |entityArrItem|
-          if entityArrItem != ''
+          if entityArrItem != ""
             base_entity = base_entity.childEntity.grep(RbVmomi::VIM::ManagedObject).find { |f| f.name == entityArrItem } ||
-                          abort("no such folder #{folderName} while looking for #{entityArrItem}")
+              abort("no such folder #{folderName} while looking for #{entityArrItem}")
           end
         end
         base_entity
@@ -223,18 +223,18 @@ class Chef
       def find_pool(poolName)
         dc = datacenter
         base_entity = dc.hostFolder
-        entity_array = poolName.split('/')
+        entity_array = poolName.split("/")
         entity_array.each do |entityArrItem|
-          next if entityArrItem == ''
+          next if entityArrItem == ""
           if base_entity.is_a? RbVmomi::VIM::Folder
             base_entity = base_entity.childEntity.find { |f| f.name == entityArrItem } ||
-                          abort("no such pool #{poolName} while looking for #{entityArrItem}")
+              abort("no such pool #{poolName} while looking for #{entityArrItem}")
           elsif base_entity.is_a?(RbVmomi::VIM::ClusterComputeResource) || base_entity.is_a?(RbVmomi::VIM::ComputeResource)
             base_entity = base_entity.resourcePool.resourcePool.find { |f| f.name == entityArrItem } ||
-                          abort("no such pool #{poolName} while looking for #{entityArrItem}")
+              abort("no such pool #{poolName} while looking for #{entityArrItem}")
           elsif base_entity.is_a? RbVmomi::VIM::ResourcePool
             base_entity = base_entity.resourcePool.find { |f| f.name == entityArrItem } ||
-                          abort("no such pool #{poolName} while looking for #{entityArrItem}")
+              abort("no such pool #{poolName} while looking for #{entityArrItem}")
           else
             abort "Unexpected Object type encountered #{base_entity.type} while finding resourcePool"
           end
@@ -265,7 +265,7 @@ class Chef
         if candidates.length > 0
           vmdk_datastore = candidates[0]
         else
-          puts 'Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target.'
+          puts "Insufficient space on all LUNs designated or assigned to the virtual machine. Please specify a new target."
           vmdk_datastore = nil
         end
         vmdk_datastore
@@ -277,7 +277,7 @@ class Chef
         dc = datacenter
         base_entity = dc.datastore
         base_entity.each do |ds|
-          stores.push ds if ds.name.match(/#{regex}/)
+          stores.push ds if ds.name =~ /#{regex}/
         end
         stores
       end
@@ -294,10 +294,10 @@ class Chef
           folder = dc.datastoreFolder
         end
         folder.childEntity.each do |child|
-          if child.class.to_s == 'Folder'
+          if child.class.to_s == "Folder"
             ds = find_datastorecluster(dsName, child)
             return ds if ds
-          elsif child.class.to_s == 'StoragePod' && child.name == dsName
+          elsif child.class.to_s == "StoragePod" && child.name == dsName
             return child
           end
         end
@@ -306,7 +306,7 @@ class Chef
 
       def number_to_human_size(number)
         number = number.to_f
-        storage_units_fmt = %w(byte kB MB GB TB)
+        storage_units_fmt = %w{byte kB MB GB TB}
         base = 1024
         if number.to_i < base
           unit = storage_units_fmt[0]
@@ -318,7 +318,7 @@ class Chef
           unit = storage_units_fmt[exponent]
         end
 
-        format('%0.2f %s', number, unit)
+        format("%0.2f %s", number, unit)
       end
 
       def find_device(vm, deviceName)
@@ -345,9 +345,9 @@ class Chef
       def get_path_to_object(object)
         if object.is_a?(RbVmomi::VIM:: ManagedEntity)
           if object.parent.is_a?(RbVmomi::VIM:: ManagedEntity)
-            return get_path_to_object(object.parent) + '/' + object.parent.name
+            get_path_to_object(object.parent) + "/" + object.parent.name
           else
-            return ''
+            ""
           end
         else
           puts "Unknown type #{object.class}, not enumerating"
@@ -397,8 +397,8 @@ class Chef
       end
 
       def windows?(config)
-        is_win_bool = config.guestId.downcase.include?('windows')
-        Chef::Log.debug('Identified os as windows.') if is_win_bool
+        is_win_bool = config.guestId.downcase.include?("windows")
+        Chef::Log.debug("Identified os as windows.") if is_win_bool
         is_win_bool
       end
 
@@ -406,8 +406,8 @@ class Chef
         gid = config.guestId.downcase
         # This makes the assumption that if it isn't mac or windows it's linux
         # See https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html for values
-        is_linux_bool = !gid.include?('windows') && !gid.include?('darwin')
-        Chef::Log.debug('Identified os as linux.') if is_linux_bool
+        is_linux_bool = !gid.include?("windows") && !gid.include?("darwin")
+        Chef::Log.debug("Identified os as linux.") if is_linux_bool
         is_linux_bool
       end
     end

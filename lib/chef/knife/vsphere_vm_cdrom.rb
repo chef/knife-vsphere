@@ -1,50 +1,50 @@
 # License:: Apache License, Version 2.0
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # VsphereVmCdrom extends the BaseVspherecommand
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm cdrom VMNAME (options)'
+  banner "knife vsphere vm cdrom VMNAME (options)"
 
   # The empty device name.
-  EMPTY_DEVICE_NAME = ''.freeze
+  EMPTY_DEVICE_NAME = "".freeze
 
   common_options
 
   option :datastore,
-         long: '--datastore STORE',
-         description: 'The datastore for an iso source'
+         long: "--datastore STORE",
+         description: "The datastore for an iso source"
 
   option :iso,
-         long: '--iso ISO',
-         description: 'The name and path of the ISO to attach'
+         long: "--iso ISO",
+         description: "The name and path of the ISO to attach"
 
   option :attach,
-         short: '-a',
-         long: '--attach',
-         description: 'Attach the virtual cdrom to the VM',
+         short: "-a",
+         long: "--attach",
+         description: "Attach the virtual cdrom to the VM",
          boolean: true
 
   option :disconnect,
-         long: '--disconnect',
-         description: 'Disconnect the virtual cdrom from the VM',
+         long: "--disconnect",
+         description: "Disconnect the virtual cdrom from the VM",
          boolean: true
 
   option :on_boot,
-         long: '--on_boot ONBOOT',
-         description: 'False for Detached on boot or True for Attached on boot'
+         long: "--on_boot ONBOOT",
+         description: "False for Detached on boot or True for Attached on boot"
 
   option :client_device,
-         long: '--client_device',
-         description: 'Set the backing store to client-device'
+         long: "--client_device",
+         description: "Set the backing store to client-device"
 
   option :recursive,
-         short: '-r',
-         long: '--recursive',
-         description: 'Search all folders'
+         short: "-r",
+         long: "--recursive",
+         description: "Search all folders"
 
   # The main run method for vm_cdrom
   #
@@ -54,20 +54,20 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
     unless get_config(:attach) ^ get_config(:disconnect)
-      fatal_exit('You must specify one of --attach or --disconnect')
+      fatal_exit("You must specify one of --attach or --disconnect")
     end
 
-    fatal_exit 'You must specify the name and path of an ISO with --iso' if get_config(:attach) && !get_config(:iso)
-    fatal_exit 'You must specify the datastore containing the ISO with --datastore' if get_config(:attach) && !get_config(:datastore)
+    fatal_exit "You must specify the name and path of an ISO with --iso" if get_config(:attach) && !get_config(:iso)
+    fatal_exit "You must specify the datastore containing the ISO with --datastore" if get_config(:attach) && !get_config(:datastore)
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
-    fatal_exit 'Could not find a cd drive' unless cdrom_obj
+    fatal_exit "Could not find a cd drive" unless cdrom_obj
 
     backing = if get_config(:attach)
                 RbVmomi::VIM::VirtualCdromIsoBackingInfo(
@@ -97,7 +97,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
             connected: get_config(:attach) || false,
             allowGuestControl: true
           )
-        )
+        ),
       }]
     )
   end

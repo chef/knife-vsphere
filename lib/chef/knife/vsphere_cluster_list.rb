@@ -3,12 +3,12 @@
 # Contributor:: Dennis Pattmann (https://github.com/DennisBP)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all known clusters in the configured datacenter
 class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere cluster list'
+  banner "knife vsphere cluster list"
 
   common_options
 
@@ -16,8 +16,8 @@ class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
     return if folder.is_a? RbVmomi::VIM::VirtualApp
 
     if folder.is_a? RbVmomi::VIM::ClusterComputeResource
-      clusters = folder.path[3..-1].reject { |p| p.last == 'ClusterComputeResource' }
-      return { 'Cluster' => clusters.map(&:last).join('/') }
+      clusters = folder.path[3..-1].reject { |p| p.last == "ClusterComputeResource" }
+      return { "Cluster" => clusters.map(&:last).join("/") }
     end
 
     folders = find_all_in_folder(folder, RbVmomi::VIM::ManagedObject) || []
@@ -29,11 +29,11 @@ class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
   def find_cluster_folder(folderName)
     dc = datacenter
     base_entity = dc.hostFolder
-    entity_array = folderName.split('/')
+    entity_array = folderName.split("/")
     entity_array.each do |entityArrItem|
-      if entityArrItem != ''
+      if entityArrItem != ""
         base_entity = base_entity.childEntity.grep(RbVmomi::VIM::ManagedObject).find { |f| f.name == entityArrItem } ||
-                      abort("no such folder #{folderName} while looking for #{entityArrItem}")
+          abort("no such folder #{folderName} while looking for #{entityArrItem}")
       end
     end
     base_entity

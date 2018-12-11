@@ -15,12 +15,12 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 def number_to_human_size(number)
   number = number.to_f
-  storage_units_fmt = %w(byte kB MB GB TB)
+  storage_units_fmt = %w{byte kB MB GB TB}
   base = 1024
   if number.to_i < base
     unit = storage_units_fmt[0]
@@ -32,19 +32,19 @@ def number_to_human_size(number)
     unit = storage_units_fmt[exponent]
   end
 
-  format('%0.2f %s', number, unit)
+  format("%0.2f %s", number, unit)
 end
 
 def traverse_folders_for_dsclusters(folder)
   print_dsclusters_in_folder(folder)
   folder.childEntity.each do |child|
-    traverse_folders_for_dsclusters(child) if child.class.to_s == 'Folder'
+    traverse_folders_for_dsclusters(child) if child.class.to_s == "Folder"
   end
 end
 
 def print_dsclusters_in_folder(folder)
   folder.childEntity.each do |child|
-    next unless child.class.to_s == 'StoragePod'
+    next unless child.class.to_s == "StoragePod"
     avail = number_to_human_size(child.summary[:freeSpace])
     cap = number_to_human_size(child.summary[:capacity])
     puts "#{ui.color('DatastoreCluster', :cyan)}: #{child.name} (#{avail} / #{cap})"
@@ -53,7 +53,7 @@ end
 
 # Lists all known data store cluster in datacenter with sizes
 class Chef::Knife::VsphereDatastoreclusterList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere datastorecluster list'
+  banner "knife vsphere datastorecluster list"
 
   common_options
 
