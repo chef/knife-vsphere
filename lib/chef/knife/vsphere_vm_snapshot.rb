@@ -2,68 +2,68 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Manage snapshots of a virtual machine
 class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm snapshot VMNAME (options)'
+  banner "knife vsphere vm snapshot VMNAME (options)"
 
   common_options
 
   option :list,
-         long: '--list',
-         description: 'The current tree of snapshots'
+         long: "--list",
+         description: "The current tree of snapshots"
 
   option :create_new_snapshot,
-         long: '--create SNAPSHOT',
-         description: 'Create a new snapshot off of the current snapshot.'
+         long: "--create SNAPSHOT",
+         description: "Create a new snapshot off of the current snapshot."
 
   option :remove_named_snapshot,
-         long: '--remove SNAPSHOT',
-         description: 'Remove a named snapshot.'
+         long: "--remove SNAPSHOT",
+         description: "Remove a named snapshot."
 
   option :revert_snapshot,
-         long: '--revert SNAPSHOT',
-         description: 'Revert to a named snapshot.'
+         long: "--revert SNAPSHOT",
+         description: "Revert to a named snapshot."
 
   option :revert_current_snapshot,
-         long: '--revert-current',
-         description: 'Revert to current snapshot.',
+         long: "--revert-current",
+         description: "Revert to current snapshot.",
          boolean: false
 
   option :power,
-         long: '--start',
-         description: 'Indicates whether to start the VM after a successful revert',
+         long: "--start",
+         description: "Indicates whether to start the VM after a successful revert",
          boolean: false
 
   option :wait,
-         long: '--wait',
-         description: 'Indicates whether to wait for creation/removal to complete',
+         long: "--wait",
+         description: "Indicates whether to wait for creation/removal to complete",
          boolean: false
 
   option :find, # imma deprecate this
-         long: '--find',
-         description: 'Finds the virtual machine by searching all folders'
+         long: "--find",
+         description: "Finds the virtual machine by searching all folders"
 
   option :dump_memory,
-         long: '--dump-memory',
+         long: "--dump-memory",
          boolean: true,
-         description: 'Dump the memory in the snapshot',
+         description: "Dump the memory in the snapshot",
          default: false
 
   option :quiesce,
-         long: '--quiesce',
+         long: "--quiesce",
          boolean: true,
-         description: 'Quiesce the VM prior to snapshotting',
+         description: "Quiesce the VM prior to snapshotting",
          default: false
 
   option :snapshot_description,
-         long: '--snapshot-descr DESCR',
-         description: 'Snapshot description',
-         default: ''
+         long: "--snapshot-descr DESCR",
+         description: "Snapshot description",
+         default: ""
 
   def run
     $stdout.sync = true
@@ -71,7 +71,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      ui.fatal('You must specify a virtual machine name')
+      ui.fatal("You must specify a virtual machine name")
       exit 1
     end
 
@@ -105,7 +105,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:revert_current_snapshot)
-      puts 'Reverting to Current Snapshot'
+      puts "Reverting to Current Snapshot"
       vm.RevertToCurrentSnapshot_Task(suppressPowerOn: false).wait_for_completion
       if get_config(:power)
         vm.PowerOnVM_Task.wait_for_completion
@@ -137,12 +137,12 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
   def display_node(node, current)
     children = node.childSnapshotList.map { |item| display_node(item, current) }
-    snapshot_tree = { 'SnapshotName' => node.name,
-                      'SnapshotId' => node.id,
-                      'SnapshotDescription' => node.description,
-                      'SnapshotCreationDate' => node.createTime.iso8601,
-                      'Children' => children }
-    snapshot_tree.merge!({ 'IsCurrentSnapshot' => true }) if node.snapshot == current
+    snapshot_tree = { "SnapshotName" => node.name,
+                      "SnapshotId" => node.id,
+                      "SnapshotDescription" => node.description,
+                      "SnapshotCreationDate" => node.createTime.iso8601,
+                      "Children" => children }
+    snapshot_tree["IsCurrentSnapshot"] = true if node.snapshot == current
     snapshot_tree
   end
 end

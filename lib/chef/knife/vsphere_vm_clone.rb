@@ -6,225 +6,225 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/customization_helper'
-require 'chef/knife/search_helper'
-require 'chef/knife/winrm_base'
-require 'ipaddr'
-require 'netaddr'
-require 'securerandom'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/customization_helper"
+require "chef/knife/search_helper"
+require "chef/knife/winrm_base"
+require "ipaddr"
+require "netaddr"
+require "securerandom"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vm clone VMNAME (options)'
+  banner "knife vsphere vm clone VMNAME (options)"
 
   # A AUTO_MAC for NIC?
-  AUTO_MAC = 'auto'
+  AUTO_MAC = "auto".freeze
   # A NO IP for you to use!
-  NO_IPS = ''
+  NO_IPS = "".freeze
   # a linklayer origin is an actual nic
-  ORIGIN_IS_REAL_NIC = 'linklayer'.freeze
+  ORIGIN_IS_REAL_NIC = "linklayer".freeze
 
   include Chef::Knife::WinrmBase
   include CustomizationHelper
   include SearchHelper
   deps do
-    require 'chef/json_compat'
-    require 'chef/knife/bootstrap'
+    require "chef/json_compat"
+    require "chef/knife/bootstrap"
     Chef::Knife::Bootstrap.load_deps
   end
 
   common_options
 
   option :dest_folder,
-         long: '--dest-folder FOLDER',
-         description: 'The folder into which to put the cloned VM'
+         long: "--dest-folder FOLDER",
+         description: "The folder into which to put the cloned VM"
 
   option :datastore,
-         long: '--datastore STORE',
-         description: 'The datastore into which to put the cloned VM'
+         long: "--datastore STORE",
+         description: "The datastore into which to put the cloned VM"
 
   option :datastorecluster,
-         long: '--datastorecluster STORE',
-         description: 'The datastorecluster into which to put the cloned VM'
+         long: "--datastorecluster STORE",
+         description: "The datastorecluster into which to put the cloned VM"
 
   option :host,
-         long: '--host HOST',
-         description: 'The host into which to put the cloned VM'
+         long: "--host HOST",
+         description: "The host into which to put the cloned VM"
 
   option :resource_pool,
-         long: '--resource-pool POOL',
-         description: 'The resource pool or cluster into which to put the cloned VM'
+         long: "--resource-pool POOL",
+         description: "The resource pool or cluster into which to put the cloned VM"
 
   option :source_vm,
-         long: '--template TEMPLATE',
-         description: 'The source VM / Template to clone from'
+         long: "--template TEMPLATE",
+         description: "The source VM / Template to clone from"
 
   option :linked_clone,
-         long: '--linked-clone',
-         description: 'Indicates whether to use linked clones.',
+         long: "--linked-clone",
+         description: "Indicates whether to use linked clones.",
          boolean: false
 
   option :thin_provision,
-         long: '--thin-provision',
-         description: 'Indicates whether disk should be thin provisioned.',
+         long: "--thin-provision",
+         description: "Indicates whether disk should be thin provisioned.",
          boolean: true
 
   option :annotation,
-         long: '--annotation TEXT',
-         description: 'Add TEXT in Notes field from annotation'
+         long: "--annotation TEXT",
+         description: "Add TEXT in Notes field from annotation"
 
   option :customization_spec,
-         long: '--cspec CUST_SPEC',
-         description: 'The name of any customization specification to apply'
+         long: "--cspec CUST_SPEC",
+         description: "The name of any customization specification to apply"
 
   option :customization_plugin,
-         long: '--cplugin CUST_PLUGIN_PATH',
-         description: 'Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm'
+         long: "--cplugin CUST_PLUGIN_PATH",
+         description: "Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm"
 
   option :customization_plugin_data,
-         long: '--cplugin-data CUST_PLUGIN_DATA',
-         description: 'String of data to pass to the plugin.  Use any format you wish.'
+         long: "--cplugin-data CUST_PLUGIN_DATA",
+         description: "String of data to pass to the plugin.  Use any format you wish."
 
   option :customization_vlan,
-         long: '--cvlan CUST_VLANS',
-         description: 'Comma-delimited list of VLAN names for network adapters to join'
+         long: "--cvlan CUST_VLANS",
+         description: "Comma-delimited list of VLAN names for network adapters to join"
 
   option :customization_sw_uuid,
-         long: '--sw-uuid SWITCH_UUIDS',
+         long: "--sw-uuid SWITCH_UUIDS",
          description: "Comma-delimited list of distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
 
   option :customization_macs,
-         long: '--cmacs CUST_MACS',
-         description: 'Comma-delimited list of MAC addresses for network adapters',
+         long: "--cmacs CUST_MACS",
+         description: "Comma-delimited list of MAC addresses for network adapters",
          default: AUTO_MAC
 
   option :customization_ips,
-         long: '--cips CUST_IPS',
-         description: 'Comma-delimited list of CIDR IPs for customization',
+         long: "--cips CUST_IPS",
+         description: "Comma-delimited list of CIDR IPs for customization",
          default: NO_IPS
 
   option :customization_dns_ips,
-         long: '--cdnsips CUST_DNS_IPS',
-         description: 'Comma-delimited list of DNS IP addresses'
+         long: "--cdnsips CUST_DNS_IPS",
+         description: "Comma-delimited list of DNS IP addresses"
 
   option :customization_dns_suffixes,
-         long: '--cdnssuffix CUST_DNS_SUFFIXES',
-         description: 'Comma-delimited list of DNS search suffixes'
+         long: "--cdnssuffix CUST_DNS_SUFFIXES",
+         description: "Comma-delimited list of DNS search suffixes"
 
   option :customization_gw,
-         long: '--cgw CUST_GW',
-         description: 'CIDR IP of gateway for customization'
+         long: "--cgw CUST_GW",
+         description: "CIDR IP of gateway for customization"
 
   option :customization_hostname,
-         long: '--chostname CUST_HOSTNAME',
-         description: 'Unqualified hostname for customization'
+         long: "--chostname CUST_HOSTNAME",
+         description: "Unqualified hostname for customization"
 
   option :customization_domain,
-         long: '--cdomain CUST_DOMAIN',
-         description: 'Domain name for customization'
+         long: "--cdomain CUST_DOMAIN",
+         description: "Domain name for customization"
 
   option :customization_tz,
-         long: '--ctz CUST_TIMEZONE',
+         long: "--ctz CUST_TIMEZONE",
          description: "Timezone invalid 'Area/Location' format"
 
   option :customization_cpucount,
-         long: '--ccpu CUST_CPU_COUNT',
-         description: 'Number of CPUs'
+         long: "--ccpu CUST_CPU_COUNT",
+         description: "Number of CPUs"
 
   option :customization_corespersocket,
-         long: '--ccorespersocket CUST_CPU_CORES_PER_SOCKET',
-         description: 'Number of CPU Cores per Socket'
+         long: "--ccorespersocket CUST_CPU_CORES_PER_SOCKET",
+         description: "Number of CPU Cores per Socket"
 
   option :customization_memory,
-         long: '--cram CUST_MEMORY_GB',
-         description: 'Gigabytes of RAM'
+         long: "--cram CUST_MEMORY_GB",
+         description: "Gigabytes of RAM"
 
   option :customization_memory_reservation,
-         long: '--cram_reservation CUST_MEMORY_RESERVATION_GB',
-         description: 'Gigabytes of RAM'
+         long: "--cram_reservation CUST_MEMORY_RESERVATION_GB",
+         description: "Gigabytes of RAM"
 
   option :power,
-         long: '--start',
-         description: 'Indicates whether to start the VM after a successful clone',
+         long: "--start",
+         description: "Indicates whether to start the VM after a successful clone",
          boolean: false
 
   option :bootstrap,
-         long: '--bootstrap',
-         description: 'Indicates whether to bootstrap the VM',
+         long: "--bootstrap",
+         description: "Indicates whether to bootstrap the VM",
          boolean: false
 
   option :environment,
-         long: '--environment ENVIRONMENT',
-         description: 'Environment to add the node to for bootstrapping'
+         long: "--environment ENVIRONMENT",
+         description: "Environment to add the node to for bootstrapping"
 
   option :fqdn,
-         long: '--fqdn SERVER_FQDN',
-         description: 'Fully qualified hostname for bootstrapping'
+         long: "--fqdn SERVER_FQDN",
+         description: "Fully qualified hostname for bootstrapping"
 
   option :bootstrap_msi_url,
-         long: '--bootstrap-msi-url URL',
-         description: 'Location of the Chef Client MSI. The default templates will prefer to download from this location.'
+         long: "--bootstrap-msi-url URL",
+         description: "Location of the Chef Client MSI. The default templates will prefer to download from this location."
 
   option :bootstrap_protocol,
-         long: '--bootstrap-protocol protocol',
-         description: 'Protocol to bootstrap windows servers. options: winrm/ssh',
+         long: "--bootstrap-protocol protocol",
+         description: "Protocol to bootstrap windows servers. options: winrm/ssh",
          proc: proc { |key| Chef::Config[:knife][:bootstrap_protocol] = key },
          default: nil
 
   option :ssh_user,
-         short: '-x USERNAME',
-         long: '--ssh-user USERNAME',
-         description: 'The ssh username',
-         default: 'root'
+         short: "-x USERNAME",
+         long: "--ssh-user USERNAME",
+         description: "The ssh username",
+         default: "root"
 
   option :ssh_password,
-         short: '-P PASSWORD',
-         long: '--ssh-password PASSWORD',
-         description: 'The ssh password'
+         short: "-P PASSWORD",
+         long: "--ssh-password PASSWORD",
+         description: "The ssh password"
 
   option :ssh_port,
-         short: '-p PORT',
-         long: '--ssh-port PORT',
-         description: 'The ssh port',
-         default: '22'
+         short: "-p PORT",
+         long: "--ssh-port PORT",
+         description: "The ssh port",
+         default: "22"
 
   option :identity_file,
-         short: '-i IDENTITY_FILE',
-         long: '--identity-file IDENTITY_FILE',
-         description: 'The SSH identity file used for authentication'
+         short: "-i IDENTITY_FILE",
+         long: "--identity-file IDENTITY_FILE",
+         description: "The SSH identity file used for authentication"
 
   option :chef_node_name,
-         short: '-N NAME',
-         long: '--node-name NAME',
-         description: 'The Chef node name for your new node'
+         short: "-N NAME",
+         long: "--node-name NAME",
+         description: "The Chef node name for your new node"
 
   option :prerelease,
-         long: '--prerelease',
-         description: 'Install the pre-release chef gems',
+         long: "--prerelease",
+         description: "Install the pre-release chef gems",
          boolean: false
 
   option :bootstrap_version,
-         long: '--bootstrap-version VERSION',
-         description: 'The version of Chef to install',
+         long: "--bootstrap-version VERSION",
+         description: "The version of Chef to install",
          proc: proc { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
   option :bootstrap_proxy,
-         long: '--bootstrap-proxy PROXY_URL',
-         description: 'The proxy server for the node being bootstrapped',
+         long: "--bootstrap-proxy PROXY_URL",
+         description: "The proxy server for the node being bootstrapped",
          proc: proc { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
   option :bootstrap_vault_file,
-         long: '--bootstrap-vault-file VAULT_FILE',
-         description: 'A JSON file with a list of vault(s) and item(s) to be updated'
+         long: "--bootstrap-vault-file VAULT_FILE",
+         description: "A JSON file with a list of vault(s) and item(s) to be updated"
 
   option :bootstrap_vault_json,
-         long: '--bootstrap-vault-json VAULT_JSON',
-         description: 'A JSON string with the vault(s) and item(s) to be updated'
+         long: "--bootstrap-vault-json VAULT_JSON",
+         description: "A JSON string with the vault(s) and item(s) to be updated"
 
   option :bootstrap_vault_item,
-         long: '--bootstrap-vault-item VAULT_ITEM',
+         long: "--bootstrap-vault-item VAULT_ITEM",
          description: 'A single vault and item to update as "vault:item"',
          proc: proc { |i|
            (vault, item) = i.split(/:/)
@@ -235,102 +235,113 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          }
 
   option :distro,
-         short: '-d DISTRO',
-         long: '--distro DISTRO',
-         description: 'Bootstrap a distro using a template; default is "chef-full"',
-         proc: proc { |d| Chef::Config[:knife][:distro] = d },
-         default: 'chef-full'
+         short: "-d DISTRO",
+         long: "--distro DISTRO",
+         description: "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
+         proc: Proc.new { |v|
+                 Chef::Log.fatal("[DEPRECATED] -d / --distro option is deprecated. Use --bootstrap-template option instead.")
+                 v
+               }
 
   option :tags,
-         long: '--tags TAGS',
-         description: 'Comma separated list of tags to apply to the node',
+         long: "--tags TAGS",
+         description: "Comma separated list of tags to apply to the node",
          proc: ->(tags) { tags.split(/[\s,]+/) },
          default: []
 
+  option :bootstrap_template,
+         short: "-t TEMPLATE",
+         long: "--bootstrap-template TEMPLATE",
+         description: "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
+
   option :template_file,
-         long: '--template-file TEMPLATE',
-         description: 'Full path to location of template to use'
+         long: "--template-file TEMPLATE",
+         description: "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option",
+         proc: Proc.new { |v|
+                 Chef::Log.fatal("[DEPRECATED] --template-file option is deprecated. Use --bootstrap-template option instead.")
+                 v
+               }
 
   option :run_list,
-         short: '-r RUN_LIST',
-         long: '--run-list RUN_LIST',
-         description: 'Comma separated list of roles/recipes to apply',
-         proc: -> (o) { o.split(/[\s,]+/) },
+         short: "-r RUN_LIST",
+         long: "--run-list RUN_LIST",
+         description: "Comma separated list of roles/recipes to apply",
+         proc: ->(o) { o.split(/[\s,]+/) },
          default: []
 
   option :secret_file,
-         long: '--secret-file SECRET_FILE',
-         description: 'A file containing the secret key to use to encrypt data bag item values',
+         long: "--secret-file SECRET_FILE",
+         description: "A file containing the secret key to use to encrypt data bag item values",
          proc: ->(secret_file) { Chef::Config[:knife][:secret_file] = secret_file }
 
   # rubocop:disable Style/Blocks
   option :hint,
-         long: '--hint HINT_NAME[=HINT_FILE]',
-         description: 'Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.',
+         long: "--hint HINT_NAME[=HINT_FILE]",
+         description: "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
          proc: proc { |h|
            Chef::Config[:knife][:hints] ||= {}
-           name, path = h.split('=')
+           name, path = h.split("=")
            Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : {}
          },
-         default: ''
+         default: ""
   # rubocop:enable Style/Blocks
 
   option :no_host_key_verify,
-         long: '--no-host-key-verify',
-         description: 'Disable host key verification',
+         long: "--no-host-key-verify",
+         description: "Disable host key verification",
          boolean: true
 
   option :node_ssl_verify_mode,
-         long: '--node-ssl-verify-mode [peer|none]',
-         description: 'Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping'
+         long: "--node-ssl-verify-mode [peer|none]",
+         description: "Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping"
 
   option :first_boot_attributes,
-         short: '-j JSON_ATTRIBS',
-         long: '--json-attributes',
-         description: 'A JSON string to be added to the first run of chef-client',
+         short: "-j JSON_ATTRIBS",
+         long: "--json-attributes",
+         description: "A JSON string to be added to the first run of chef-client",
          proc: ->(o) { JSON.parse(o) },
          default: {}
 
   option :disable_customization,
-         long: '--disable-customization',
-         description: 'Disable default customization',
+         long: "--disable-customization",
+         description: "Disable default customization",
          boolean: true,
          default: false
 
   option :log_level,
-         short: '-l LEVEL',
-         long: '--log_level',
-         description: 'Set the log level (debug, info, warn, error, fatal) for chef-client',
+         short: "-l LEVEL",
+         long: "--log_level",
+         description: "Set the log level (debug, info, warn, error, fatal) for chef-client",
          proc: ->(l) { l.to_sym }
 
   option :mark_as_template,
-         long: '--mark_as_template',
-         description: 'Indicates whether to mark the new vm as a template',
+         long: "--mark_as_template",
+         description: "Indicates whether to mark the new vm as a template",
          boolean: false
 
   option :random_vmname,
-         long: '--random-vmname',
-         description: 'Creates a random VMNAME starts with vm-XXXXXXXX',
+         long: "--random-vmname",
+         description: "Creates a random VMNAME starts with vm-XXXXXXXX",
          boolean: false
 
   option :random_vmname_prefix,
-         long: '--random-vmname-prefix PREFIX',
-         description: 'Change the VMNAME prefix',
-         default: 'vm-'
+         long: "--random-vmname-prefix PREFIX",
+         description: "Change the VMNAME prefix",
+         default: "vm-"
 
   option :sysprep_timeout,
-         long: '--sysprep_timeout TIMEOUT',
-         description: 'Wait TIMEOUT seconds for sysprep event before continuing with bootstrap',
+         long: "--sysprep_timeout TIMEOUT",
+         description: "Wait TIMEOUT seconds for sysprep event before continuing with bootstrap",
          default: 600
 
   option :bootstrap_nic,
-         long: '--bootstrap-nic INTEGER',
-         description: 'Network interface to use when multiple NICs are defined on a template.',
+         long: "--bootstrap-nic INTEGER",
+         description: "Network interface to use when multiple NICs are defined on a template.",
          default: 0
 
   option :bootstrap_ipv4,
-         long: '--bootstrap-ipv4',
-         description: 'Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.',
+         long: "--bootstrap-ipv4",
+         description: "Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.",
          default: false
 
   def run
@@ -338,13 +349,13 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
     unless using_supplied_hostname? ^ using_random_hostname?
       show_usage
-      fatal_exit('You must specify a virtual machine name OR use --random-vmname')
+      fatal_exit("You must specify a virtual machine name OR use --random-vmname")
     end
 
-    abort '--template or knife[:source_vm] must be specified' unless config[:source_vm]
+    abort "--template or knife[:source_vm] must be specified" unless config[:source_vm]
 
     if get_config(:datastore) && get_config(:datastorecluster)
-      abort 'Please select either datastore or datastorecluster'
+      abort "Please select either datastore or datastorecluster"
     end
 
     if get_config(:customization_macs) != AUTO_MAC && get_config(:customization_ips) == NO_IPS
@@ -380,7 +391,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       if fault.class == RbVmomi::VIM::NicSettingMismatch
         abort "There is a mismatch in the number of NICs on the template (#{fault.numberOfNicsInVM}) and what you've passed on the command line with --cips (#{fault.numberOfNicsInSpec}). The VM has been cloned but not customized."
       elsif fault.class == RbVmomi::VIM::DuplicateName
-        ui.info 'VM already exists, proceeding to bootstrap'
+        ui.info "VM already exists, proceeding to bootstrap"
       else
         raise e
       end
@@ -409,14 +420,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     connect_port = get_config(:ssh_port)
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
-      protocol ||= 'winrm'
+      protocol ||= "winrm"
       # Set distro to windows-chef-client-msi
-      config[:distro] = 'windows-chef-client-msi' if config[:distro].nil? || config[:distro] == 'chef-full'
+      config[:distro] = "windows-chef-client-msi" if config[:distro].nil? || config[:distro] == "chef-full"
       unless config[:disable_customization]
         # Wait for customization to complete
-        puts 'Waiting for customization to complete...'
+        puts "Waiting for customization to complete..."
         CustomizationHelper.wait_for_sysprep(vm, vim, Integer(get_config(:sysprep_timeout)), 10)
-        puts 'Customization Complete'
+        puts "Customization Complete"
       end
       connect_host = guest_address(vm)
       Chef::Log.debug("Connect Host for winrm Bootstrap: #{connect_host}")
@@ -426,7 +437,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     else
       connect_host = guest_address(vm)
       Chef::Log.debug("Connect Host for SSH Bootstrap: #{connect_host}")
-      protocol ||= 'ssh'
+      protocol ||= "ssh"
       wait_for_access(connect_host, connect_port, protocol)
       ssh_override_winrm
       bootstrap_for_node.run
@@ -434,7 +445,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   def ipv4_address(vm)
-    puts 'Waiting for a valid IPv4 address...'
+    puts "Waiting for a valid IPv4 address..."
     # Multiple reboots occur during guest customization in which a link-local
     # address is assigned. As such, we need to wait until a routable IP address
     # becomes available. This is most commonly an issue with Windows instances.
@@ -448,7 +459,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   def guest_address(vm)
-    puts 'Waiting for network interfaces to become available...'
+    puts "Waiting for network interfaces to become available..."
     sleep 2 while vm.guest.net.empty? || !vm.guest.ipAddress
     ui.info "Found address #{vm.guest.ipAddress}" if log_verbose?
     config[:fqdn] = if config[:bootstrap_ipv4]
@@ -460,28 +471,28 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                       # This is the closest thing to vm.guest.ipAddress but
                       # allows specifying a NIC.
                       vm.guest.net[bootstrap_nic_index].ipConfig.ipAddress.detect do |addr|
-                        addr.origin != 'linklayer'
+                        addr.origin != "linklayer"
                       end.ipAddress
                     end
   end
 
   def wait_for_access(connect_host, connect_port, protocol)
-    if protocol == 'winrm'
+    if protocol == "winrm"
       load_winrm_deps
-      if get_config(:winrm_transport) == 'ssl' && get_config(:winrm_port) == '5985'
-        config[:winrm_port] = '5986'
+      if get_config(:winrm_transport) == "ssl" && get_config(:winrm_port) == "5985"
+        config[:winrm_port] = "5986"
       end
       connect_port = get_config(:winrm_port)
       print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}", :magenta)}"
-      print('.') until tcp_test_winrm(connect_host, connect_port) do
+      print(".") until tcp_test_winrm(connect_host, connect_port) do
         sleep 10
-        puts('done')
+        puts("done")
       end
     else
       print "\n#{ui.color("Waiting for sshd access to become available on #{connect_host}:#{connect_port}", :magenta)}"
-      print('.') until tcp_test_ssh(connect_host, connect_port) do
+      print(".") until tcp_test_ssh(connect_host, connect_port) do
         sleep 10
-        puts('done')
+        puts("done")
       end
     end
     connect_port
@@ -494,7 +505,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         deviceChange: [
           {
             operation: :remove,
-            device: disk
+            device: disk,
           },
           {
             operation: :add,
@@ -503,9 +514,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
               new_disk.backing = new_disk.backing.dup
               new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
               new_disk.backing.parent = disk.backing
-            end
+            end,
           }
-        ]
+        ],
       }
       src_vm.ReconfigVM_Task(spec: spec).wait_for_completion
     end
@@ -513,10 +524,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def find_available_hosts
     hosts = traverse_folders_for_computeresources(datacenter.hostFolder)
-    fatal_exit('No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster') if hosts.empty?
+    fatal_exit("No ComputeResource found - Use --resource-pool to specify a resource pool or a cluster") if hosts.empty?
     hosts.reject!(&:nil?)
     hosts.reject! { |host| host.host.all? { |h| h.runtime.inMaintenanceMode } }
-    fatal_exit 'All hosts in maintenance mode!' if hosts.empty?
+    fatal_exit "All hosts in maintenance mode!" if hosts.empty?
     if get_config(:datastore)
       hosts.reject! { |host| !host.datastore.include?(find_datastore(get_config(:datastore))) }
     end
@@ -530,7 +541,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     fatal_exit "No hosts have the requested DatastoreCluster available! #{get_config(:datastorecluster)}" if hosts.empty?
 
     if get_config(:customization_vlan)
-      vlan_list = get_config(:customization_vlan).split(',')
+      vlan_list = get_config(:customization_vlan).split(",")
       vlan_list.each do |network|
         hosts.reject! { |host| !host.network.include?(find_network(network)) }
       end
@@ -619,24 +630,24 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     mac_list = if get_config(:customization_macs) == AUTO_MAC
-                 [AUTO_MAC] * get_config(:customization_ips).split(',').length
+                 [AUTO_MAC] * get_config(:customization_ips).split(",").length
                else
-                 get_config(:customization_macs).split(',')
+                 get_config(:customization_macs).split(",")
                end
 
     if get_config(:customization_sw_uuid)
       unless get_config(:customization_vlan)
-        abort('Must specify VLANs with --cvlan when specifying switch UUIDs with --sw-uuids')
+        abort("Must specify VLANs with --cvlan when specifying switch UUIDs with --sw-uuids")
       end
-      swuuid_list = if get_config(:customization_sw_uuid) == 'auto'
-                      ['auto'] * get_config(:customization_ips).split(',').length
+      swuuid_list = if get_config(:customization_sw_uuid) == "auto"
+                      ["auto"] * get_config(:customization_ips).split(",").length
                     else
-                      get_config(:customization_sw_uuid).split(',').map { |swuuid| swuuid.gsub(/((\w+\s+){7})(\w+)\s+(.+)/, '\1\3-\4') }
+                      get_config(:customization_sw_uuid).split(",").map { |swuuid| swuuid.gsub(/((\w+\s+){7})(\w+)\s+(.+)/, '\1\3-\4') }
                     end
     end
 
     if get_config(:customization_vlan)
-      vlan_list = get_config(:customization_vlan).split(',')
+      vlan_list = get_config(:customization_vlan).split(",")
       sw_uuid   = get_config(:customization_sw_uuid)
       networks  = vlan_list.map { |vlan| find_network(vlan, sw_uuid) }
 
@@ -645,7 +656,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       networks.each_with_index do |network, index|
         card = cards[index] || abort("Can't find source network card to customize for vlan #{vlan_list[index]}")
         begin
-          if get_config(:customization_sw_uuid) && (swuuid_list[index] != 'auto')
+          if get_config(:customization_sw_uuid) && (swuuid_list[index] != "auto")
             switch_port = RbVmomi::VIM.DistributedVirtualSwitchPortConnection(
               switchUuid: swuuid_list[index], portgroupKey: network.key
             )
@@ -660,7 +671,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           card.backing = RbVmomi::VIM::VirtualEthernetCardNetworkBackingInfo(network: network, deviceName: network.name)
         end
         card.macAddress = mac_list[index] if get_config(:customization_macs) && mac_list[index] != AUTO_MAC
-        dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: 'edit')
+        dev_spec = RbVmomi::VIM.VirtualDeviceConfigSpec(device: card, operation: "edit")
         clone_spec.config.deviceChange.push dev_spec
       end
     end
@@ -682,15 +693,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     if get_config(:customization_dns_ips)
-      cust_spec.globalIPSettings.dnsServerList = get_config(:customization_dns_ips).split(',')
+      cust_spec.globalIPSettings.dnsServerList = get_config(:customization_dns_ips).split(",")
     end
 
     if get_config(:customization_dns_suffixes)
-      cust_spec.globalIPSettings.dnsSuffixList = get_config(:customization_dns_suffixes).split(',')
+      cust_spec.globalIPSettings.dnsSuffixList = get_config(:customization_dns_suffixes).split(",")
     end
 
     if config[:customization_ips] != NO_IPS
-      cust_spec.nicSettingMap = config[:customization_ips].split(',').map.with_index { |cust_ip, index|
+      cust_spec.nicSettingMap = config[:customization_ips].split(",").map.with_index { |cust_ip, index|
         generate_adapter_map(cust_ip, get_config(:customization_gw), mac_list[index])
       }
     end
@@ -704,13 +715,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
       if windows?(src_config)
         # We should get here with the customizations set, either by a plugin or a --cspec
-        fatal_exit 'Windows clones need a customization identity. Try passing a --cspec or making a --cplugin' if cust_spec.identity.props.empty?
+        fatal_exit "Windows clones need a customization identity. Try passing a --cspec or making a --cplugin" if cust_spec.identity.props.empty?
 
         identification = identification_for_spec(cust_spec)
 
-        license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
-          autoMode: cust_spec.identity.licenseFilePrintData.autoMode
-        ) if cust_spec.identity.licenseFilePrintData # optional param
+        if cust_spec.identity.licenseFilePrintData
+          license_file_print_data = RbVmomi::VIM.CustomizationLicenseFilePrintData(
+            autoMode: cust_spec.identity.licenseFilePrintData.autoMode
+          )
+        end # optional param
 
         user_data = RbVmomi::VIM.CustomizationUserData(
           fullName: cust_spec.identity.userData.fullName,
@@ -729,7 +742,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           timeZone: cust_spec.identity.guiUnattended.timeZone
         )
         runonce = RbVmomi::VIM.CustomizationGuiRunOnce(
-          commandList: ['cust_spec.identity.guiUnattended.commandList']
+          commandList: ["cust_spec.identity.guiUnattended.commandList"]
         )
         ident = RbVmomi::VIM.CustomizationSysprep
         ident.guiRunOnce = runonce
@@ -745,11 +758,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         ident.domain = if get_config(:customization_domain)
                          get_config(:customization_domain)
                        else
-                         ''
+                         ""
                        end
         cust_spec.identity = ident
       else
-        ui.error('Customization only supports Linux and Windows currently.')
+        ui.error("Customization only supports Linux and Windows currently.")
         exit 1
       end
     end
@@ -773,14 +786,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
           abort "Customization plugin could not be found at #{cplugin_path}"
         end
 
-        if Object.const_defined? 'KnifeVspherePlugin'
-          @customization_plugin = Object.const_get('KnifeVspherePlugin').new
+        if Object.const_defined? "KnifeVspherePlugin"
+          @customization_plugin = Object.const_get("KnifeVspherePlugin").new
           cplugin_data = get_config(:customization_plugin_data)
           if cplugin_data
             if @customization_plugin.respond_to?(:data=)
               @customization_plugin.data = cplugin_data
             else
-              abort 'Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither.'
+              abort "Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither."
             end
           end
         else
@@ -807,7 +820,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def generate_adapter_map(ip = nil, gw = nil, mac = nil)
     settings = RbVmomi::VIM.CustomizationIPSettings
 
-    if ip.nil? || ip.downcase == 'dhcp'
+    if ip.nil? || ip.casecmp("dhcp") == 0
       settings.ip = RbVmomi::VIM::CustomizationDhcpIpGenerator.new
     else
       cidr_ip = NetAddr::CIDR.create(ip)
@@ -816,7 +829,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
       # TODO: want to confirm gw/ip are in same subnet?
       # Only set gateway on first IP.
-      if config[:customization_ips].split(',').first == ip
+      if config[:customization_ips].split(",").first == ip
         if gw.nil?
           settings.gateway = [cidr_ip.network(Objectify: true).next_ip]
         else
@@ -854,20 +867,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def bootstrap_for_windows_node
     Chef::Knife::Bootstrap.load_deps
-    if get_config(:bootstrap_protocol) == 'winrm' || get_config(:bootstrap_protocol).nil?
+    if get_config(:bootstrap_protocol) == "winrm" || get_config(:bootstrap_protocol).nil?
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
       bootstrap.name_args = [config[:fqdn]]
       bootstrap.config[:winrm_user] = get_config(:winrm_user)
       bootstrap.config[:winrm_password] = get_config(:winrm_password)
       bootstrap.config[:winrm_transport] = get_config(:winrm_transport)
       bootstrap.config[:winrm_port] = get_config(:winrm_port)
-    elsif get_config(:bootstrap_protocol) == 'ssh'
+    elsif get_config(:bootstrap_protocol) == "ssh"
       bootstrap = Chef::Knife::BootstrapWindowsSsh.new
       bootstrap.config[:ssh_user] = get_config(:ssh_user)
       bootstrap.config[:ssh_password] = get_config(:ssh_password)
       bootstrap.config[:ssh_port] = get_config(:ssh_port)
     else
-      ui.error('Unsupported Bootstrapping Protocol. Supports : winrm, ssh')
+      ui.error("Unsupported Bootstrapping Protocol. Supports : winrm, ssh")
       exit 1
     end
     bootstrap.config[:msi_url] = get_config(:bootstrap_msi_url)
@@ -883,8 +896,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     bootstrap.config[:ssh_password] = get_config(:ssh_password)
     bootstrap.config[:ssh_port] = get_config(:ssh_port)
     bootstrap.config[:identity_file] = get_config(:identity_file)
-    bootstrap.config[:use_sudo] = true unless get_config(:ssh_user) == 'root'
-    bootstrap.config[:use_sudo_password] = true unless get_config(:ssh_user) == 'root'
+    bootstrap.config[:use_sudo] = true unless get_config(:ssh_user) == "root"
+    bootstrap.config[:use_sudo_password] = true unless get_config(:ssh_user) == "root"
     bootstrap.config[:log_level] = get_config(:log_level)
     bootstrap_common_params(bootstrap)
   end
@@ -892,19 +905,19 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def ssh_override_winrm
     # unchanged ssh_user and changed winrm_user, override ssh_user
     if get_config(:ssh_user).eql?(options[:ssh_user][:default]) &&
-       !get_config(:winrm_user).eql?(options[:winrm_user][:default])
+        !get_config(:winrm_user).eql?(options[:winrm_user][:default])
       config[:ssh_user] = get_config(:winrm_user)
     end
 
     # unchanged ssh_port and changed winrm_port, override ssh_port
     if get_config(:ssh_port).eql?(options[:ssh_port][:default]) &&
-       !get_config(:winrm_port).eql?(options[:winrm_port][:default])
+        !get_config(:winrm_port).eql?(options[:winrm_port][:default])
       config[:ssh_port] = get_config(:winrm_port)
     end
 
     # unset ssh_password and set winrm_password, override ssh_password
     if get_config(:ssh_password).nil? &&
-       !get_config(:winrm_password).nil?
+        !get_config(:winrm_password).nil?
       config[:ssh_password] = get_config(:winrm_password)
     end
 
@@ -969,11 +982,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   def load_winrm_deps
-    require 'winrm'
-    require 'chef/knife/winrm'
-    require 'chef/knife/bootstrap_windows_winrm'
-    require 'chef/knife/bootstrap_windows_ssh'
-    require 'chef/knife/core/windows_bootstrap_context'
+    require "winrm"
+    require "chef/knife/winrm"
+    require "chef/knife/bootstrap_windows_winrm"
+    require "chef/knife/bootstrap_windows_ssh"
+    require "chef/knife/core/windows_bootstrap_context"
   end
 
   private

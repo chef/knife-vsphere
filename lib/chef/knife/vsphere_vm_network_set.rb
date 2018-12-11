@@ -2,21 +2,21 @@
 # Author:: Owen Groves (<omgroves@gmail.com>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Changes network on a certain VM
 # VsphereVmNetworkSet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm network set VMNAME NETWORKNAME'
+  banner "knife vsphere vm network set VMNAME NETWORKNAME"
 
   common_options
 
   option :nic,
-    long: '--nic INTEGER',
-    description: 'Network interface to use when multiple NICs are present on the VM. (0,1..)',
+    long: "--nic INTEGER",
+    description: "Network interface to use when multiple NICs are present on the VM. (0,1..)",
     default: 0
 
   # The main run method for vm_network_set
@@ -27,11 +27,11 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
     networkname = @name_args[1]
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
     if networkname.nil?
       show_usage
-      fatal_exit('You must specify a network name')
+      fatal_exit("You must specify a network name")
     end
 
     network = find_network(networkname)
@@ -43,9 +43,9 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
     elsif network.is_a? RbVmomi::VIM::Network
       nic.backing = RbVmomi::VIM.VirtualEthernetCardNetworkBackingInfo(deviceName: network.name)
     else
-      fatal_exit('Network type not recognized')
+      fatal_exit("Network type not recognized")
     end
-    change_spec = RbVmomi::VIM.VirtualMachineConfigSpec(deviceChange: [RbVmomi::VIM.VirtualDeviceConfigSpec(device: nic, operation: 'edit')])
+    change_spec = RbVmomi::VIM.VirtualMachineConfigSpec(deviceChange: [RbVmomi::VIM.VirtualDeviceConfigSpec(device: nic, operation: "edit")])
     vm.ReconfigVM_Task(spec: change_spec).wait_for_completion
   end
 end

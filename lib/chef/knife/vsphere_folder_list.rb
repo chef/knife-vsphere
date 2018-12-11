@@ -2,13 +2,13 @@
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all vm folders
 # VsphereFolderlist extends the BaseVspherecommand
 class Chef::Knife::VsphereFolderList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere folder list'
+  banner "knife vsphere folder list"
 
   common_options
 
@@ -21,7 +21,7 @@ class Chef::Knife::VsphereFolderList < Chef::Knife::BaseVsphereCommand
 
     folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
     folders.each do |child|
-      traverse_folders(child, indent_level  + 1)
+      traverse_folders(child, indent_level + 1)
     end
   end
 

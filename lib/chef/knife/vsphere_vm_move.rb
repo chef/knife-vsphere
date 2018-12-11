@@ -2,39 +2,39 @@
 # Author:: Brian Dupras (<bdupras@rallydev.com>)
 # License:: Apache License, Version 2.0
 #
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # Moves the VM to another folder or datastore
 # VsphereVmMove extends the BaseVspherecommand
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm move VMNAME'
+  banner "knife vsphere vm move VMNAME"
 
   common_options
 
   option :dest_name,
-         long: '--dest-name NAME',
-         short: '-r',
-         description: 'Destination name of the VM or template'
+         long: "--dest-name NAME",
+         short: "-r",
+         description: "Destination name of the VM or template"
 
   option :dest_folder,
-         long: '--dest-folder FOLDER',
-         description: 'The destination folder into which the VM or template should be moved'
+         long: "--dest-folder FOLDER",
+         description: "The destination folder into which the VM or template should be moved"
 
   option :datastore,
-         long: '--datastore STORE',
-         description: 'The datastore into which to put the cloned VM'
+         long: "--datastore STORE",
+         description: "The datastore into which to put the cloned VM"
 
   option :thin_provision,
-         long: '--thin-provision',
-         description: 'Indicates whether disk should be thin provisioned.',
+         long: "--thin-provision",
+         description: "Indicates whether disk should be thin provisioned.",
          boolean: true
 
   option :thick_provision,
-         long: '--thick-provision',
-         description: 'Indicates whether disk should be thick provisioned.',
+         long: "--thick-provision",
+         description: "Indicates whether disk should be thick provisioned.",
          boolean: true
 
   # Convert VM
@@ -78,7 +78,7 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
     vmname = @name_args[0]
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")

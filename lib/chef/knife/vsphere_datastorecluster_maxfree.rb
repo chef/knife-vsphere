@@ -15,8 +15,8 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 def max_dscluster(dscluster, max_dscluster)
   return true unless max_dscluster
@@ -30,10 +30,10 @@ end
 
 def find_max_dscluster(folder, max_dscluster, regex)
   folder.childEntity.each do |child|
-    if child.class.to_s == 'Folder'
+    if child.class.to_s == "Folder"
       sub_max = find_max_dscluster(child, max_dscluster, regex)
       max_dscluster = sub_max if max_dscluster(sub_max, max_dscluster)
-    elsif child.class.to_s == 'StoragePod'
+    elsif child.class.to_s == "StoragePod"
       if max_dscluster(child, max_dscluster) && regex.match(child.name)
         max_dscluster = child
       end
@@ -45,13 +45,13 @@ end
 
 # Gets the data store cluster with the most free space in datacenter
 class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere datastorecluster maxfree'
+  banner "knife vsphere datastorecluster maxfree"
 
   option :regex,
-         short: '-r REGEX',
-         long: '--regex REGEX',
-         description: 'Regex to match the datastore cluster name',
-         default: ''
+         short: "-r REGEX",
+         long: "--regex REGEX",
+         description: "Regex to match the datastore cluster name",
+         default: ""
   common_options
 
   def run
@@ -68,7 +68,7 @@ class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereComm
     if max_dscluster
       puts max_dscluster.name
     else
-      puts 'No datastore clusters found'
+      puts "No datastore clusters found"
       exit 1
     end
   end

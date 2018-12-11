@@ -1,16 +1,16 @@
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all known data stores in datacenter with sizes
 # VsphereVlanCreate extends BaseVspherecommand
 class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vlan create NAME VID'
+  banner "knife vsphere vlan create NAME VID"
 
   common_options
 
   option :switch,
-         long: '--switch DVSNAME',
-         description: 'The DVSwitch that will hold this VLAN'
+         long: "--switch DVSNAME",
+         description: "The DVSwitch that will hold this VLAN"
 
   # The main run method for vlan_create
   #
@@ -24,11 +24,11 @@ class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
     switch = if config[:switch]
                switches.find { |s| s.name == config[:switch] }
              else
-               ui.warn 'Multiple switches found. Choosing the first switch. Use --switch to select a switch.' if switches.count > 1
+               ui.warn "Multiple switches found. Choosing the first switch. Use --switch to select a switch." if switches.count > 1
                switches.first
              end
 
-    fatal_exit 'No switches found.' if switch.nil?
+    fatal_exit "No switches found." if switch.nil?
 
     ui.info "Found #{switch.name}" if log_verbose?
     switch.AddDVPortgroup_Task(spec: [add_port_spec(@name_args[0], @name_args[1])])
@@ -46,7 +46,7 @@ class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
       ),
       name: name,
       numPorts: 128,
-      type: 'earlyBinding'
+      type: "earlyBinding"
     )
     pp spec if log_verbose?
     spec

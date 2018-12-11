@@ -3,31 +3,31 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
-require 'rbvmomi'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
+require "rbvmomi"
 
 # These two are needed for the '--purge' deletion case
-require 'chef/node'
-require 'chef/api_client'
+require "chef/node"
+require "chef/api_client"
 
 # Delete a virtual machine from vCenter
 # VsphereVmDelete extends the BaseVspherecommand
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  banner 'knife vsphere vm delete VMNAME (options)'
+  banner "knife vsphere vm delete VMNAME (options)"
 
   option :purge,
-         short: '-P',
-         long: '--purge',
+         short: "-P",
+         long: "--purge",
          boolean: true,
-         description: 'Destroy corresponding node and client on the Chef Server, in addition to destroying the VM itself.'
+         description: "Destroy corresponding node and client on the Chef Server, in addition to destroying the VM itself."
 
   option :chef_node_name,
-         short: '-N NAME',
-         long: '--node-name NAME',
-         description: 'Use this option if the Chef node name is different from the VM name'
+         short: "-N NAME",
+         long: "--node-name NAME",
+         description: "Use this option if the Chef node name is different from the VM name"
 
   common_options
 
@@ -55,19 +55,19 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == 'poweredOff'
+    vm.PowerOffVM_Task.wait_for_completion unless vm.runtime.powerState == "poweredOff"
     vm.Destroy_Task.wait_for_completion
     puts "Deleted virtual machine #{vmname}"
 
     if config[:purge]
       vmname = config[:chef_node_name] if config[:chef_node_name]
-      destroy_item(Chef::Node, vmname, 'node')
-      destroy_item(Chef::ApiClient, vmname, 'client')
+      destroy_item(Chef::Node, vmname, "node")
+      destroy_item(Chef::ApiClient, vmname, "client")
       puts "Corresponding node and client for the #{vmname} server were deleted and unregistered with the Chef Server"
     end
   end

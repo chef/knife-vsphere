@@ -1,9 +1,9 @@
 # Author:: Brian Dupras (<bdupras@rallydev.com>)
 # License:: Apache License, Version 2.0
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
-require 'chef/knife/search_helper'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
+require "chef/knife/search_helper"
 
 # VsphereVMconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
@@ -21,11 +21,11 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
     vmname = @name_args.shift
     if vmname.nil?
       show_usage
-      fatal_exit('You must specify a virtual machine name')
+      fatal_exit("You must specify a virtual machine name")
     end
 
-    unless @name_args.length > 0 && @name_args.length % 2 == 0
-      fatal_exit('You must specify a series of PROPERTY name (e.g. annotation) followed by a value')
+    unless @name_args.length > 0 && @name_args.length.even?
+      fatal_exit("You must specify a series of PROPERTY name (e.g. annotation) followed by a value")
     end
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")

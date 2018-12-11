@@ -14,13 +14,13 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE
 
-require 'chef/knife'
-require 'chef/knife/base_vsphere_command'
+require "chef/knife"
+require "chef/knife/base_vsphere_command"
 
 # Lists all known data stores in datacenter with sizes
 # VsphereVlanlist extends the BaseVspherecommand
 class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
-  banner 'knife vsphere vlan list'
+  banner "knife vsphere vlan list"
 
   common_options
 

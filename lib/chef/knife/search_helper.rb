@@ -15,10 +15,10 @@ module SearchHelper
                vim_connection.serviceInstance.content.rootFolder
              end
     vmview = viewmgr.CreateContainerView(container: folder,
-                                         type: ['VirtualMachine'],
+                                         type: ["VirtualMachine"],
                                          recursive: true)
 
-    opts[:properties] ||= ['name']
+    opts[:properties] ||= ["name"]
 
     filter_spec = RbVmomi::VIM.PropertyFilterSpec(
       objectSet: [
@@ -26,22 +26,22 @@ module SearchHelper
         skip: true,
         selectSet: [
           RbVmomi::VIM.TraversalSpec(
-            name: 'traverseEntities',
-            type: 'ContainerView',
-            path: 'view',
+            name: "traverseEntities",
+            type: "ContainerView",
+            path: "view",
             skip: false
           )
         ]
       ],
       propSet: [
-        { type: 'VirtualMachine', pathSet: opts[:properties] }
+        { type: "VirtualMachine", pathSet: opts[:properties] }
       ]
     )
     pc.RetrieveProperties(specSet: [filter_spec])
   end
 
   def get_vm_by_name(vmname, folder = nil)
-    vm = get_all_vm_objects(folder: folder).detect { |r| r['name'] == vmname }
+    vm = get_all_vm_objects(folder: folder).detect { |r| r["name"] == vmname }
     vm ? vm.obj : nil
   end
 end

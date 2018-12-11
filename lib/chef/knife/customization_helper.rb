@@ -3,7 +3,7 @@
 # License:: Apache License, Version 2.0
 #
 
-require 'rbvmomi'
+require "rbvmomi"
 
 # The Customization helper for sysprep
 module CustomizationHelper
@@ -19,7 +19,7 @@ module CustomizationHelper
     wait = true
     waited_seconds = 0
 
-    print 'Waiting for sysprep...'
+    print "Waiting for sysprep..."
     while wait
       events = query_customization_succeeded(vm, vem)
 
@@ -31,7 +31,7 @@ module CustomizationHelper
       elsif waited_seconds >= timeout
         abort "\nCustomization of VM #{vm.name} not succeeded within #{timeout} seconds."
       else
-        print '.'
+        print "."
         sleep(sleep_time)
         waited_seconds += sleep_time
       end
@@ -46,6 +46,6 @@ module CustomizationHelper
     vem.QueryEvents(filter:
         RbVmomi::VIM::EventFilterSpec(entity:
         RbVmomi::VIM::EventFilterSpecByEntity(entity: vm, recursion:
-        RbVmomi::VIM::EventFilterSpecRecursionOption(:self)), eventTypeId: ['CustomizationSucceeded']))
+        RbVmomi::VIM::EventFilterSpecRecursionOption(:self)), eventTypeId: ["CustomizationSucceeded"]))
   end
 end
