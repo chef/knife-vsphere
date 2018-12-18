@@ -1,15 +1,15 @@
 ﻿# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
-[![Build Status](https://travis-ci.org/chef-partners/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef-partners/knife-vsphere)
-[![Inline docs](http://inch-ci.org/github/chef-partners/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef-partners/knife-vsphere)
+[![Build Status](https://travis-ci.org/chef/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef/knife-vsphere)
+[![Inline docs](http://inch-ci.org/github/chef/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef/knife-vsphere)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
-* Documentation: <https://github.com/chef-partners/knife-vsphere/blob/master/README.md>
-* Source: <http://github.com/chef-partners/knife-vsphere/tree/master>
-* Issues: <https://github.com/chef-partners/knife-vsphere/issues>
+* Documentation: <https://github.com/chef/knife-vsphere/blob/master/README.md>
+* Source: <http://github.com/chef/knife-vsphere/tree/master>
+* Issues: <https://github.com/chef/knife-vsphere/issues>
 * Slack: sign up: https://code.vmware.com/slack/ slack channel: #chef
 * Mailing list: <https://discourse.chef.io/>
 
@@ -71,7 +71,7 @@ knife[:vsphere_insecure] = true
 ```
 
 Credentials can also be specified on the command line for multiple vSphere
-servers/data centers, or see [dealing with multiple datacenters](https://github.com/chef-partners/knife-vsphere/wiki/Dealing-with-multiple-datacenters).
+servers/data centers, or see [dealing with multiple datacenters](https://github.com/chef/knife-vsphere/wiki/Dealing-with-multiple-datacenters).
 
 ### vCenter Permissions
 
@@ -725,7 +725,7 @@ what's published on Ruby gems:
 
 ```bash
 $ gem uninstall knife-vsphere
-$ git clone git@github.com:chef-partners/knife-vsphere.git # or your fork
+$ git clone git@github.com:chef/knife-vsphere.git # or your fork
 $ cd knife-vsphere
 $ rake build                                           # Take note of the version
 $ gem install pkg/knife-vsphere-1.1.1.gem              # Use the version above
@@ -752,7 +752,7 @@ Below are examples of the potential implementations that would be saved to an rb
 argument.
 
 * [extend or add a disk during cloning](https://gist.github.com/warroyo/4887300cbb3bec2034650202a65fb906)
-* [unattended Windows installation](https://github.com/chef-partners/knife-vsphere/wiki/Sample-plugin-to-do-unattended-Windows-installations)
+* [unattended Windows installation](https://github.com/chef/knife-vsphere/wiki/Sample-plugin-to-do-unattended-Windows-installations)
 
 # Getting help
 
@@ -764,11 +764,11 @@ doing something, we're happy to help. Try this checklist:
 *   Try running the same command with `-VV` to add additional logging messages
 *   Are there any errors in the vSphere console or logs?
 *   Search for known issues at
-    https://github.com/chef-partners/knife-vsphere/issues
+    https://github.com/chef/knife-vsphere/issues
 
 
 If you're still having problems, head on over to the
-[issues](https://github.com/chef-partners/knife-vsphere/issues) page and
+[issues](https://github.com/chef/knife-vsphere/issues) page and
 create a new issue. Please include:
 *   A description of what you are trying to do, what you are seeing
 *   The version number of knife-vsphere and of vSphere itself
