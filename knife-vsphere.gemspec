@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = "ezra@cpan.org"
   s.files = Dir["lib/**/*"]
   s.rubygems_version = "1.6.2"
-  s.homepage = "http://github.com/chef-partners/knife-vsphere"
+  s.homepage = "http://github.com/chef/knife-vsphere"
   s.license = "Apache-2.0"
   s.add_dependency "knife-windows", ["~> 1.0"]
   s.add_dependency "netaddr", ["~> 1.5"]

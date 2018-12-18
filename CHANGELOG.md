@@ -1,6 +1,12 @@
-knife-vsphere changelog
-----------------------
+# knife-vsphere changelog
 
+<!-- latest_release -->
+<!-- latest_release -->
+
+<!-- release_rollup -->
+<!-- release_rollup -->
+
+<!-- latest_stable_release -->
 2.1.1   swalberg   - Allow vsphere vm config to handle multiple settings per
                      invocation
 									 - Kill off vsphere vm query
@@ -8,6 +14,7 @@ knife-vsphere changelog
 									   ui.output
 									 - vsphere vm execute handles multiple args and uses faster
 									   find
+<!-- latest_stable_release -->
 
 2.1.0   swalberg   - Update find and clone to use SearchHelper
 
