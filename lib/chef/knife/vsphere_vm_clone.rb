@@ -234,15 +234,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
            Chef::Config[:knife][:bootstrap_vault_item]
          }
 
-  option :distro,
-         short: "-d DISTRO",
-         long: "--distro DISTRO",
-         description: "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-         proc: Proc.new { |v|
-                 Chef::Log.fatal("[DEPRECATED] -d / --distro option is deprecated. Use --bootstrap-template option instead.")
-                 v
-               }
-
   option :tags,
          long: "--tags TAGS",
          description: "Comma separated list of tags to apply to the node",
@@ -253,14 +244,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          short: "-t TEMPLATE",
          long: "--bootstrap-template TEMPLATE",
          description: "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
-
-  option :template_file,
-         long: "--template-file TEMPLATE",
-         description: "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option",
-         proc: Proc.new { |v|
-                 Chef::Log.fatal("[DEPRECATED] --template-file option is deprecated. Use --bootstrap-template option instead.")
-                 v
-               }
 
   option :run_list,
          short: "-r RUN_LIST",
@@ -421,8 +404,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
       protocol ||= "winrm"
-      # Set distro to windows-chef-client-msi
-      config[:distro] = "windows-chef-client-msi" if config[:distro].nil? || config[:distro] == "chef-full"
       unless config[:disable_customization]
         # Wait for customization to complete
         puts "Waiting for customization to complete..."
@@ -848,8 +829,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def bootstrap_common_params(bootstrap)
     bootstrap.config[:run_list] = config[:run_list]
     bootstrap.config[:bootstrap_version] = get_config(:bootstrap_version)
-    bootstrap.config[:distro] = get_config(:distro)
-    bootstrap.config[:template_file] = get_config(:template_file)
     bootstrap.config[:environment] = get_config(:environment)
     bootstrap.config[:prerelease] = get_config(:prerelease)
     bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)

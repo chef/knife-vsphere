@@ -307,7 +307,6 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 --bootstrap-vault-item VAULT_ITEM - A single vault and item to update as "vault:item"
 --bootstrap-vault-json VAULT_JSON - A JSON string with the vault(s) and item(s) to be updated
 --bootstrap-version VERSION - The version of Chef to install
---distro DISTRO - Bootstrap a distro using a template
 --fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
 --hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
 --identity-file IDENTITY_FILE - SSH identity file used for authentication
@@ -367,7 +366,6 @@ These options alter the way the VM is created, such as to decide where it is pla
 --start - Start the VM after cloning.
 --sw-uuid SWITCH_UUIDS - Comma-delimited list of virtual switch UUIDs to attach to the network adapters, or *auto* to automatically assign virtual switch
 --template TEMPLATE - The source VM / Template to clone from
---template-file TEMPLATE - Full path to location of template to use
 ```
 
 ### Examples

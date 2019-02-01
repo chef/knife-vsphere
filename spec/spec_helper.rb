@@ -141,7 +141,6 @@ RSpec.shared_context "basic_setup" do
     subject.config[:source_vm] = "my_template"
     # Defaults from the code
     subject.config[:folder] = ""
-    subject.config[:distro] = "chef-full"
     subject.config[:bootstrap_protocol] = nil
     subject.config[:bootstrap_nic] = 0
     subject.config[:bootstrap_ipv4] = false
