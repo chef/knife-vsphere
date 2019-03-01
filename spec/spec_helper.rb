@@ -95,7 +95,6 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_context "stub_vm_search" do
-
   before do
     allow(subject).to receive(:get_vm_by_name).and_return(vm)
   end

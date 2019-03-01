@@ -30,15 +30,6 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
          long: "--resource-pool POOL",
          description: "The resource pool into which to put the VM"
 
-  def find_host_folder(folder, name)
-    folder.childEntity.each do |cluster|
-      cluster.host.each do |host|
-        return host if host.name == name
-      end
-    end
-    nil
-  end
-
   def run
     $stdout.sync = true
     vmname = @name_args[0]
@@ -50,10 +41,14 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
     priority = config[:priority]
-    dest_host = config[:dest_host]
-    ndc = find_datastore(config[:dest_datastore]) || abort("dest-datastore not found")
+    dest_host = get_vm_host_by_name(config[:dest_host]) if config[:dest_host]
+    ndc = find_datastore(config[:dest_datastore]) if config[:dest_datastore]
     pool = find_pool(config[:resource_pool]) if config[:resource_pool]
-    dest_host = find_host_folder(datacenter.hostFolder, dest_host)
+
+    unless dest_host || ndc || pool
+      fatal_exit("You need to specify one or more of --dest-host, --dest-datastore, or --resource-pool")
+    end
+
     migrate_spec = RbVmomi::VIM.VirtualMachineRelocateSpec(datastore: ndc, pool: pool, host: dest_host)
     vm.RelocateVM_Task(spec: migrate_spec, priority: priority).wait_for_completion
   end
