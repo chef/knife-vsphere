@@ -7,6 +7,10 @@ module SearchHelper
   # param [Array<String>] properties to retrieve
   # @return [Array<RbVmomi::VIM::ObjectContent>]
   def get_all_vm_objects(opts = {})
+    get_all_objects(opts.merge(type: "VirtualMachine"))
+  end
+
+  def get_all_objects(opts = {})
     pc = vim_connection.serviceInstance.content.propertyCollector
     viewmgr = vim_connection.serviceInstance.content.viewManager
     folder = if opts[:folder]
@@ -15,7 +19,7 @@ module SearchHelper
                vim_connection.serviceInstance.content.rootFolder
              end
     vmview = viewmgr.CreateContainerView(container: folder,
-                                         type: ["VirtualMachine"],
+                                         type: [opts[:type]],
                                          recursive: true)
 
     opts[:properties] ||= ["name"]
@@ -34,7 +38,7 @@ module SearchHelper
         ]
       ],
       propSet: [
-        { type: "VirtualMachine", pathSet: opts[:properties] }
+        { type: opts[:type], pathSet: opts[:properties] }
       ]
     )
     pc.RetrieveProperties(specSet: [filter_spec])
@@ -43,5 +47,10 @@ module SearchHelper
   def get_vm_by_name(vmname, folder = nil)
     vm = get_all_vm_objects(folder: folder).detect { |r| r["name"] == vmname }
     vm ? vm.obj : nil
+  end
+
+  def get_vm_host_by_name(name, folder = nil)
+    host = get_all_objects(type: "HostSystem", folder: folder).detect { |r| r["name"] == name }
+    host ? host.obj : nil
   end
 end
