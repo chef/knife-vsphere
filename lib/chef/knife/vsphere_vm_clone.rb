@@ -421,8 +421,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
       protocol ||= "winrm"
-      # Set distro to windows-chef-client-msi
-      config[:distro] = "windows-chef-client-msi" if config[:distro].nil? || config[:distro] == "chef-full"
       unless config[:disable_customization]
         # Wait for customization to complete
         puts "Waiting for customization to complete..."
@@ -848,8 +846,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def bootstrap_common_params(bootstrap)
     bootstrap.config[:run_list] = config[:run_list]
     bootstrap.config[:bootstrap_version] = get_config(:bootstrap_version)
-    bootstrap.config[:distro] = get_config(:distro)
-    bootstrap.config[:template_file] = get_config(:template_file)
     bootstrap.config[:environment] = get_config(:environment)
     bootstrap.config[:prerelease] = get_config(:prerelease)
     bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)
@@ -891,6 +887,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     Chef::Knife::Bootstrap.load_deps
     bootstrap = Chef::Knife::Bootstrap.new
     bootstrap.name_args = [config[:fqdn]]
+    bootstrap.config[:bootstrap_template] = get_config(:bootstrap_template)
     bootstrap.config[:secret_file] = get_config(:secret_file)
     bootstrap.config[:ssh_user] = get_config(:ssh_user)
     bootstrap.config[:ssh_password] = get_config(:ssh_password)
