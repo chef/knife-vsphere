@@ -43,7 +43,7 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
     end
 
     args = @name_args
-    args = "" if args.nil? || args.empty?
+    args = [] if args.nil?
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
