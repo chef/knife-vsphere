@@ -21,9 +21,8 @@ class Chef
   # Base class for knife
   class Knife
     # Main knife vsphere that more or less everything in this gem is built off of
-    class BaseVsphereCommand < Knife
+    class BaseVsphereCommand < Chef::Knife::Bootstrap
       deps do
-        require "chef/knife/bootstrap"
         Chef::Knife::Bootstrap.load_deps
         require "socket"
         require "net/ssh/multi"
