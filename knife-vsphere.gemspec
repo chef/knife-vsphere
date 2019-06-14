@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.6.2"
   s.homepage = "http://github.com/chef/knife-vsphere"
   s.license = "Apache-2.0"
-  s.add_dependency "knife-windows", ["~> 1.0"]
+  # s.add_dependency "knife-windows", ["~> 1.0"]
   s.add_dependency "netaddr", ["~> 1.5"]
   s.add_dependency "rbvmomi", ["~> 1.8"]
   s.add_dependency "filesize", ["~> 0.1.1"]

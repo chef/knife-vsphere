@@ -10,10 +10,11 @@ require "chef/knife"
 require "chef/knife/base_vsphere_command"
 require "chef/knife/customization_helper"
 require "chef/knife/search_helper"
-require "chef/knife/winrm_base"
+# require "chef/knife/connection_base"
 require "ipaddr"
 require "netaddr"
 require "securerandom"
+require "chef/knife/bootstrap"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
@@ -26,12 +27,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # a linklayer origin is an actual nic
   ORIGIN_IS_REAL_NIC = "linklayer".freeze
 
-  include Chef::Knife::WinrmBase
+  # include Chef::Knife::WinrmBase
   include CustomizationHelper
   include SearchHelper
   deps do
     require "chef/json_compat"
-    require "chef/knife/bootstrap"
     Chef::Knife::Bootstrap.load_deps
   end
 
@@ -421,8 +421,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
       protocol ||= "winrm"
-      # Set distro to windows-chef-client-msi
-      config[:distro] = "windows-chef-client-msi" if config[:distro].nil? || config[:distro] == "chef-full"
       unless config[:disable_customization]
         # Wait for customization to complete
         puts "Waiting for customization to complete..."
@@ -477,12 +475,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   def wait_for_access(connect_host, connect_port, protocol)
-    if protocol == "winrm"
-      load_winrm_deps
-      if get_config(:winrm_transport) == "ssl" && get_config(:winrm_port) == "5985"
-        config[:winrm_port] = "5986"
+    if winrm?
+      if get_config(:connection_transport) == "ssl" && get_config(:connection_port) == "5985"
+        config[:connection_port] = "5986"
       end
-      connect_port = get_config(:winrm_port)
+      connect_port = get_config(:connection_port)
       print "\n#{ui.color("Waiting for winrm access to become available on #{connect_host}:#{connect_port}", :magenta)}"
       print(".") until tcp_test_winrm(connect_host, connect_port) do
         sleep 10
@@ -845,80 +842,40 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     adapter_map
   end
 
-  def bootstrap_common_params(bootstrap)
-    bootstrap.config[:run_list] = config[:run_list]
-    bootstrap.config[:bootstrap_version] = get_config(:bootstrap_version)
-    bootstrap.config[:distro] = get_config(:distro)
-    bootstrap.config[:template_file] = get_config(:template_file)
-    bootstrap.config[:environment] = get_config(:environment)
-    bootstrap.config[:prerelease] = get_config(:prerelease)
-    bootstrap.config[:first_boot_attributes] = get_config(:first_boot_attributes)
-    bootstrap.config[:hint] = get_config(:hint)
-    bootstrap.config[:chef_node_name] = get_config(:chef_node_name)
-    bootstrap.config[:bootstrap_vault_file] = get_config(:bootstrap_vault_file)
-    bootstrap.config[:bootstrap_vault_json] = get_config(:bootstrap_vault_json)
-    bootstrap.config[:bootstrap_vault_item] = get_config(:bootstrap_vault_item)
+  def bootstrap_common_params
+    config[:run_list] = config[:run_list]
+    config[:bootstrap_version] = get_config(:bootstrap_version)
+    config[:environment] = get_config(:environment)
+    config[:prerelease] = get_config(:prerelease)
+    config[:first_boot_attributes] = get_config(:first_boot_attributes)
+    config[:hint] = get_config(:hint)
+    config[:chef_node_name] = get_config(:chef_node_name)
+    config[:bootstrap_vault_file] = get_config(:bootstrap_vault_file)
+    config[:bootstrap_vault_json] = get_config(:bootstrap_vault_json)
+    config[:bootstrap_vault_item] = get_config(:bootstrap_vault_item)
     # may be needed for vpc mode
-    bootstrap.config[:no_host_key_verify] = get_config(:no_host_key_verify)
-    bootstrap.config[:node_ssl_verify_mode] = get_config(:node_ssl_verify_mode)
-    bootstrap.config[:tags] = get_config(:tags)
-    bootstrap
-  end
-
-  def bootstrap_for_windows_node
-    Chef::Knife::Bootstrap.load_deps
-    if get_config(:bootstrap_protocol) == "winrm" || get_config(:bootstrap_protocol).nil?
-      bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
-      bootstrap.name_args = [config[:fqdn]]
-      bootstrap.config[:winrm_user] = get_config(:winrm_user)
-      bootstrap.config[:winrm_password] = get_config(:winrm_password)
-      bootstrap.config[:winrm_transport] = get_config(:winrm_transport)
-      bootstrap.config[:winrm_port] = get_config(:winrm_port)
-    elsif get_config(:bootstrap_protocol) == "ssh"
-      bootstrap = Chef::Knife::BootstrapWindowsSsh.new
-      bootstrap.config[:ssh_user] = get_config(:ssh_user)
-      bootstrap.config[:ssh_password] = get_config(:ssh_password)
-      bootstrap.config[:ssh_port] = get_config(:ssh_port)
-    else
-      ui.error("Unsupported Bootstrapping Protocol. Supports : winrm, ssh")
-      exit 1
-    end
-    bootstrap.config[:msi_url] = get_config(:bootstrap_msi_url)
-    bootstrap_common_params(bootstrap)
-  end
-
-  def bootstrap_for_node
-    Chef::Knife::Bootstrap.load_deps
-    bootstrap = Chef::Knife::Bootstrap.new
-    bootstrap.name_args = [config[:fqdn]]
-    bootstrap.config[:secret_file] = get_config(:secret_file)
-    bootstrap.config[:ssh_user] = get_config(:ssh_user)
-    bootstrap.config[:ssh_password] = get_config(:ssh_password)
-    bootstrap.config[:ssh_port] = get_config(:ssh_port)
-    bootstrap.config[:identity_file] = get_config(:identity_file)
-    bootstrap.config[:use_sudo] = true unless get_config(:ssh_user) == "root"
-    bootstrap.config[:use_sudo_password] = true unless get_config(:ssh_user) == "root"
-    bootstrap.config[:log_level] = get_config(:log_level)
-    bootstrap_common_params(bootstrap)
+    config[:no_host_key_verify] = get_config(:no_host_key_verify)
+    config[:node_ssl_verify_mode] = get_config(:node_ssl_verify_mode)
+    config[:tags] = get_config(:tags)
   end
 
   def ssh_override_winrm
-    # unchanged ssh_user and changed winrm_user, override ssh_user
+    # unchanged ssh_user and changed connection_user, override ssh_user
     if get_config(:ssh_user).eql?(options[:ssh_user][:default]) &&
-        !get_config(:winrm_user).eql?(options[:winrm_user][:default])
-      config[:ssh_user] = get_config(:winrm_user)
+        !get_config(:connection_user).eql?(options[:connection_user][:default])
+      config[:ssh_user] = get_config(:connection_user)
     end
 
-    # unchanged ssh_port and changed winrm_port, override ssh_port
+    # unchanged ssh_port and changed connection_port, override ssh_port
     if get_config(:ssh_port).eql?(options[:ssh_port][:default]) &&
-        !get_config(:winrm_port).eql?(options[:winrm_port][:default])
-      config[:ssh_port] = get_config(:winrm_port)
+        !get_config(:connection_port).eql?(options[:connection_port][:default])
+      config[:ssh_port] = get_config(:connection_port)
     end
 
-    # unset ssh_password and set winrm_password, override ssh_password
+    # unset ssh_password and set connection_password, override ssh_password
     if get_config(:ssh_password).nil? &&
-        !get_config(:winrm_password).nil?
-      config[:ssh_password] = get_config(:winrm_password)
+        !get_config(:connection_password).nil?
+      config[:ssh_password] = get_config(:connection_password)
     end
 
     # unset identity_file and set kerberos_keytab_file, override identity_file
@@ -979,14 +936,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     false
   ensure
     tcp_socket && tcp_socket.close
-  end
-
-  def load_winrm_deps
-    require "winrm"
-    require "chef/knife/winrm"
-    require "chef/knife/bootstrap_windows_winrm"
-    require "chef/knife/bootstrap_windows_ssh"
-    require "chef/knife/core/windows_bootstrap_context"
   end
 
   private
