@@ -1,3 +1,5 @@
+require 'rubygems/package_task'
+
 begin
   require "rspec/core/rake_task"
 
