@@ -1,23 +1,21 @@
 # knife-vsphere changelog
 
-<!-- latest_release 2.1.5 -->
-## [v2.1.5](https://github.com/chef/knife-vsphere/tree/v2.1.5) (2019-07-04)
-
-#### Merged Pull Requests
-- Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=2.1.1 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50)) <!-- 2.1.5 -->
-- Fix handling of program args in vsphere vm execute. [#468](https://github.com/chef/knife-vsphere/pull/468) ([dsopscak](https://github.com/dsopscak)) <!-- 2.1.4 -->
-- Bootstrap: add bootstrap_template remove old opts [#466](https://github.com/chef/knife-vsphere/pull/466) ([swalberg](https://github.com/swalberg)) <!-- 2.1.3 -->
-- Find host through the API rather than iterating [#464](https://github.com/chef/knife-vsphere/pull/464) ([swalberg](https://github.com/swalberg)) <!-- 2.1.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v2.1.5](https://github.com/chef/knife-vsphere/tree/v2.1.5) (2019-07-04)
+
+#### Merged Pull Requests
+- Find host through the API rather than iterating [#464](https://github.com/chef/knife-vsphere/pull/464) ([swalberg](https://github.com/swalberg))
+- Bootstrap: add bootstrap_template remove old opts [#466](https://github.com/chef/knife-vsphere/pull/466) ([swalberg](https://github.com/swalberg))
+- Fix handling of program args in vsphere vm execute. [#468](https://github.com/chef/knife-vsphere/pull/468) ([dsopscak](https://github.com/dsopscak))
+- Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 2.1.1   swalberg   - Allow vsphere vm config to handle multiple settings per
                      invocation
 									 - Kill off vsphere vm query
@@ -25,7 +23,6 @@
 									   ui.output
 									 - vsphere vm execute handles multiple args and uses faster
 									   find
-<!-- latest_stable_release -->
 
 2.1.0   swalberg   - Update find and clone to use SearchHelper
 
