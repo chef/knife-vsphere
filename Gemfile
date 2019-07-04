@@ -2,16 +2,23 @@ source "https://rubygems.org"
 
 gemspec
 
+group :debug do
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-stack_explorer"
+end
+
+group :test do
+  gem "chef", ">= 13.0"
+  gem "chefstyle", "= 0.13.0"
+  gem "rake"
+  gem "rspec", "~> 3.0"
+end
+
 group :docs do
   gem "github-markup"
   gem "redcarpet"
   gem "yard"
-end
-
-group :test do
-  gem "chefstyle", "= 0.10.0"
-  gem "chef", ">= 13.0"
-  gem "rake"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
