@@ -1,20 +1,18 @@
 # knife-vsphere changelog
 
-<!-- latest_release 2.1.6 -->
+<!-- latest_release -->
+<!-- latest_release -->
+
+<!-- release_rollup -->
+<!-- release_rollup -->
+
+<!-- latest_stable_release -->
 ## [v2.1.6](https://github.com/chef/knife-vsphere/tree/v2.1.6) (2019-07-04)
 
 #### Merged Pull Requests
 - Add rspec dev dep and bump chefstyle to the latest [#470](https://github.com/chef/knife-vsphere/pull/470) ([tas50](https://github.com/tas50))
-<!-- latest_release -->
-
-<!-- release_rollup -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Add rspec dev dep and bump chefstyle to the latest [#470](https://github.com/chef/knife-vsphere/pull/470) ([tas50](https://github.com/tas50)) <!-- 2.1.6 -->
-<!-- release_rollup -->
-
 <!-- latest_stable_release -->
+
 ## [v2.1.5](https://github.com/chef/knife-vsphere/tree/v2.1.5) (2019-07-04)
 
 #### Merged Pull Requests
@@ -22,7 +20,6 @@
 - Bootstrap: add bootstrap_template remove old opts [#466](https://github.com/chef/knife-vsphere/pull/466) ([swalberg](https://github.com/swalberg))
 - Fix handling of program args in vsphere vm execute. [#468](https://github.com/chef/knife-vsphere/pull/468) ([dsopscak](https://github.com/dsopscak))
 - Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 2.1.1   swalberg   - Allow vsphere vm config to handle multiple settings per
                      invocation
