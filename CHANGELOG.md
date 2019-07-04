@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 2.1.6 -->
+## [v2.1.6](https://github.com/chef/knife-vsphere/tree/v2.1.6) (2019-07-04)
+
+#### Merged Pull Requests
+- Add rspec dev dep and bump chefstyle to the latest [#470](https://github.com/chef/knife-vsphere/pull/470) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Add rspec dev dep and bump chefstyle to the latest [#470](https://github.com/chef/knife-vsphere/pull/470) ([tas50](https://github.com/tas50)) <!-- 2.1.6 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
