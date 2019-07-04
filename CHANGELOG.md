@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 2.1.4 -->
-## [v2.1.4](https://github.com/chef/knife-vsphere/tree/v2.1.4) (2019-03-28)
+<!-- latest_release 2.1.5 -->
+## [v2.1.5](https://github.com/chef/knife-vsphere/tree/v2.1.5) (2019-07-04)
 
 #### Merged Pull Requests
-- Fix handling of program args in vsphere vm execute. [#468](https://github.com/chef/knife-vsphere/pull/468) ([dsopscak](https://github.com/dsopscak))
+- Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=2.1.1 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Loosen the knife-windows dep to allow 3.x [#469](https://github.com/chef/knife-vsphere/pull/469) ([tas50](https://github.com/tas50)) <!-- 2.1.5 -->
 - Fix handling of program args in vsphere vm execute. [#468](https://github.com/chef/knife-vsphere/pull/468) ([dsopscak](https://github.com/dsopscak)) <!-- 2.1.4 -->
 - Bootstrap: add bootstrap_template remove old opts [#466](https://github.com/chef/knife-vsphere/pull/466) ([swalberg](https://github.com/swalberg)) <!-- 2.1.3 -->
 - Find host through the API rather than iterating [#464](https://github.com/chef/knife-vsphere/pull/464) ([swalberg](https://github.com/swalberg)) <!-- 2.1.2 -->
