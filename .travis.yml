@@ -16,8 +16,6 @@ branches:
   only:
     - master
 
-bundler_args: --jobs 7 --without docs
+bundler_args: --jobs 7 --without docs debug
 
-script:
-  - bundle exec rake style
-  - bundle exec rake spec
+script: bundle exec rake
