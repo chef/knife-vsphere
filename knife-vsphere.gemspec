@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = "VMware vSphere support for Chef Infra's Knife command"
   s.email = "ezra@cpan.org"
   s.files = Dir["lib/**/*"]
-  s.rubygems_version = "1.6.2"
+  s.required_ruby_version = ">= 2.4"
   s.homepage = "http://github.com/chef/knife-vsphere"
   s.license = "Apache-2.0"
   s.add_dependency "knife-windows", ["< 4"]
