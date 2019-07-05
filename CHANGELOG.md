@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 2.1.7 -->
-## [v2.1.7](https://github.com/chef/knife-vsphere/tree/v2.1.7) (2019-07-05)
+<!-- latest_release 3.0.0 -->
+## [v3.0.0](https://github.com/chef/knife-vsphere/tree/v3.0.0) (2019-07-05)
 
 #### Merged Pull Requests
--  Add a buildkite test queue and update github codeowners [#471](https://github.com/chef/knife-vsphere/pull/471) ([tas50](https://github.com/tas50))
+- Require Ruby 2.4 or later &amp; test PRs in buildkite [#472](https://github.com/chef/knife-vsphere/pull/472) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=2.1.3 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Require Ruby 2.4 or later &amp; test PRs in buildkite [#472](https://github.com/chef/knife-vsphere/pull/472) ([tas50](https://github.com/tas50)) <!-- 3.0.0 -->
 -  Add a buildkite test queue and update github codeowners [#471](https://github.com/chef/knife-vsphere/pull/471) ([tas50](https://github.com/tas50)) <!-- 2.1.7 -->
 <!-- release_rollup -->
 
