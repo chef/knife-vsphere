@@ -4,7 +4,7 @@
 slack:
   notify_channel:
     - sustaining-notify
-    - chef-notify
+    - chef-ws-notify
 
 # This publish is triggered by the `built_in:publish_rubygems` artifact_action.
 rubygems:
@@ -44,3 +44,8 @@ promote:
   actions:
     - built_in:rollover_changelog
     - built_in:publish_rubygems
+
+pipelines:
+  - verify:
+      description: Pull Request validation tests
+      public: true
