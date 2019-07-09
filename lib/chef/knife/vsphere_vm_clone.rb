@@ -20,11 +20,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm clone VMNAME (options)"
 
   # A AUTO_MAC for NIC?
-  AUTO_MAC = "auto".freeze
+  AUTO_MAC ||= "auto".freeze
   # A NO IP for you to use!
-  NO_IPS = "".freeze
+  NO_IPS ||= "".freeze
   # a linklayer origin is an actual nic
-  ORIGIN_IS_REAL_NIC = "linklayer".freeze
+  ORIGIN_IS_REAL_NIC ||= "linklayer".freeze
 
   include Chef::Knife::WinrmBase
   include CustomizationHelper
