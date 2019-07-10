@@ -11,7 +11,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   banner "knife vsphere vm find"
 
-  VMFOLDER = "vm".freeze
+  VMFOLDER ||= "vm".freeze
 
   common_options
 

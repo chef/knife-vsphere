@@ -10,7 +10,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm cdrom VMNAME (options)"
 
   # The empty device name.
-  EMPTY_DEVICE_NAME = "".freeze
+  EMPTY_DEVICE_NAME ||= "".freeze
 
   common_options
 

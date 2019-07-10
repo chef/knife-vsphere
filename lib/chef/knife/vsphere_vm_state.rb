@@ -12,7 +12,7 @@ require "chef/knife/search_helper"
 class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   # The Different power states that vSphere reports
-  POWER_STATES = {
+  POWER_STATES ||= {
     PS_ON => "powered on",
     PS_OFF => "powered off",
     PS_SUSPENDED => "suspended",
