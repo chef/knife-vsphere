@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 3.0.1 -->
+## [v3.0.1](https://github.com/chef/knife-vsphere/tree/v3.0.1) (2019-07-10)
+
+#### Merged Pull Requests
+- Avoid a few more frozen constant warnings [#473](https://github.com/chef/knife-vsphere/pull/473) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=3.0.0 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Avoid a few more frozen constant warnings [#473](https://github.com/chef/knife-vsphere/pull/473) ([tas50](https://github.com/tas50)) <!-- 3.0.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
