@@ -8,6 +8,7 @@ require "chef/knife"
 require "rbvmomi"
 require "base64"
 require "filesize"
+require "chef/knife/bootstrap"
 
 # Power state on
 PS_ON ||= "poweredOn".freeze

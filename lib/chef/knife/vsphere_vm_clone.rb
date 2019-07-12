@@ -14,7 +14,6 @@ require "chef/knife/search_helper"
 require "ipaddr"
 require "netaddr"
 require "securerandom"
-require "chef/knife/bootstrap"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
@@ -173,67 +172,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          proc: proc { |key| Chef::Config[:knife][:bootstrap_protocol] = key },
          default: nil
 
-  option :ssh_user,
-         short: "-x USERNAME",
-         long: "--ssh-user USERNAME",
-         description: "The ssh username",
-         default: "root"
-
-  option :ssh_password,
-         short: "-P PASSWORD",
-         long: "--ssh-password PASSWORD",
-         description: "The ssh password"
-
-  option :ssh_port,
-         short: "-p PORT",
-         long: "--ssh-port PORT",
-         description: "The ssh port",
-         default: "22"
-
-  option :identity_file,
-         short: "-i IDENTITY_FILE",
-         long: "--identity-file IDENTITY_FILE",
-         description: "The SSH identity file used for authentication"
-
-  option :chef_node_name,
-         short: "-N NAME",
-         long: "--node-name NAME",
-         description: "The Chef node name for your new node"
-
-  option :prerelease,
-         long: "--prerelease",
-         description: "Install the pre-release chef gems",
-         boolean: false
-
-  option :bootstrap_version,
-         long: "--bootstrap-version VERSION",
-         description: "The version of Chef to install",
-         proc: proc { |v| Chef::Config[:knife][:bootstrap_version] = v }
-
-  option :bootstrap_proxy,
-         long: "--bootstrap-proxy PROXY_URL",
-         description: "The proxy server for the node being bootstrapped",
-         proc: proc { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
-
-  option :bootstrap_vault_file,
-         long: "--bootstrap-vault-file VAULT_FILE",
-         description: "A JSON file with a list of vault(s) and item(s) to be updated"
-
-  option :bootstrap_vault_json,
-         long: "--bootstrap-vault-json VAULT_JSON",
-         description: "A JSON string with the vault(s) and item(s) to be updated"
-
-  option :bootstrap_vault_item,
-         long: "--bootstrap-vault-item VAULT_ITEM",
-         description: 'A single vault and item to update as "vault:item"',
-         proc: proc { |i|
-           (vault, item) = i.split(/:/)
-           Chef::Config[:knife][:bootstrap_vault_item] ||= {}
-           Chef::Config[:knife][:bootstrap_vault_item][vault] ||= []
-           Chef::Config[:knife][:bootstrap_vault_item][vault].push(item)
-           Chef::Config[:knife][:bootstrap_vault_item]
-         }
-
   option :distro,
          short: "-d DISTRO",
          long: "--distro DISTRO",
@@ -243,17 +181,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                  v
                }
 
-  option :tags,
-         long: "--tags TAGS",
-         description: "Comma separated list of tags to apply to the node",
-         proc: ->(tags) { tags.split(/[\s,]+/) },
-         default: []
-
-  option :bootstrap_template,
-         short: "-t TEMPLATE",
-         long: "--bootstrap-template TEMPLATE",
-         description: "Bootstrap Chef using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
-
   option :template_file,
          long: "--template-file TEMPLATE",
          description: "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option",
@@ -262,45 +189,10 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
                  v
                }
 
-  option :run_list,
-         short: "-r RUN_LIST",
-         long: "--run-list RUN_LIST",
-         description: "Comma separated list of roles/recipes to apply",
-         proc: ->(o) { o.split(/[\s,]+/) },
-         default: []
-
   option :secret_file,
          long: "--secret-file SECRET_FILE",
          description: "A file containing the secret key to use to encrypt data bag item values",
          proc: ->(secret_file) { Chef::Config[:knife][:secret_file] = secret_file }
-
-  # rubocop:disable Style/Blocks
-  option :hint,
-         long: "--hint HINT_NAME[=HINT_FILE]",
-         description: "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
-         proc: proc { |h|
-           Chef::Config[:knife][:hints] ||= {}
-           name, path = h.split("=")
-           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : {}
-         },
-         default: ""
-  # rubocop:enable Style/Blocks
-
-  option :no_host_key_verify,
-         long: "--no-host-key-verify",
-         description: "Disable host key verification",
-         boolean: true
-
-  option :node_ssl_verify_mode,
-         long: "--node-ssl-verify-mode [peer|none]",
-         description: "Whether or not to verify the SSL cert for all HTTPS requests when bootstrapping"
-
-  option :first_boot_attributes,
-         short: "-j JSON_ATTRIBS",
-         long: "--json-attributes",
-         description: "A JSON string to be added to the first run of chef-client",
-         proc: ->(o) { JSON.parse(o) },
-         default: {}
 
   option :disable_customization,
          long: "--disable-customization",
@@ -345,8 +237,37 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          default: false
 
   def run
-    $stdout.sync = true
+    check_license
 
+    plugin_setup!
+    validate_name_args!
+    validate_protocol!
+    validate_first_boot_attributes!
+    validate_winrm_transport_opts!
+    validate_policy_options!
+    plugin_validate_options!
+
+    winrm_warn_no_ssl_verification
+    warn_on_short_session_timeout
+
+    plugin_create_instance!
+
+    return unless get_config(:bootstrap)
+
+    $stdout.sync = true
+    connect!
+    register_client
+
+    content = render_template
+    bootstrap_path = upload_bootstrap(content)
+    perform_bootstrap(bootstrap_path)
+    plugin_finalize
+  ensure
+    connection.del_file!(bootstrap_path) if connection && bootstrap_path
+  end
+
+  # @return [TrueClass] If options are valid or exits
+  def plugin_validate_options!
     unless using_supplied_hostname? ^ using_random_hostname?
       show_usage
       fatal_exit("You must specify a virtual machine name OR use --random-vmname")
@@ -361,7 +282,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     if get_config(:customization_macs) != AUTO_MAC && get_config(:customization_ips) == NO_IPS
       abort('Must specify IP numbers with --cips when specifying MAC addresses with --cmacs, can use "dhcp" as placeholder')
     end
+  end
 
+  attr_accessor :server_name
+
+  alias host_descriptor server_name
+
+  # Create the server that we will bootstrap, if necessary
+  #
+  # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to call out to an API to build an instance of the server we wish to bootstrap
+  #
+  # @return [TrueClass] If instance successfully created, or exits
+  def plugin_create_instance!
     config[:chef_node_name] = vmname unless get_config(:chef_node_name)
 
     vim = vim_connection
@@ -414,13 +346,11 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       end
       puts "Powered on virtual machine #{vmname}"
     end
-
     return unless get_config(:bootstrap)
-
-    connect_port = get_config(:ssh_port)
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
       protocol ||= "winrm"
+      connect_port ||= 5985
       unless config[:disable_customization]
         # Wait for customization to complete
         puts "Waiting for customization to complete..."
@@ -428,19 +358,36 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         puts "Customization Complete"
       end
       connect_host = guest_address(vm)
+      self.server_name = connect_host
       Chef::Log.debug("Connect Host for winrm Bootstrap: #{connect_host}")
       wait_for_access(connect_host, connect_port, protocol)
-      ssh_override_winrm
-      bootstrap_for_windows_node.run
     else
       connect_host = guest_address(vm)
+      self.server_name = connect_host
+      connect_port ||= 22
       Chef::Log.debug("Connect Host for SSH Bootstrap: #{connect_host}")
       protocol ||= "ssh"
       wait_for_access(connect_host, connect_port, protocol)
-      ssh_override_winrm
-      bootstrap_for_node.run
     end
   end
+
+  # Perform any setup necessary by the plugin
+  #
+  # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to create connection objects
+  #
+  # @return [TrueClass] If instance successfully created, or exits
+  def plugin_setup!
+  end
+
+  # Perform any teardown or cleanup necessary by the plugin
+  #
+  # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to display a message or perform any cleanup
+  #
+  # @return [void]
+  def plugin_finalize
+  end
+
+  def validate_name_args!; end
 
   def ipv4_address(vm)
     puts "Waiting for a valid IPv4 address..."
@@ -842,50 +789,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     adapter_map
   end
 
-  def bootstrap_common_params
-    config[:run_list] = config[:run_list]
-    config[:bootstrap_version] = get_config(:bootstrap_version)
-    config[:environment] = get_config(:environment)
-    config[:prerelease] = get_config(:prerelease)
-    config[:first_boot_attributes] = get_config(:first_boot_attributes)
-    config[:hint] = get_config(:hint)
-    config[:chef_node_name] = get_config(:chef_node_name)
-    config[:bootstrap_vault_file] = get_config(:bootstrap_vault_file)
-    config[:bootstrap_vault_json] = get_config(:bootstrap_vault_json)
-    config[:bootstrap_vault_item] = get_config(:bootstrap_vault_item)
-    # may be needed for vpc mode
-    config[:no_host_key_verify] = get_config(:no_host_key_verify)
-    config[:node_ssl_verify_mode] = get_config(:node_ssl_verify_mode)
-    config[:tags] = get_config(:tags)
-  end
-
-  def ssh_override_winrm
-    # unchanged ssh_user and changed connection_user, override ssh_user
-    if get_config(:ssh_user).eql?(options[:ssh_user][:default]) &&
-        !get_config(:connection_user).eql?(options[:connection_user][:default])
-      config[:ssh_user] = get_config(:connection_user)
-    end
-
-    # unchanged ssh_port and changed connection_port, override ssh_port
-    if get_config(:ssh_port).eql?(options[:ssh_port][:default]) &&
-        !get_config(:connection_port).eql?(options[:connection_port][:default])
-      config[:ssh_port] = get_config(:connection_port)
-    end
-
-    # unset ssh_password and set connection_password, override ssh_password
-    if get_config(:ssh_password).nil? &&
-        !get_config(:connection_password).nil?
-      config[:ssh_password] = get_config(:connection_password)
-    end
-
-    # unset identity_file and set kerberos_keytab_file, override identity_file
-    return unless get_config(:identity_file).nil? && !get_config(:kerberos_keytab_file).nil?
-
-    config[:identity_file] = get_config(:kerberos_keytab_file)
-  end
-
-  def tcp_test_ssh(hostname, ssh_port)
-    tcp_socket = TCPSocket.new(hostname, ssh_port)
+  def tcp_test_ssh(hostname, connection_port)
+    tcp_socket = TCPSocket.new(hostname, connection_port)
     readable = IO.select([tcp_socket], nil, nil, 5)
     if readable
       ssh_banner = tcp_socket.gets
