@@ -9,7 +9,8 @@ group :debug do
 end
 
 group :test do
-  gem "chefstyle", "= 0.10.0"
+  gem "chef", ">= 15.1"
+  gem "chefstyle"
   gem "rake"
   gem "rspec", "~> 3.0"
 end
