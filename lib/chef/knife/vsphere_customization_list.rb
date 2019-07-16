@@ -21,7 +21,7 @@ class Chef::Knife::VsphereCustomizationList < Chef::Knife::BaseVsphereCommand
 
     csm = vim.serviceContent.customizationSpecManager
     csm.info.each do |c|
-      puts "#{ui.color('Customization Name', :cyan)}: #{c.name}"
+      puts "#{ui.color("Customization Name", :cyan)}: #{c.name}"
     end
   end
 end

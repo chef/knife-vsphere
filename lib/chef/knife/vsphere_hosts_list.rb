@@ -10,9 +10,9 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
 
   common_options
   option :pool,
-         long: "--pool pool",
-         short: "-h",
-         description: "Target pool"
+    long: "--pool pool",
+    short: "-h",
+    description: "Target pool"
 
   # The main run method for hosts_list
   #

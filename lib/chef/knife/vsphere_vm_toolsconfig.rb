@@ -13,9 +13,9 @@ class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
           for available properties and types."
 
   option :empty,
-         short: "-e",
-         long: "--empty",
-         description: "Allow empty string"
+    short: "-e",
+    long: "--empty",
+    description: "Allow empty string"
   common_options
 
   # The main run method for vm_toolsconfig

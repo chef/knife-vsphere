@@ -32,7 +32,7 @@ class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
     vim_connection
     dc = datacenter
     dc.network.each do |network|
-      puts "#{ui.color('VLAN', :cyan)}: #{network.name}"
+      puts "#{ui.color("VLAN", :cyan)}: #{network.name}"
     end
   end
 end

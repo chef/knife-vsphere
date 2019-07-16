@@ -41,7 +41,7 @@ class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
       backing = a.backing
       key = a.key
 
-      puts "#{ui.color('Setting network adapter', :cyan)} :#{a.deviceInfo.label} on vlan :#{a.deviceInfo.summary} :#{state}"
+      puts "#{ui.color("Setting network adapter", :cyan)} :#{a.deviceInfo.label} on vlan :#{a.deviceInfo.summary} :#{state}"
 
       conninfo = RbVmomi::VIM.VirtualDeviceConnectInfo(startConnected: true,
                                                        allowGuestControl: true,

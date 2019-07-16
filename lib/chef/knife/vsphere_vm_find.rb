@@ -17,101 +17,101 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
 
   # Deprecating
   option :pool,
-         long: "--pool pool",
-         short: "-h",
-         description: "Target pool"
+    long: "--pool pool",
+    short: "-h",
+    description: "Target pool"
   # Deprecating
   option :poolpath,
-         long: "--pool-path",
-         description: "Pool is full-path"
+    long: "--pool-path",
+    description: "Pool is full-path"
 
   option :esx_disk,
-         long: "--esx-disk",
-         description: "Show esx disks"
+    long: "--esx-disk",
+    description: "Show esx disks"
 
   option :snapshots,
-         long: "--snapshots",
-         description: "Show snapshots"
+    long: "--snapshots",
+    description: "Show snapshots"
 
   option :os_disk,
-         long: "--os-disks",
-         description: "Show os disks"
+    long: "--os-disks",
+    description: "Show os disks"
 
   option :cpu,
-         long: "--cpu",
-         description: "Show cpu"
+    long: "--cpu",
+    description: "Show cpu"
 
   option :cpu_hot_add_enabled,
-         long: "--cpu_hot_add_enabled",
-         description: "Show cpu hot add enabled"
+    long: "--cpu_hot_add_enabled",
+    description: "Show cpu hot add enabled"
 
   option :memory_hot_add_enabled,
-         long: "--memory_hot_add_enabled",
-         description: "Show memory hot add enabled"
+    long: "--memory_hot_add_enabled",
+    description: "Show memory hot add enabled"
 
   option :ram,
-         long: "--ram",
-         description: "Show ram"
+    long: "--ram",
+    description: "Show ram"
 
   option :ip,
-         long: "--ip",
-         description: "Show primary ip"
+    long: "--ip",
+    description: "Show primary ip"
 
   option :networks,
-         long: "--networks",
-         description: "Show all networks with their IPs"
+    long: "--networks",
+    description: "Show all networks with their IPs"
 
   option :soff,
-         long: "--powered-off",
-         description: "Show only stopped machines"
+    long: "--powered-off",
+    description: "Show only stopped machines"
 
   option :son,
-         long: "--powered-on",
-         description: "Show only started machines"
+    long: "--powered-on",
+    description: "Show only started machines"
 
   option :matchip,
-         long: "--match-ip IP",
-         description: "match ip"
+    long: "--match-ip IP",
+    description: "match ip"
 
   option :matchos,
-         long: "--match-os OS",
-         description: "match os"
+    long: "--match-os OS",
+    description: "match os"
 
   option :matchname,
-         long: "--match-name VMNAME",
-         description: "match name"
+    long: "--match-name VMNAME",
+    description: "match name"
 
   option :matchtools,
-         long: "--match-tools TOOLSSTATE",
-         description: "match tools state"
+    long: "--match-tools TOOLSSTATE",
+    description: "match tools state"
 
   option :hostname,
-         long: "--hostname",
-         description: "show hostname of the guest"
+    long: "--hostname",
+    description: "show hostname of the guest"
 
   option :host_name,
-         long: "--host_name",
-         description: "show name of the VMs host"
+    long: "--host_name",
+    description: "show name of the VMs host"
 
   option :os,
-         long: "--os",
-         description: "show os details"
+    long: "--os",
+    description: "show os details"
 
   option :alarms,
-         long: "--alarms",
-         description: "show alarm status"
+    long: "--alarms",
+    description: "show alarm status"
 
   option :tools,
-         long: "--tools",
-         description: "show tools status"
+    long: "--tools",
+    description: "show tools status"
 
   option :full_path,
-         long: "--full-path",
-         description: "Show full folder path to the VM"
+    long: "--full-path",
+    description: "Show full folder path to the VM"
 
   option :short_path,
-         long: "--short-path",
-         description: "Show the VM's enclosing folder name"
+    long: "--short-path",
+    description: "Show the VM's enclosing folder name"
 
   $stdout.sync = true # smoother output from print
 
@@ -241,6 +241,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
     iterator = vm.obj
     while (iterator = iterator.parent)
       break if iterator.name == VMFOLDER
+
       path.unshift iterator.name
     end
 

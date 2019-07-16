@@ -48,10 +48,10 @@ class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereComm
   banner "knife vsphere datastorecluster maxfree"
 
   option :regex,
-         short: "-r REGEX",
-         long: "--regex REGEX",
-         description: "Regex to match the datastore cluster name",
-         default: ""
+    short: "-r REGEX",
+    long: "--regex REGEX",
+    description: "Regex to match the datastore cluster name",
+    default: ""
   common_options
 
   def run

@@ -36,182 +36,182 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :dest_folder,
-         long: "--dest-folder FOLDER",
-         description: "The folder into which to put the cloned VM"
+    long: "--dest-folder FOLDER",
+    description: "The folder into which to put the cloned VM"
 
   option :datastore,
-         long: "--datastore STORE",
-         description: "The datastore into which to put the cloned VM"
+    long: "--datastore STORE",
+    description: "The datastore into which to put the cloned VM"
 
   option :datastorecluster,
-         long: "--datastorecluster STORE",
-         description: "The datastorecluster into which to put the cloned VM"
+    long: "--datastorecluster STORE",
+    description: "The datastorecluster into which to put the cloned VM"
 
   option :host,
-         long: "--host HOST",
-         description: "The host into which to put the cloned VM"
+    long: "--host HOST",
+    description: "The host into which to put the cloned VM"
 
   option :resource_pool,
-         long: "--resource-pool POOL",
-         description: "The resource pool or cluster into which to put the cloned VM"
+    long: "--resource-pool POOL",
+    description: "The resource pool or cluster into which to put the cloned VM"
 
   option :source_vm,
-         long: "--template TEMPLATE",
-         description: "The source VM / Template to clone from"
+    long: "--template TEMPLATE",
+    description: "The source VM / Template to clone from"
 
   option :linked_clone,
-         long: "--linked-clone",
-         description: "Indicates whether to use linked clones.",
-         boolean: false
+    long: "--linked-clone",
+    description: "Indicates whether to use linked clones.",
+    boolean: false
 
   option :thin_provision,
-         long: "--thin-provision",
-         description: "Indicates whether disk should be thin provisioned.",
-         boolean: true
+    long: "--thin-provision",
+    description: "Indicates whether disk should be thin provisioned.",
+    boolean: true
 
   option :annotation,
-         long: "--annotation TEXT",
-         description: "Add TEXT in Notes field from annotation"
+    long: "--annotation TEXT",
+    description: "Add TEXT in Notes field from annotation"
 
   option :customization_spec,
-         long: "--cspec CUST_SPEC",
-         description: "The name of any customization specification to apply"
+    long: "--cspec CUST_SPEC",
+    description: "The name of any customization specification to apply"
 
   option :customization_plugin,
-         long: "--cplugin CUST_PLUGIN_PATH",
-         description: "Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm"
+    long: "--cplugin CUST_PLUGIN_PATH",
+    description: "Path to plugin that implements KnifeVspherePlugin.customize_clone_spec and/or KnifeVspherePlugin.reconfig_vm"
 
   option :customization_plugin_data,
-         long: "--cplugin-data CUST_PLUGIN_DATA",
-         description: "String of data to pass to the plugin.  Use any format you wish."
+    long: "--cplugin-data CUST_PLUGIN_DATA",
+    description: "String of data to pass to the plugin.  Use any format you wish."
 
   option :customization_vlan,
-         long: "--cvlan CUST_VLANS",
-         description: "Comma-delimited list of VLAN names for network adapters to join"
+    long: "--cvlan CUST_VLANS",
+    description: "Comma-delimited list of VLAN names for network adapters to join"
 
   option :customization_sw_uuid,
-         long: "--sw-uuid SWITCH_UUIDS",
-         description: "Comma-delimited list of distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
+    long: "--sw-uuid SWITCH_UUIDS",
+    description: "Comma-delimited list of distributed virtual switch UUIDs for network adapter to connect, use 'auto' to automatically assign"
 
   option :customization_macs,
-         long: "--cmacs CUST_MACS",
-         description: "Comma-delimited list of MAC addresses for network adapters",
-         default: AUTO_MAC
+    long: "--cmacs CUST_MACS",
+    description: "Comma-delimited list of MAC addresses for network adapters",
+    default: AUTO_MAC
 
   option :customization_ips,
-         long: "--cips CUST_IPS",
-         description: "Comma-delimited list of CIDR IPs for customization",
-         default: NO_IPS
+    long: "--cips CUST_IPS",
+    description: "Comma-delimited list of CIDR IPs for customization",
+    default: NO_IPS
 
   option :customization_dns_ips,
-         long: "--cdnsips CUST_DNS_IPS",
-         description: "Comma-delimited list of DNS IP addresses"
+    long: "--cdnsips CUST_DNS_IPS",
+    description: "Comma-delimited list of DNS IP addresses"
 
   option :customization_dns_suffixes,
-         long: "--cdnssuffix CUST_DNS_SUFFIXES",
-         description: "Comma-delimited list of DNS search suffixes"
+    long: "--cdnssuffix CUST_DNS_SUFFIXES",
+    description: "Comma-delimited list of DNS search suffixes"
 
   option :customization_gw,
-         long: "--cgw CUST_GW",
-         description: "CIDR IP of gateway for customization"
+    long: "--cgw CUST_GW",
+    description: "CIDR IP of gateway for customization"
 
   option :customization_hostname,
-         long: "--chostname CUST_HOSTNAME",
-         description: "Unqualified hostname for customization"
+    long: "--chostname CUST_HOSTNAME",
+    description: "Unqualified hostname for customization"
 
   option :customization_domain,
-         long: "--cdomain CUST_DOMAIN",
-         description: "Domain name for customization"
+    long: "--cdomain CUST_DOMAIN",
+    description: "Domain name for customization"
 
   option :customization_tz,
-         long: "--ctz CUST_TIMEZONE",
-         description: "Timezone invalid 'Area/Location' format"
+    long: "--ctz CUST_TIMEZONE",
+    description: "Timezone invalid 'Area/Location' format"
 
   option :customization_cpucount,
-         long: "--ccpu CUST_CPU_COUNT",
-         description: "Number of CPUs"
+    long: "--ccpu CUST_CPU_COUNT",
+    description: "Number of CPUs"
 
   option :customization_corespersocket,
-         long: "--ccorespersocket CUST_CPU_CORES_PER_SOCKET",
-         description: "Number of CPU Cores per Socket"
+    long: "--ccorespersocket CUST_CPU_CORES_PER_SOCKET",
+    description: "Number of CPU Cores per Socket"
 
   option :customization_memory,
-         long: "--cram CUST_MEMORY_GB",
-         description: "Gigabytes of RAM"
+    long: "--cram CUST_MEMORY_GB",
+    description: "Gigabytes of RAM"
 
   option :customization_memory_reservation,
-         long: "--cram_reservation CUST_MEMORY_RESERVATION_GB",
-         description: "Gigabytes of RAM"
+    long: "--cram_reservation CUST_MEMORY_RESERVATION_GB",
+    description: "Gigabytes of RAM"
 
   option :power,
-         long: "--start",
-         description: "Indicates whether to start the VM after a successful clone",
-         boolean: false
+    long: "--start",
+    description: "Indicates whether to start the VM after a successful clone",
+    boolean: false
 
   option :bootstrap,
-         long: "--bootstrap",
-         description: "Indicates whether to bootstrap the VM",
-         boolean: false
+    long: "--bootstrap",
+    description: "Indicates whether to bootstrap the VM",
+    boolean: false
 
   option :environment,
-         long: "--environment ENVIRONMENT",
-         description: "Environment to add the node to for bootstrapping"
+    long: "--environment ENVIRONMENT",
+    description: "Environment to add the node to for bootstrapping"
 
   option :fqdn,
-         long: "--fqdn SERVER_FQDN",
-         description: "Fully qualified hostname for bootstrapping"
+    long: "--fqdn SERVER_FQDN",
+    description: "Fully qualified hostname for bootstrapping"
 
   option :bootstrap_msi_url,
-         long: "--bootstrap-msi-url URL",
-         description: "Location of the Chef Client MSI. The default templates will prefer to download from this location."
+    long: "--bootstrap-msi-url URL",
+    description: "Location of the Chef Client MSI. The default templates will prefer to download from this location."
 
   option :bootstrap_protocol,
-         long: "--bootstrap-protocol protocol",
-         description: "Protocol to bootstrap windows servers. options: winrm/ssh",
-         proc: proc { |key| Chef::Config[:knife][:bootstrap_protocol] = key },
-         default: nil
+    long: "--bootstrap-protocol protocol",
+    description: "Protocol to bootstrap windows servers. options: winrm/ssh",
+    proc: proc { |key| Chef::Config[:knife][:bootstrap_protocol] = key },
+    default: nil
 
   option :disable_customization,
-         long: "--disable-customization",
-         description: "Disable default customization",
-         boolean: true,
-         default: false
+    long: "--disable-customization",
+    description: "Disable default customization",
+    boolean: true,
+    default: false
 
   option :log_level,
-         short: "-l LEVEL",
-         long: "--log_level",
-         description: "Set the log level (debug, info, warn, error, fatal) for chef-client",
-         proc: ->(l) { l.to_sym }
+    short: "-l LEVEL",
+    long: "--log_level",
+    description: "Set the log level (debug, info, warn, error, fatal) for chef-client",
+    proc: ->(l) { l.to_sym }
 
   option :mark_as_template,
-         long: "--mark_as_template",
-         description: "Indicates whether to mark the new vm as a template",
-         boolean: false
+    long: "--mark_as_template",
+    description: "Indicates whether to mark the new vm as a template",
+    boolean: false
 
   option :random_vmname,
-         long: "--random-vmname",
-         description: "Creates a random VMNAME starts with vm-XXXXXXXX",
-         boolean: false
+    long: "--random-vmname",
+    description: "Creates a random VMNAME starts with vm-XXXXXXXX",
+    boolean: false
 
   option :random_vmname_prefix,
-         long: "--random-vmname-prefix PREFIX",
-         description: "Change the VMNAME prefix",
-         default: "vm-"
+    long: "--random-vmname-prefix PREFIX",
+    description: "Change the VMNAME prefix",
+    default: "vm-"
 
   option :sysprep_timeout,
-         long: "--sysprep_timeout TIMEOUT",
-         description: "Wait TIMEOUT seconds for sysprep event before continuing with bootstrap",
-         default: 600
+    long: "--sysprep_timeout TIMEOUT",
+    description: "Wait TIMEOUT seconds for sysprep event before continuing with bootstrap",
+    default: 600
 
   option :bootstrap_nic,
-         long: "--bootstrap-nic INTEGER",
-         description: "Network interface to use when multiple NICs are defined on a template.",
-         default: 0
+    long: "--bootstrap-nic INTEGER",
+    description: "Network interface to use when multiple NICs are defined on a template.",
+    default: 0
 
   option :bootstrap_ipv4,
-         long: "--bootstrap-ipv4",
-         description: "Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.",
-         default: false
+    long: "--bootstrap-ipv4",
+    description: "Force using an IPv4 address when a NIC has both IPv4 and IPv6 addresses.",
+    default: false
 
   def run
     check_license
@@ -314,6 +314,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     end
 
     return if get_config(:mark_as_template)
+
     if get_config(:power) || get_config(:bootstrap)
       vm = get_vm_by_name(vmname, cust_folder) || fatal_exit("VM #{vmname} not found")
       begin
@@ -324,6 +325,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
       puts "Powered on virtual machine #{vmname}"
     end
     return unless get_config(:bootstrap)
+
     protocol = get_config(:bootstrap_protocol)
     if windows?(src_vm.config)
       protocol ||= "winrm"
@@ -353,16 +355,14 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to create connection objects
   #
   # @return [TrueClass] If instance successfully created, or exits
-  def plugin_setup!
-  end
+  def plugin_setup!; end
 
   # Perform any teardown or cleanup necessary by the plugin
   #
   # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to display a message or perform any cleanup
   #
   # @return [void]
-  def plugin_finalize
-  end
+  def plugin_finalize; end
 
   def validate_name_args!; end
 
@@ -436,7 +436,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
               new_disk.backing.fileName = "[#{disk.backing.datastore.name}]"
               new_disk.backing.parent = disk.backing
             end,
-          }
+          },
         ],
       }
       src_vm.ReconfigVM_Task(spec: spec).wait_for_completion
@@ -488,6 +488,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   def find_host(host_name)
     host = all_the_hosts.find { |host| host.name == host_name }
     raise "Can't find #{host_name}. I found #{all_the_hosts.map(&:name)}" unless host
+
     host
   end
 

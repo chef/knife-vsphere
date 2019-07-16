@@ -17,7 +17,7 @@ class Chef::Knife::VsphereFolderList < Chef::Knife::BaseVsphereCommand
   # param [String] folder that you should go through
   # param [String] indent_level for the output to indent
   def traverse_folders(folder, indent_level)
-    puts "#{'  ' * indent_level} #{ui.color('Folder', :cyan)}: " + folder.name
+    puts "#{"  " * indent_level} #{ui.color("Folder", :cyan)}: " + folder.name
 
     folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
     folders.each do |child|

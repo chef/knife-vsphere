@@ -15,14 +15,14 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :vmdk_type,
-         long: "--vmdk-type TYPE",
-         description: "Type of VMDK",
-         # this is a bad idea as it will let you overcommit SAN by 400% or more. thick is a more "sane" default
-         default: "thin"
+    long: "--vmdk-type TYPE",
+    description: "Type of VMDK",
+    # this is a bad idea as it will let you overcommit SAN by 400% or more. thick is a more "sane" default
+    default: "thin"
 
   option :target_lun,
-         long: "--target-lun NAME",
-         description: "name of target LUN"
+    long: "--target-lun NAME",
+    description: "name of target LUN"
 
   # The main run method for vm_vmdk_add
   #
@@ -68,7 +68,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         rescue RbVmomi::Fault => e
           ui.warn "Ignoring a fault when trying to create #{vmdk_dir}. This may be related to issue #213."
           if log_verbose?
-            puts "Chose #{vmdk_datastore.name} out of #{vmdk_datastores.map(&:name).join(', ')}"
+            puts "Chose #{vmdk_datastore.name} out of #{vmdk_datastores.map(&:name).join(", ")}"
             puts e
           end
         end
@@ -84,7 +84,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     vm_files = pc.collectMultiple vms, "layoutEx.file"
     vm_files.keys.each do |vmFile|
       vm_files[vmFile]["layoutEx.file"].each do |layout|
-        if layout.name =~ /^\[#{vmdk_datastore.name}\] #{vmname}\/#{vmname}_([0-9]+).vmdk/
+        if layout.name =~ %r{^\[#{vmdk_datastore.name}\] #{vmname}/#{vmname}_([0-9]+).vmdk}
           num = Regexp.last_match(1)
           next_vmdk = num.to_i + 1 if next_vmdk <= num.to_i
         end
@@ -104,11 +104,11 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         diskType: vmdk_type
       )
       ui.info "Creating VMDK"
-      ui.info "#{ui.color 'Capacity:', :cyan} #{size} GB"
-      ui.info "#{ui.color 'Disk:', :cyan} #{vmdk_name}"
+      ui.info "#{ui.color "Capacity:", :cyan} #{size} GB"
+      ui.info "#{ui.color "Disk:", :cyan} #{vmdk_name}"
 
       if get_config(:noop)
-        ui.info "#{ui.color 'Skipping disk creation process because --noop specified.', :red}"
+        ui.info "#{ui.color "Skipping disk creation process because --noop specified.", :red}"
       else
         vdm.CreateVirtualDisk_Task(
           datacenter: datacenter,
@@ -132,6 +132,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         scsi_tree[device.key]["device"] = device
       end
       next unless device.class == RbVmomi::VIM::VirtualDisk
+
       if scsi_tree[device.controllerKey].nil?
         scsi_tree[device.controllerKey] = {}
         scsi_tree[device.controllerKey]["children"] = []
@@ -172,7 +173,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
         )
 
         if get_config(:noop)
-          ui.info "#{ui.color 'Skipping controller creation process because --noop specified.', :red}"
+          ui.info "#{ui.color "Skipping controller creation process because --noop specified.", :red}"
         else
           vm.ReconfigVM_Task(spec: vm_config_spec).wait_for_completion
         end
@@ -195,6 +196,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     used_unit_numbers = []
     scsi_tree.keys.sort.each do |c|
       next unless controller.key == scsi_tree[c]["device"].key
+
       used_unit_numbers.push(scsi_tree[c]["device"].scsiCtlrUnitNumber)
       scsi_tree[c]["children"].each do |disk|
         used_unit_numbers.push(disk.unitNumber)
@@ -237,7 +239,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     )
 
     if get_config(:noop)
-      ui.info "#{ui.color 'Skipping disk attaching process because --noop specified.', :red}"
+      ui.info "#{ui.color "Skipping disk attaching process because --noop specified.", :red}"
     else
       vm.ReconfigVM_Task(spec: vm_config_spec).wait_for_completion
     end

@@ -22,14 +22,14 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :sleep,
-         long: "--sleep TIME",
-         description: "The time in seconds to wait between queries for CustomizationSucceeded event. Default: 60 seconds",
-         default: 60
+    long: "--sleep TIME",
+    description: "The time in seconds to wait between queries for CustomizationSucceeded event. Default: 60 seconds",
+    default: 60
 
   option :timeout,
-         long: "--timeout TIME",
-         description: "The timeout in seconds before aborting. Default: 300 seconds",
-         default: 300
+    long: "--timeout TIME",
+    description: "The timeout in seconds before aborting. Default: 300 seconds",
+    default: 300
 
   # The main run method for vm_wait_sysprep.
   #

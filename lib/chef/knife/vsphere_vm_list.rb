@@ -12,14 +12,14 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :recursive,
-         long: "--recursive",
-         short: "-r",
-         description: "Recurse into sub-folders"
+    long: "--recursive",
+    short: "-r",
+    description: "Recurse into sub-folders"
 
   option :onlyfolders,
-         long: "--only-folders",
-         description: "List only the folders found",
-         boolean: false
+    long: "--only-folders",
+    description: "List only the folders found",
+    boolean: false
 
   def traverse_folders(folder, is_top = false, recurse = false, only_folders = false)
     if only_folders
@@ -30,11 +30,12 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
         print_folder(folder)
         vms.each { |v| print_vm(v) }
       elsif is_top
-        puts "#{ui.color('No VMs', :cyan)}"
+        puts "#{ui.color("No VMs", :cyan)}"
       end
     end
 
     return unless recurse
+
     folders = find_all_in_folder(folder, RbVmomi::VIM::Folder)
     folders.each do |child|
       traverse_folders(child, false, recurse, only_folders)
@@ -50,14 +51,14 @@ class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
             when PS_SUSPENDED
               ui.color("suspended", :yellow)
             end
-    puts "\t#{ui.color('VM Name:', :cyan)} #{vm.name}"
-    puts "\t\t#{ui.color('IP:', :magenta)} #{vm.guest.ipAddress}"
-    puts "\t\t#{ui.color('RAM:', :magenta)} #{vm.summary.config.memorySizeMB}"
-    puts "\t\t#{ui.color('State:', :magenta)} #{state}"
+    puts "\t#{ui.color("VM Name:", :cyan)} #{vm.name}"
+    puts "\t\t#{ui.color("IP:", :magenta)} #{vm.guest.ipAddress}"
+    puts "\t\t#{ui.color("RAM:", :magenta)} #{vm.summary.config.memorySizeMB}"
+    puts "\t\t#{ui.color("State:", :magenta)} #{state}"
   end
 
   def print_folder(folder)
-    puts "#{ui.color('Folder', :cyan)}: " + (folder.path[3..-1].map { |x| x[1] }.* "/")
+    puts "#{ui.color("Folder", :cyan)}: " + (folder.path[3..-1].map { |x| x[1] }.* "/")
   end
 
   def run

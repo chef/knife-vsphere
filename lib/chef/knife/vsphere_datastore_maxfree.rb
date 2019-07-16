@@ -24,18 +24,18 @@ class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastore maxfree"
 
   option :regex,
-         short: "-r REGEX",
-         long: "--regex REGEX",
-         description: "Regex to match the datastore name",
-         default: ""
+    short: "-r REGEX",
+    long: "--regex REGEX",
+    description: "Regex to match the datastore name",
+    default: ""
 
   option :vlan,
-         long: "--vlan VLAN",
-         description: "Require listed vlan available to datastore's parent"
+    long: "--vlan VLAN",
+    description: "Require listed vlan available to datastore's parent"
 
   option :pool,
-         long: "--pool pool",
-         description: "Pool or Cluster to search for datastores in"
+    long: "--pool pool",
+    description: "Pool or Cluster to search for datastores in"
 
   common_options
 

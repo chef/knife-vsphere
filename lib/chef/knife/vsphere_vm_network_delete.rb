@@ -43,7 +43,7 @@ class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
       )
 
       vm.ReconfigVM_Task(spec: spec).wait_for_completion
-      puts "#{ui.color('NIC', :red)}: #{card.deviceInfo.label} was deleted"
+      puts "#{ui.color("NIC", :red)}: #{card.deviceInfo.label} was deleted"
     end
   end
 end
