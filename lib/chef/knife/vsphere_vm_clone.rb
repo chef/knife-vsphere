@@ -10,7 +10,6 @@ require "chef/knife"
 require "chef/knife/base_vsphere_command"
 require "chef/knife/customization_helper"
 require "chef/knife/search_helper"
-# require "chef/knife/connection_base"
 require "ipaddr"
 require "netaddr"
 require "securerandom"
@@ -171,28 +170,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
          description: "Protocol to bootstrap windows servers. options: winrm/ssh",
          proc: proc { |key| Chef::Config[:knife][:bootstrap_protocol] = key },
          default: nil
-
-  option :distro,
-         short: "-d DISTRO",
-         long: "--distro DISTRO",
-         description: "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-         proc: Proc.new { |v|
-                 Chef::Log.fatal("[DEPRECATED] -d / --distro option is deprecated. Use --bootstrap-template option instead.")
-                 v
-               }
-
-  option :template_file,
-         long: "--template-file TEMPLATE",
-         description: "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option",
-         proc: Proc.new { |v|
-                 Chef::Log.fatal("[DEPRECATED] --template-file option is deprecated. Use --bootstrap-template option instead.")
-                 v
-               }
-
-  option :secret_file,
-         long: "--secret-file SECRET_FILE",
-         description: "A file containing the secret key to use to encrypt data bag item values",
-         proc: ->(secret_file) { Chef::Config[:knife][:secret_file] = secret_file }
 
   option :disable_customization,
          long: "--disable-customization",
@@ -423,7 +400,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   def wait_for_access(connect_host, connect_port, protocol)
     if winrm?
-      if get_config(:connection_transport) == "ssl" && get_config(:connection_port) == "5985"
+      if get_config(:winrm_ssl) && get_config(:connection_port) == "5985"
         config[:connection_port] = "5986"
       end
       connect_port = get_config(:connection_port)

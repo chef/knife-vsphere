@@ -48,6 +48,7 @@ describe Chef::Knife::VsphereVmClone do
     allow(subject).to receive(:upload_bootstrap)
     allow(subject).to receive(:perform_bootstrap)
     allow(subject).to receive(:windows?).and_return(false)
+    allow(subject).to receive(:check_license)
   end
 
   context "input handling" do
