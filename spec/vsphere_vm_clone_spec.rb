@@ -41,6 +41,14 @@ describe Chef::Knife::VsphereVmClone do
     subject.config[:customization_ips] = Chef::Knife::VsphereVmClone::NO_IPS
     subject.config[:customization_macs] = Chef::Knife::VsphereVmClone::AUTO_MAC
     allow(subject).to receive(:get_vm_by_name).with("my_template", "").and_return(template)
+    allow(template).to receive(:CloneVM_Task).and_return(task)
+    allow(subject).to receive(:connect!)
+    allow(subject).to receive(:register_client)
+    allow(subject).to receive(:render_template)
+    allow(subject).to receive(:upload_bootstrap)
+    allow(subject).to receive(:perform_bootstrap)
+    allow(subject).to receive(:windows?).and_return(false)
+    allow(subject).to receive(:check_license)
   end
 
   context "input handling" do
@@ -256,6 +264,8 @@ describe Chef::Knife::VsphereVmClone do
                            password: { plainText: "plaintextpassword" } } }
       end
 
+      before { allow(subject).to receive(:windows?).and_return(true) }
+
       it "provides an error message when called with no customization" do
         expect(subject).to receive(:fatal_exit).and_raise ArgumentError
         expect { subject.run }.to raise_error ArgumentError
@@ -358,7 +368,6 @@ describe Chef::Knife::VsphereVmClone do
   context "bootstrapping chef" do
     include_context "basic_setup"
 
-    let(:chef) { OpenStruct.new(config: {}, run: "boom") }
     let(:guest) { double("Guest", net: [:thing], ipAddress: "1.2.3.4") }
 
     before do
@@ -367,28 +376,24 @@ describe Chef::Knife::VsphereVmClone do
       allow(guest).to receive(:PowerOnVM_Task).and_return(task)
       allow(guest).to receive(:guest).and_return(guest)
       allow(subject).to receive(:tcp_test_ssh).with("foo.bar", 22).and_return(true) # cheat
-
-      expect(Chef::Knife::Bootstrap).to receive(:new).and_return(chef)
-      expect(template).to receive(:CloneVM_Task).and_return(task)
     end
 
     context "with an fqdn" do
+      let(:fqdn) { "foo.bar" }
       before do
-        subject.config[:fqdn] = "foo.bar"
+        subject.config[:fqdn] = fqdn
       end
 
       it "calls Chef to bootstrap" do
-        expect(chef).to receive(:run) do
-          expect(chef.name_args).to eq(["foo.bar"])
-        end
-
+        expect(subject.guest_address(guest)).to eq(fqdn)
+        expect(template).to receive(:CloneVM_Task).and_return(task)
         subject.run
       end
 
       it "sends the runlist" do
         subject.config[:run_list] = %w{role[a] recipe[foo::bar]}
-        expect(chef).to receive(:run) do
-          expect(chef.config[:run_list]).to eq(%w{role[a] recipe[foo::bar]})
+        expect(subject).to receive(:run) do
+          expect(subject.config[:run_list]).to eq(%w{role[a] recipe[foo::bar]})
         end
 
         subject.run
@@ -403,8 +408,8 @@ describe Chef::Knife::VsphereVmClone do
 
       context "without tags" do
         it "does not set any tags" do
-          expect(chef).to receive(:run) do
-            expect(chef.config[:tags]).to eq([])
+          expect(subject).to receive(:run) do
+            expect(subject.config[:tags]).to eq([])
           end
 
           subject.run
@@ -417,8 +422,8 @@ describe Chef::Knife::VsphereVmClone do
         end
 
         it "sends the tags to the bootstrap" do
-          expect(chef).to receive(:run) do
-            expect(chef.config[:tags]).to eq(%w{tag1 tag2})
+          expect(subject).to receive(:run) do
+            expect(subject.config[:tags]).to eq(%w{tag1 tag2})
           end
 
           subject.run

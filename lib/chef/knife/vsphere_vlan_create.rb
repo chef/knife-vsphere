@@ -9,8 +9,8 @@ class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :switch,
-         long: "--switch DVSNAME",
-         description: "The DVSwitch that will hold this VLAN"
+    long: "--switch DVSNAME",
+    description: "The DVSwitch that will hold this VLAN"
 
   # The main run method for vlan_create
   #

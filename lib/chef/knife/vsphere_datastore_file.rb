@@ -10,24 +10,24 @@ class Chef::Knife::VsphereDatastoreFile < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :local_file,
-         long: "--local-file FILE",
-         short: "-f",
-         description: "Local file and path"
+    long: "--local-file FILE",
+    short: "-f",
+    description: "Local file and path"
 
   option :remote_file,
-         long: "--remote-file FILE",
-         short: "-r",
-         description: "Remote file and path"
+    long: "--remote-file FILE",
+    short: "-r",
+    description: "Remote file and path"
 
   option :upload,
-         long: "--upload-file",
-         short: "-u",
-         description: "Upload local file to remote"
+    long: "--upload-file",
+    short: "-u",
+    description: "Upload local file to remote"
 
   option :download,
-         long: "--download-file",
-         short: "-D",
-         description: "Download remote file to local"
+    long: "--download-file",
+    short: "-D",
+    description: "Download remote file to local"
 
   # Main run method for datastore_file
   #

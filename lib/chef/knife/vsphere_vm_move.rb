@@ -15,27 +15,27 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :dest_name,
-         long: "--dest-name NAME",
-         short: "-r",
-         description: "Destination name of the VM or template"
+    long: "--dest-name NAME",
+    short: "-r",
+    description: "Destination name of the VM or template"
 
   option :dest_folder,
-         long: "--dest-folder FOLDER",
-         description: "The destination folder into which the VM or template should be moved"
+    long: "--dest-folder FOLDER",
+    description: "The destination folder into which the VM or template should be moved"
 
   option :datastore,
-         long: "--datastore STORE",
-         description: "The datastore into which to put the cloned VM"
+    long: "--datastore STORE",
+    description: "The datastore into which to put the cloned VM"
 
   option :thin_provision,
-         long: "--thin-provision",
-         description: "Indicates whether disk should be thin provisioned.",
-         boolean: true
+    long: "--thin-provision",
+    description: "Indicates whether disk should be thin provisioned.",
+    boolean: true
 
   option :thick_provision,
-         long: "--thick-provision",
-         description: "Indicates whether disk should be thick provisioned.",
-         boolean: true
+    long: "--thick-provision",
+    description: "Indicates whether disk should be thick provisioned.",
+    boolean: true
 
   # Convert VM
   #

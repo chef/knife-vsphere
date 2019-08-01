@@ -8,6 +8,7 @@ require "chef/knife"
 require "rbvmomi"
 require "base64"
 require "filesize"
+require "chef/knife/bootstrap"
 
 # Power state on
 PS_ON ||= "poweredOn".freeze
@@ -21,9 +22,8 @@ class Chef
   # Base class for knife
   class Knife
     # Main knife vsphere that more or less everything in this gem is built off of
-    class BaseVsphereCommand < Knife
+    class BaseVsphereCommand < Chef::Knife::Bootstrap
       deps do
-        require "chef/knife/bootstrap"
         Chef::Knife::Bootstrap.load_deps
         require "socket"
         require "net/ssh/multi"
@@ -33,55 +33,55 @@ class Chef
 
       def self.common_options
         option :vsphere_user,
-               short: "-u USERNAME",
-               long: "--vsuser USERNAME",
-               description: "The username for vsphere"
+          short: "-u USERNAME",
+          long: "--vsuser USERNAME",
+          description: "The username for vsphere"
 
         option :vsphere_pass,
-               short: "-p PASSWORD",
-               long: "--vspass PASSWORD",
-               description: "The password for vsphere"
+          short: "-p PASSWORD",
+          long: "--vspass PASSWORD",
+          description: "The password for vsphere"
 
         option :vsphere_host,
-               long: "--vshost HOST",
-               description: "The vsphere host"
+          long: "--vshost HOST",
+          description: "The vsphere host"
 
         option :vsphere_dc,
-               short: "-D DATACENTER",
-               long: "--vsdc DATACENTER",
-               description: "The Datacenter for vsphere"
+          short: "-D DATACENTER",
+          long: "--vsdc DATACENTER",
+          description: "The Datacenter for vsphere"
 
         option :vsphere_path,
-               long: "--vspath SOAP_PATH",
-               description: "The vsphere SOAP endpoint path",
-               default: "/sdk"
+          long: "--vspath SOAP_PATH",
+          description: "The vsphere SOAP endpoint path",
+          default: "/sdk"
 
         option :vsphere_port,
-               long: "--vsport PORT",
-               description: "The VI SDK port number to use",
-               default: "443"
+          long: "--vsport PORT",
+          description: "The VI SDK port number to use",
+          default: "443"
 
         option :vsphere_nossl,
-               long: "--vsnossl",
-               description: "Disable SSL connectivity"
+          long: "--vsnossl",
+          description: "Disable SSL connectivity"
 
         option :vsphere_insecure,
-               long: "--vsinsecure",
-               description: "Disable SSL certificate verification"
+          long: "--vsinsecure",
+          description: "Disable SSL certificate verification"
 
         option :folder,
-               short: "-f FOLDER",
-               long: "--folder FOLDER",
-               description: "The folder to get VMs from",
-               default: ""
+          short: "-f FOLDER",
+          long: "--folder FOLDER",
+          description: "The folder to get VMs from",
+          default: ""
 
         option :proxy_host,
-               long: "--proxyhost PROXY_HOSTNAME",
-               description: "Proxy hostname"
+          long: "--proxyhost PROXY_HOSTNAME",
+          description: "Proxy hostname"
 
         option :proxy_port,
-               long: "--proxyport PROXY_PORT",
-               description: "Proxy port"
+          long: "--proxyport PROXY_PORT",
+          description: "Proxy port"
       end
 
       def get_config(key)
@@ -199,6 +199,7 @@ class Chef
         if dvswitch && dvswitch != "auto"
           return networks.find do |f|
             next unless f.respond_to?(:config)
+
             sw = f.config.distributedVirtualSwitch
             sw.uuid == dvswitch || sw.name == dvswitch
           end
@@ -226,6 +227,7 @@ class Chef
         entity_array = poolName.split("/")
         entity_array.each do |entityArrItem|
           next if entityArrItem == ""
+
           if base_entity.is_a? RbVmomi::VIM::Folder
             base_entity = base_entity.childEntity.find { |f| f.name == entityArrItem } ||
               abort("no such pool #{poolName} while looking for #{entityArrItem}")
@@ -251,13 +253,14 @@ class Chef
         dstores.each do |store|
           avail = number_to_human_size(store.summary[:freeSpace])
           cap = number_to_human_size(store.summary[:capacity])
-          puts "#{ui.color('Datastore', :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"
+          puts "#{ui.color("Datastore", :cyan)}: #{store.name} (#{avail}(#{store.summary[:freeSpace]}) / #{cap})"
 
           # vm's can span multiple datastores, so instead of grabbing the first one
           # let's find the first datastore with the available space on a LUN the vm
           # is already using, or use a specified LUN (if given)
 
           next unless (store.summary[:freeSpace] - vmdk_size_b) > 0
+
           # also let's not use more than 90% of total space to save room for snapshots.
           cap_remains = 100 * ((store.summary[:freeSpace].to_f - vmdk_size_b.to_f) / store.summary[:capacity].to_f)
           candidates.push(store) if cap_remains.to_i > 10

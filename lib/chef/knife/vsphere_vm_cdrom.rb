@@ -15,36 +15,36 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :datastore,
-         long: "--datastore STORE",
-         description: "The datastore for an iso source"
+    long: "--datastore STORE",
+    description: "The datastore for an iso source"
 
   option :iso,
-         long: "--iso ISO",
-         description: "The name and path of the ISO to attach"
+    long: "--iso ISO",
+    description: "The name and path of the ISO to attach"
 
   option :attach,
-         short: "-a",
-         long: "--attach",
-         description: "Attach the virtual cdrom to the VM",
-         boolean: true
+    short: "-a",
+    long: "--attach",
+    description: "Attach the virtual cdrom to the VM",
+    boolean: true
 
   option :disconnect,
-         long: "--disconnect",
-         description: "Disconnect the virtual cdrom from the VM",
-         boolean: true
+    long: "--disconnect",
+    description: "Disconnect the virtual cdrom from the VM",
+    boolean: true
 
   option :on_boot,
-         long: "--on_boot ONBOOT",
-         description: "False for Detached on boot or True for Attached on boot"
+    long: "--on_boot ONBOOT",
+    description: "False for Detached on boot or True for Attached on boot"
 
   option :client_device,
-         long: "--client_device",
-         description: "Set the backing store to client-device"
+    long: "--client_device",
+    description: "Set the backing store to client-device"
 
   option :recursive,
-         short: "-r",
-         long: "--recursive",
-         description: "Search all folders"
+    short: "-r",
+    long: "--recursive",
+    description: "Search all folders"
 
   # The main run method for vm_cdrom
   #

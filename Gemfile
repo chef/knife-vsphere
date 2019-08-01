@@ -9,8 +9,8 @@ group :debug do
 end
 
 group :test do
-  gem "chef", "~> 14.0" # this can get bumped when we remove Ruby 2.4 support
-  gem "chefstyle", "= 0.13.0"
+  gem "chef", ">= 15.1"
+  gem "chefstyle"
   gem "rake"
   gem "rspec", "~> 3.0"
 end

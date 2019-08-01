@@ -12,14 +12,14 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm network add VMNAME NETWORKNAME"
 
   option :adapter_type,
-         long: "--adapter-type STRING",
-         description: "Adapter type eg e1000,vmxnet3",
-         required: true
+    long: "--adapter-type STRING",
+    description: "Adapter type eg e1000,vmxnet3",
+    required: true
 
   option :mac_address,
-         long: "--mac-address STRING",
-         description: "Adapter MAC address eg. AA:BB:CC:DD:EE:FF",
-         required: false
+    long: "--mac-address STRING",
+    description: "Adapter MAC address eg. AA:BB:CC:DD:EE:FF",
+    required: false
 
   common_options
 
@@ -83,8 +83,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
             deviceInfo: { summary: summary, label: "" },
             backing: backing,
             addressType: address_type,
-            macAddress: mac_address
-          ),
+            macAddress: mac_address),
         }],
       }
     ).wait_for_completion

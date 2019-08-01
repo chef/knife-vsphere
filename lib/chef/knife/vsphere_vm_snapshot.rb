@@ -14,56 +14,56 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :list,
-         long: "--list",
-         description: "The current tree of snapshots"
+    long: "--list",
+    description: "The current tree of snapshots"
 
   option :create_new_snapshot,
-         long: "--create SNAPSHOT",
-         description: "Create a new snapshot off of the current snapshot."
+    long: "--create SNAPSHOT",
+    description: "Create a new snapshot off of the current snapshot."
 
   option :remove_named_snapshot,
-         long: "--remove SNAPSHOT",
-         description: "Remove a named snapshot."
+    long: "--remove SNAPSHOT",
+    description: "Remove a named snapshot."
 
   option :revert_snapshot,
-         long: "--revert SNAPSHOT",
-         description: "Revert to a named snapshot."
+    long: "--revert SNAPSHOT",
+    description: "Revert to a named snapshot."
 
   option :revert_current_snapshot,
-         long: "--revert-current",
-         description: "Revert to current snapshot.",
-         boolean: false
+    long: "--revert-current",
+    description: "Revert to current snapshot.",
+    boolean: false
 
   option :power,
-         long: "--start",
-         description: "Indicates whether to start the VM after a successful revert",
-         boolean: false
+    long: "--start",
+    description: "Indicates whether to start the VM after a successful revert",
+    boolean: false
 
   option :wait,
-         long: "--wait",
-         description: "Indicates whether to wait for creation/removal to complete",
-         boolean: false
+    long: "--wait",
+    description: "Indicates whether to wait for creation/removal to complete",
+    boolean: false
 
   option :find, # imma deprecate this
-         long: "--find",
-         description: "Finds the virtual machine by searching all folders"
+    long: "--find",
+    description: "Finds the virtual machine by searching all folders"
 
   option :dump_memory,
-         long: "--dump-memory",
-         boolean: true,
-         description: "Dump the memory in the snapshot",
-         default: false
+    long: "--dump-memory",
+    boolean: true,
+    description: "Dump the memory in the snapshot",
+    default: false
 
   option :quiesce,
-         long: "--quiesce",
-         boolean: true,
-         description: "Quiesce the VM prior to snapshotting",
-         default: false
+    long: "--quiesce",
+    boolean: true,
+    description: "Quiesce the VM prior to snapshotting",
+    default: false
 
   option :snapshot_description,
-         long: "--snapshot-descr DESCR",
-         description: "Snapshot description",
-         default: ""
+    long: "--snapshot-descr DESCR",
+    description: "Snapshot description",
+    default: ""
 
   def run
     $stdout.sync = true
@@ -114,10 +114,12 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
     end
 
     return unless get_config(:revert_snapshot)
+
     ss_name = get_config(:revert_snapshot)
     snapshot = find_node(snapshot_list, ss_name)
     snapshot.RevertToSnapshot_Task(suppressPowerOn: false).wait_for_completion
     return unless get_config(:power)
+
     vm.PowerOnVM_Task.wait_for_completion
     puts "Powered on virtual machine #{vmname}"
   end

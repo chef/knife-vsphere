@@ -14,8 +14,8 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :diskname,
-         long: "--diskname DISKNAME",
-         description: "The name of the disk that will be extended"
+    long: "--diskname DISKNAME",
+    description: "The name of the disk that will be extended"
 
   def run
     $stdout.sync = true
@@ -57,7 +57,8 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
       RbVmomi::VIM::VirtualMachineConfigSpec(
         deviceChange: [RbVmomi::VIM::VirtualDeviceConfigSpec(
           device: disk,
-          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation("edit"))]
+          operation: RbVmomi::VIM::VirtualDeviceConfigSpecOperation("edit")
+        )]
       )).wait_for_completion
 
     puts "Disk resized successfully"

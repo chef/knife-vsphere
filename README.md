@@ -157,7 +157,7 @@ called "SPEC" to help bootstrap. Also calls a different SSH user and Password.
 
 ```bash
 $ knife vsphere vm clone MACHINENAME --template TEMPLATENAME --bootstrap --cips dhcp \
-  --cspec SPEC --ssh-user USER --ssh-password PASSWORD
+  --cspec SPEC --connection-user USER --connection-password PASSWORD
 ```
 
 Note: add a `-f FOLDERNAME` if you put your `--template` in someplace other then
@@ -309,26 +309,23 @@ to bootstrap the VM, but at the very least `--bootstrap` is required to do so.
 --bootstrap-version VERSION - The version of Chef to install
 --fqdn SERVER_FQDN - Fully qualified hostname for bootstrapping
 --hint HINT_NAME[=HINT_FILE] Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.
---identity-file IDENTITY_FILE - SSH identity file used for authentication
+--ssh-identity-file IDENTITY_FILE - SSH identity file used for authentication
 --json-attributes - A JSON string to be added to the first run of chef-client
 --node-name NAME - The Chef node name for your new node
---no-host-key-verify - Disable host key verification
+--ssh-verify-host-key - Verify host key. Default is 'always'. Available options are 'always' ,'accept_new accept_new_or_local_tunnel' and  'never'
 --node-ssl-verify-mode [peer|none] - Whether or not to verify the SSL cert for all HTTPS requests
 --prerelease - Install the pre-release chef gems
 --run-list RUN_LIST - Comma separated list of roles/recipes to apply
 --secret-file SECRET_FILE - A file containing the secret key to use to encrypt data bag item values
---ssh-password PASSWORD - SSH password
---ssh-port PORT - SSH port
---ssh-user USERNAME - SSH username
+--connection-password PASSWORD - SSH password / winrm password
+--connection-port PORT - SSH port / winrm port
+--connection-user USERNAME - SSH username / winrm username
 --sysprep_timeout TIMEOUT - Wait TIMEOUT seconds for sysprep event before continuing with bootstrap
 --winrm-authentication-protocol AUTHENTICATION_PROTOCOL. The authentication protocol used during WinRM communication. The supported protocols are basic,negotiate,kerberos. Default is 'negotiate'.
 --winrm-codepage Codepage    The codepage to use for the winrm cmd shell
---winrm-password PASSWORD    The WinRM password
---winrm-port PORT            The WinRM port, by default this is '5985' for 'plaintext' and '5986' for 'ssl' winrm transport
 --winrm-shell SHELL          The WinRM shell type. Valid choices are [cmd, powershell, elevated]. 'elevated' runs powershell in a scheduled task
 --winrm-ssl-verify-mode SSL_VERIFY_MODE   The WinRM peer verification mode. Valid choices are [verify_peer, verify_none]
---winrm-transport TRANSPORT  The WinRM transport type. Valid choices are [ssl, plaintext]
---winrm-user USERNAME        The WinRM username
+--winrm-ssl  User ssl WinRM transport type
 --tags TAG1,TAG2 - Tag the node with the given list of tags
 ```
 

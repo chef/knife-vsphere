@@ -23,24 +23,24 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :state,
-         short: "-s STATE",
-         long: "--state STATE",
-         description: "The power state to transition the VM into; one of on|off|suspended|reboot"
+    short: "-s STATE",
+    long: "--state STATE",
+    description: "The power state to transition the VM into; one of on|off|suspended|reboot"
 
   option :wait_port,
-         short: "-w PORT",
-         long: "--wait-port PORT",
-         description: "Wait for VM to be accessible on a port"
+    short: "-w PORT",
+    long: "--wait-port PORT",
+    description: "Wait for VM to be accessible on a port"
 
   option :shutdown,
-         short: "-g",
-         long: "--shutdown",
-         description: "Guest OS shutdown"
+    short: "-g",
+    long: "--shutdown",
+    description: "Guest OS shutdown"
 
   option :recursive,
-         short: "-r",
-         long: "--recursive",
-         description: "Search all folders"
+    short: "-r",
+    long: "--recursive",
+    description: "Search all folders"
 
   # The main run method for vm_state
   #

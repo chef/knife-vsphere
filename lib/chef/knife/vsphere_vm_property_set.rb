@@ -13,8 +13,8 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :ovf_environment_transport,
-         long: "--ovf-environment-transport STRING",
-         description: "Comma delimited string.  Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo."
+    long: "--ovf-environment-transport STRING",
+    description: "Comma delimited string.  Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo."
 
   # The main run method for vm_property_set
   #
@@ -69,7 +69,7 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
               userConfigurable: true,
               value: property_value,
             }
-          )
+          ),
         ]
       )
     )

@@ -26,13 +26,13 @@ class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :list,
-         long: "--list",
-         short: "-L",
-         description: "Indicates whether to list VM's in datastore",
-         boolean: true
+    long: "--list",
+    short: "-L",
+    description: "Indicates whether to list VM's in datastore",
+    boolean: true
   option :pool,
-         long: "--pool pool",
-         description: "Target pool"
+    long: "--pool pool",
+    description: "Target pool"
 
   # The main run method for datastore_list
   #

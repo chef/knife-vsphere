@@ -15,20 +15,20 @@ class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
   common_options
 
   option :dest_host,
-         long: "--dest-host HOST",
-         description: "Destination host for the VM or template"
+    long: "--dest-host HOST",
+    description: "Destination host for the VM or template"
 
   option :dest_datastore,
-         long: "--dest-datastore DATASTORE",
-         description: "The destination datastore"
+    long: "--dest-datastore DATASTORE",
+    description: "The destination datastore"
 
   option :priority,
-         long: "--priority PRIORITY",
-         description: "migration priority"
+    long: "--priority PRIORITY",
+    description: "migration priority"
 
   option :resource_pool,
-         long: "--resource-pool POOL",
-         description: "The resource pool into which to put the VM"
+    long: "--resource-pool POOL",
+    description: "The resource pool into which to put the VM"
 
   def run
     $stdout.sync = true

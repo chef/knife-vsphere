@@ -34,11 +34,11 @@ module SearchHelper
             type: "ContainerView",
             path: "view",
             skip: false
-          )
-        ]
+          ),
+        ],
       ],
       propSet: [
-        { type: opts[:type], pathSet: opts[:properties] }
+        { type: opts[:type], pathSet: opts[:properties] },
       ]
     )
     pc.RetrieveProperties(specSet: [filter_spec])

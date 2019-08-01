@@ -45,9 +45,10 @@ end
 def print_dsclusters_in_folder(folder)
   folder.childEntity.each do |child|
     next unless child.class.to_s == "StoragePod"
+
     avail = number_to_human_size(child.summary[:freeSpace])
     cap = number_to_human_size(child.summary[:capacity])
-    puts "#{ui.color('DatastoreCluster', :cyan)}: #{child.name} (#{avail} / #{cap})"
+    puts "#{ui.color("DatastoreCluster", :cyan)}: #{child.name} (#{avail} / #{cap})"
   end
 end
 

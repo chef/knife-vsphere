@@ -12,18 +12,18 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm execute VMNAME COMMAND ARGS"
 
   option :exec_user,
-         long: "--exec-user USER",
-         description: "User to execute as",
-         required: true
+    long: "--exec-user USER",
+    description: "User to execute as",
+    required: true
 
   option :exec_passwd,
-         long: "--exec-passwd PASSWORD",
-         description: "Password for execute user",
-         required: true
+    long: "--exec-passwd PASSWORD",
+    description: "Password for execute user",
+    required: true
 
   option :exec_dir,
-         long: "--exec-dir DIRECTORY",
-         description: "Working directory to execute in"
+    long: "--exec-dir DIRECTORY",
+    description: "Working directory to execute in"
 
   common_options
 

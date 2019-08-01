@@ -19,15 +19,15 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm delete VMNAME (options)"
 
   option :purge,
-         short: "-P",
-         long: "--purge",
-         boolean: true,
-         description: "Destroy corresponding node and client on the Chef Server, in addition to destroying the VM itself."
+    short: "-P",
+    long: "--purge",
+    boolean: true,
+    description: "Destroy corresponding node and client on the Chef Server, in addition to destroying the VM itself."
 
   option :chef_node_name,
-         short: "-N NAME",
-         long: "--node-name NAME",
-         description: "Use this option if the Chef node name is different from the VM name"
+    short: "-N NAME",
+    long: "--node-name NAME",
+    description: "Use this option if the Chef node name is different from the VM name"
 
   common_options
 
