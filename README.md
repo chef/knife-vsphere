@@ -5,6 +5,14 @@
 [![Inline docs](http://inch-ci.org/github/chef/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef/knife-vsphere)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
+**Umbrella Project**: [Knife](https://github.com/chef/chef-oss-practices/blob/master/projects/knife.md)
+
+ **Project State**: [Active](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#active)
+
+ **Issues [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
+
+ **Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
+
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
 * Documentation: <https://github.com/chef/knife-vsphere/blob/master/README.md>
