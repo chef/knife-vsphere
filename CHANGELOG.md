@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.0.0 -->
-## [v4.0.0](https://github.com/chef/knife-vsphere/tree/v4.0.0) (2019-08-01)
+<!-- latest_release 4.0.1 -->
+## [v4.0.1](https://github.com/chef/knife-vsphere/tree/v4.0.1) (2019-08-23)
 
 #### Merged Pull Requests
-- Bump version to 4 for major release with Chef 15 support [#475](https://github.com/chef/knife-vsphere/pull/475) ([btm](https://github.com/btm))
+- Update README and github templates for OSS Best Practices [#476](https://github.com/chef/knife-vsphere/pull/476) ([samshinde](https://github.com/samshinde))
 <!-- latest_release -->
 
 <!-- release_rollup since=3.0.1 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Update README and github templates for OSS Best Practices [#476](https://github.com/chef/knife-vsphere/pull/476) ([samshinde](https://github.com/samshinde)) <!-- 4.0.1 -->
 - Bump version to 4 for major release with Chef 15 support [#475](https://github.com/chef/knife-vsphere/pull/475) ([btm](https://github.com/btm)) <!-- 4.0.0 -->
 - Support for Chef-15 [#474](https://github.com/chef/knife-vsphere/pull/474) ([samshinde](https://github.com/samshinde)) <!-- 3.0.2 -->
 <!-- release_rollup -->
