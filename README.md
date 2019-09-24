@@ -259,7 +259,7 @@ $ knife vsphere vm find --snapshots --full-path --cpu --ram --esx-disk \
 Manage power state of a virtual machine, aka turn it off and on
 
 ```bash
--s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspended|reboot
+-s STATE, --state STATE    - The power state to transition the VM into; one of on|off|suspend|reboot
 -w PORT, --wait-port PORT  - Wait for VM to be accessible on a port
 -g, --shutdown             - Guest OS shutdown (format: -s off -g)
 -r, --recursive            - Recurse down through sub-folders to the specified folder to find the VM
