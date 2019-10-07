@@ -25,7 +25,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   option :state,
     short: "-s STATE",
     long: "--state STATE",
-    description: "The power state to transition the VM into; one of on|off|suspended|reboot"
+    description: "The power state to transition the VM into; one of on|off|suspend|reboot"
 
   option :wait_port,
     short: "-w PORT",
@@ -60,6 +60,9 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
 
     state = vm.runtime.powerState
 
+    puts state
+    exit
+
     if config[:state].nil?
       puts "VM #{vmname} is currently " + POWER_STATES[vm.runtime.powerState]
     else
@@ -89,8 +92,8 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
             puts "Powered off virtual machine #{vmname}"
           end
         end
-      when "suspend"
-        if state == POWER_STATES["suspended"]
+      when "suspend", "suspended"
+        if state == PS_SUSPENDED
           puts "Virtual machine #{vmname} was already suspended"
         else
           vm.SuspendVM_Task.wait_for_completion
