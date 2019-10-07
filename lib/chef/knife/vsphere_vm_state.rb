@@ -60,9 +60,6 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
 
     state = vm.runtime.powerState
 
-    puts state
-    exit
-
     if config[:state].nil?
       puts "VM #{vmname} is currently " + POWER_STATES[vm.runtime.powerState]
     else
