@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.0.2 -->
-## [v4.0.2](https://github.com/chef/knife-vsphere/tree/v4.0.2) (2019-09-24)
+<!-- latest_release 4.0.3 -->
+## [v4.0.3](https://github.com/chef/knife-vsphere/tree/v4.0.3) (2019-10-10)
 
 #### Merged Pull Requests
-- trivial update to vm-state options [#478](https://github.com/chef/knife-vsphere/pull/478) ([bby-bishopclark](https://github.com/bby-bishopclark))
+- Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg))
 <!-- latest_release -->
 
 <!-- release_rollup since=4.0.1 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg)) <!-- 4.0.3 -->
 - trivial update to vm-state options [#478](https://github.com/chef/knife-vsphere/pull/478) ([bby-bishopclark](https://github.com/bby-bishopclark)) <!-- 4.0.2 -->
 <!-- release_rollup -->
 
