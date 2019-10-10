@@ -1,28 +1,25 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.0.3 -->
-## [v4.0.3](https://github.com/chef/knife-vsphere/tree/v4.0.3) (2019-10-10)
-
-#### Merged Pull Requests
-- Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=4.0.1 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg)) <!-- 4.0.3 -->
-- trivial update to vm-state options [#478](https://github.com/chef/knife-vsphere/pull/478) ([bby-bishopclark](https://github.com/bby-bishopclark)) <!-- 4.0.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v4.0.3](https://github.com/chef/knife-vsphere/tree/v4.0.3) (2019-10-10)
+
+#### Merged Pull Requests
+- trivial update to vm-state options [#478](https://github.com/chef/knife-vsphere/pull/478) ([bby-bishopclark](https://github.com/bby-bishopclark))
+- Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg))
+<!-- latest_stable_release -->
+
 ## [v4.0.1](https://github.com/chef/knife-vsphere/tree/v4.0.1) (2019-09-16)
 
 #### Merged Pull Requests
 - Support for Chef-15 [#474](https://github.com/chef/knife-vsphere/pull/474) ([samshinde](https://github.com/samshinde))
 - Bump version to 4 for major release with Chef 15 support [#475](https://github.com/chef/knife-vsphere/pull/475) ([btm](https://github.com/btm))
 - Update README and github templates for OSS Best Practices [#476](https://github.com/chef/knife-vsphere/pull/476) ([samshinde](https://github.com/samshinde))
-<!-- latest_stable_release -->
 
 ## [v3.0.1](https://github.com/chef/knife-vsphere/tree/v3.0.1) (2019-07-10)
 
