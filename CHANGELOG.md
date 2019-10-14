@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 4.0.4 -->
+## [v4.0.4](https://github.com/chef/knife-vsphere/tree/v4.0.4) (2019-10-14)
+
+#### Merged Pull Requests
+- Add a reference to our wiki article on templates [#482](https://github.com/chef/knife-vsphere/pull/482) ([swalberg](https://github.com/swalberg))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=4.0.3 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Add a reference to our wiki article on templates [#482](https://github.com/chef/knife-vsphere/pull/482) ([swalberg](https://github.com/swalberg)) <!-- 4.0.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
