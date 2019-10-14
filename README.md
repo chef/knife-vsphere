@@ -299,7 +299,7 @@ specified).
 * For Linux, a fixed named customization using the vmname as the
 host name unless otherwise specified.
 
-This command has many options which which to customize your VM.
+This command has many options which which to customize your VM. The most important part of this is the initial template. We have some guidance on [how to make a template](https://github.com/chef/knife-vsphere/wiki/Making-a-template-for-cloning)
 
 ### Chef bootstrap options
 
