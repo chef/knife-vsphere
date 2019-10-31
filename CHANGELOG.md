@@ -1,27 +1,24 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.0.5 -->
-## [v4.0.5](https://github.com/chef/knife-vsphere/tree/v4.0.5) (2019-10-31)
-
-#### Merged Pull Requests
-- Make sure we ship the license file with the gem [#485](https://github.com/chef/knife-vsphere/pull/485) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=4.0.3 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Make sure we ship the license file with the gem [#485](https://github.com/chef/knife-vsphere/pull/485) ([tas50](https://github.com/tas50)) <!-- 4.0.5 -->
-- Add a reference to our wiki article on templates [#482](https://github.com/chef/knife-vsphere/pull/482) ([swalberg](https://github.com/swalberg)) <!-- 4.0.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v4.0.5](https://github.com/chef/knife-vsphere/tree/v4.0.5) (2019-10-31)
+
+#### Merged Pull Requests
+- Add a reference to our wiki article on templates [#482](https://github.com/chef/knife-vsphere/pull/482) ([swalberg](https://github.com/swalberg))
+- Make sure we ship the license file with the gem [#485](https://github.com/chef/knife-vsphere/pull/485) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v4.0.3](https://github.com/chef/knife-vsphere/tree/v4.0.3) (2019-10-10)
 
 #### Merged Pull Requests
 - trivial update to vm-state options [#478](https://github.com/chef/knife-vsphere/pull/478) ([bby-bishopclark](https://github.com/bby-bishopclark))
 - Support suspend and suspended for state [#481](https://github.com/chef/knife-vsphere/pull/481) ([swalberg](https://github.com/swalberg))
-<!-- latest_stable_release -->
 
 ## [v4.0.1](https://github.com/chef/knife-vsphere/tree/v4.0.1) (2019-09-16)
 
