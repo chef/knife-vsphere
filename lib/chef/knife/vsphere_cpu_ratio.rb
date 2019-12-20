@@ -1,5 +1,5 @@
 require "chef/knife"
-require "chef/knife/base_vsphere_command"
+require_relative "base_vsphere_command"
 
 # VsphereCpuratio extends the BaseVspherecommand
 class Chef::Knife::VsphereCpuRatio < Chef::Knife::BaseVsphereCommand

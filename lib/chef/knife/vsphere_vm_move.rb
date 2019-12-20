@@ -3,8 +3,8 @@
 # License:: Apache License, Version 2.0
 #
 require "chef/knife"
-require "chef/knife/base_vsphere_command"
-require "chef/knife/search_helper"
+require_relative "base_vsphere_command"
+require_relative "search_helper"
 
 # Moves the VM to another folder or datastore
 # VsphereVmMove extends the BaseVspherecommand
