@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 4.0.8 -->
+## [v4.0.8](https://github.com/chef/knife-vsphere/tree/v4.0.8) (2019-12-21)
+
+#### Merged Pull Requests
+- Substitute require for require_relative [#492](https://github.com/chef/knife-vsphere/pull/492) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=4.0.7 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Substitute require for require_relative [#492](https://github.com/chef/knife-vsphere/pull/492) ([tas50](https://github.com/tas50)) <!-- 4.0.8 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
