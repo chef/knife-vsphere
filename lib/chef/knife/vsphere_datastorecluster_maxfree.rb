@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE
 
 require "chef/knife"
-require "chef/knife/base_vsphere_command"
+require_relative "base_vsphere_command"
 
 def max_dscluster(dscluster, max_dscluster)
   return true unless max_dscluster

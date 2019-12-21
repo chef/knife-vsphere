@@ -1,5 +1,5 @@
 require "chef/knife"
-require "chef/knife/base_vsphere_command"
+require_relative "base_vsphere_command"
 
 # Lists all known data stores in datacenter with sizes
 # VsphereVlanCreate extends BaseVspherecommand

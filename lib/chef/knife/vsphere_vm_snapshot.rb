@@ -3,8 +3,8 @@
 #
 
 require "chef/knife"
-require "chef/knife/base_vsphere_command"
-require "chef/knife/search_helper"
+require_relative "base_vsphere_command"
+require_relative "search_helper"
 
 # Manage snapshots of a virtual machine
 class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
