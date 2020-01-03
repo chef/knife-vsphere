@@ -345,6 +345,8 @@ These options are related to the customization of the VM by the vSphere agent. T
 --ccorespersocket CUST_CPU_CORES_PER_SOCKET - Number of CPU Cores per Socket
 --cdomain CUST_DOMAIN - Domain name for customization
 --cgw CUST_GW - CIDR IP of gateway for customization
+--cdnsips CUST_DNS_IPS - Comma-delimited list of DNS IP addresses
+--cdnssuffix CUST_DNS_SUFFIXES - Comma-delimited list of DNS search suffixes
 --chostname CUST_HOSTNAME - Unqualified hostname for customization
 --cips CUST_IPS - Comma-delimited list of CIDR IPs for customization, or *dhcp* to configure that interface to use DHCP
 --cmacs CUST_MACS - Comma-delimited list of MAC addresses, or *auto* to configure that interface to use automatically generated MAC address
