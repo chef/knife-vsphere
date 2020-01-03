@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 4.0.9 -->
+## [v4.0.9](https://github.com/chef/knife-vsphere/tree/v4.0.9) (2020-01-03)
+
+#### Merged Pull Requests
+- Update README.md [#493](https://github.com/chef/knife-vsphere/pull/493) ([bby-bishopclark](https://github.com/bby-bishopclark))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=4.0.8 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Update README.md [#493](https://github.com/chef/knife-vsphere/pull/493) ([bby-bishopclark](https://github.com/bby-bishopclark)) <!-- 4.0.9 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
