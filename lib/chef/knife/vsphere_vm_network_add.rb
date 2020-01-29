@@ -5,7 +5,6 @@
 require "chef/knife"
 require_relative "base_vsphere_command"
 require_relative "search_helper"
-require "netaddr"
 
 class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
   include SearchHelper
@@ -20,6 +19,10 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     long: "--mac-address STRING",
     description: "Adapter MAC address eg. AA:BB:CC:DD:EE:FF",
     required: false
+
+  deps do
+    require "netaddr"
+  end
 
   common_options
 

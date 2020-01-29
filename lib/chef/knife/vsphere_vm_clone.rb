@@ -8,15 +8,21 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "customization_helper"
 require_relative "search_helper"
-require "ipaddr"
-require "netaddr"
-require "securerandom"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm clone VMNAME (options)"
+
+  deps do
+    require "ipaddr"
+    require "netaddr"
+    require "securerandom"
+    require_relative "customization_helper"
+    require "chef/json_compat"
+    Chef::Knife::Bootstrap.load_deps
+    include CustomizationHelper
+  end
 
   # A AUTO_MAC for NIC?
   AUTO_MAC ||= "auto".freeze
@@ -26,12 +32,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   ORIGIN_IS_REAL_NIC ||= "linklayer".freeze
 
   # include Chef::Knife::WinrmBase
-  include CustomizationHelper
   include SearchHelper
-  deps do
-    require "chef/json_compat"
-    Chef::Knife::Bootstrap.load_deps
-  end
 
   common_options
 

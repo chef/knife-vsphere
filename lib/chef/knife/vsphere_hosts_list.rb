@@ -1,14 +1,18 @@
 require "chef/knife"
 require_relative "base_vsphere_command"
-require "rbvmomi"
-require "netaddr"
 
 # list hosts belonging to pool
 # VsphereHostslist extends the BaseVspherecommand
 class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere hosts list"
 
+  deps do
+    require "rbvmomi"
+    require "netaddr"
+  end
+
   common_options
+
   option :pool,
     long: "--pool pool",
     short: "-h",
