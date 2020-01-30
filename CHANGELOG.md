@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.0.9 -->
-## [v4.0.9](https://github.com/chef/knife-vsphere/tree/v4.0.9) (2020-01-03)
+<!-- latest_release 4.1.0 -->
+## [v4.1.0](https://github.com/chef/knife-vsphere/tree/v4.1.0) (2020-01-30)
 
 #### Merged Pull Requests
-- Update README.md [#493](https://github.com/chef/knife-vsphere/pull/493) ([bby-bishopclark](https://github.com/bby-bishopclark))
+- Lazy load the rbvmomi dep to speedup knife [#496](https://github.com/chef/knife-vsphere/pull/496) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=4.0.8 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Lazy load the rbvmomi dep to speedup knife [#496](https://github.com/chef/knife-vsphere/pull/496) ([tas50](https://github.com/tas50)) <!-- 4.1.0 -->
 - Update README.md [#493](https://github.com/chef/knife-vsphere/pull/493) ([bby-bishopclark](https://github.com/bby-bishopclark)) <!-- 4.0.9 -->
 <!-- release_rollup -->
 
