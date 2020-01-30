@@ -34,6 +34,7 @@ describe Chef::Knife::VsphereVmClone do
   subject { described_class.new }
 
   before do
+    described_class.load_deps
     subject.config[:random_vmname_prefix] = "vm-"
     subject.config[:vsphere_pass] = "password"
     subject.config[:vsphere_host] = "host"

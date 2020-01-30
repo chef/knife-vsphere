@@ -6,7 +6,6 @@
 require "chef/knife"
 require_relative "base_vsphere_command"
 require_relative "search_helper"
-require "rbvmomi"
 
 # These two are needed for the '--purge' deletion case
 require "chef/node"
@@ -17,6 +16,10 @@ require "chef/api_client"
 class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   include SearchHelper
   banner "knife vsphere vm delete VMNAME (options)"
+
+  deps do
+    require "rbvmomi"
+  end
 
   option :purge,
     short: "-P",
