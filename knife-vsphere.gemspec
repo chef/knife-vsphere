@@ -19,5 +19,4 @@ Gem::Specification.new do |s|
   s.add_dependency "filesize", ">= 0.1.1", "< 0.3.0"
   s.add_dependency "chef-vault", [">= 2.6.0"]
   s.add_dependency "chef", ">= 15.1"
-  s.add_dependency "chef-bin", ">= 15.1"
 end
