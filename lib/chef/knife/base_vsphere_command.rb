@@ -6,8 +6,6 @@
 
 require "chef/knife"
 require "rbvmomi"
-require "base64"
-require "filesize"
 require "chef/knife/bootstrap"
 
 # Power state on
@@ -25,6 +23,8 @@ class Chef
     class BaseVsphereCommand < Chef::Knife::Bootstrap
       deps do
         Chef::Knife::Bootstrap.load_deps
+        require "base64"
+        require "filesize"
         require "socket"
         require "net/ssh/multi"
         require "readline"
