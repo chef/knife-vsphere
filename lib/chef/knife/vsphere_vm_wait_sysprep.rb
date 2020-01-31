@@ -14,12 +14,12 @@ require_relative "search_helper"
 #     --timeout 600
 class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
   include SearchHelper
-  include CustomizationHelper
 
   banner "knife vsphere vm wait sysprep VMNAME (options)"
 
   deps do
     require_relative "customization_helper"
+    include CustomizationHelper
   end
 
   common_options
