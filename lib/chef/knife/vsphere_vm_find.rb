@@ -4,12 +4,15 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # find vms belonging to pool that match criteria, display specified fields
 class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm find"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   VMFOLDER ||= "vm".freeze
 

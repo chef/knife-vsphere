@@ -3,19 +3,23 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Vspherevmtoolsconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm toolsconfig VMNAME PROPERTY VALUE
           See \"https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.vm.ToolsConfigInfo.html\"
           for available properties and types."
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   option :empty,
     short: "-e",
     long: "--empty",
     description: "Allow empty string"
+
   common_options
 
   # The main run method for vm_toolsconfig

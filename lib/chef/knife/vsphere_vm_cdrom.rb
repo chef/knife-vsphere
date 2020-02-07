@@ -2,12 +2,15 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVmCdrom extends the BaseVspherecommand
 class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm cdrom VMNAME (options)"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   # The empty device name.
   EMPTY_DEVICE_NAME ||= "".freeze

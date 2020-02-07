@@ -6,18 +6,18 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Wait for vm finishing Sysprep.
 # usage:
 # knife vsphere vm wait sysprep somemachine --sleep 30 \
 #     --timeout 600
 class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
-
   banner "knife vsphere vm wait sysprep VMNAME (options)"
 
   deps do
+    require_relative "search_helper"
+    include SearchHelper
+
     require_relative "customization_helper"
     include CustomizationHelper
   end

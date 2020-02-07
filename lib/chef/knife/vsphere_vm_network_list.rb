@@ -4,12 +4,15 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVmNetworklist extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkList < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm network list VMNAME"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

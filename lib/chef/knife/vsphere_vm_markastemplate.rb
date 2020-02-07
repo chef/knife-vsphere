@@ -8,15 +8,18 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Clone an existing template into a new VM, optionally applying a customization specification.
 # usage:
 # knife vsphere vm markastemplate MyVM --folder /templates
 # Vspherevmmarkastemplate extends the Basevspherecommand
 class Chef::Knife::VsphereVmMarkastemplate < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm markastemplate VMNAME"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

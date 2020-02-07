@@ -4,13 +4,16 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Changes network on a certain VM
 # VsphereVmNetworkSet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm network set VMNAME NETWORKNAME"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

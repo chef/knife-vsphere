@@ -3,13 +3,15 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVMexecute extends the Basevspherecommand
 class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
-
   banner "knife vsphere vm execute VMNAME COMMAND ARGS"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   option :exec_user,
     long: "--exec-user USER",

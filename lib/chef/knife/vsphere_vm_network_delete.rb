@@ -4,11 +4,14 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm network delete VMNAME NICNAME"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

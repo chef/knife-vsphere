@@ -5,13 +5,16 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Lists all known VM templates in the configured datacenter
 # VsphereTemplatelist extends the BaseVspherecommand
 class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere template list"
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

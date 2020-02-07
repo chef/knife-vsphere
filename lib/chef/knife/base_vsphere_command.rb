@@ -5,7 +5,6 @@
 #
 
 require "chef/knife"
-require "rbvmomi"
 require "chef/knife/bootstrap"
 
 # Power state on
@@ -22,6 +21,7 @@ class Chef
     # Main knife vsphere that more or less everything in this gem is built off of
     class BaseVsphereCommand < Chef::Knife::Bootstrap
       deps do
+        require "rbvmomi"
         Chef::Knife::Bootstrap.load_deps
         require "base64"
         require "filesize"

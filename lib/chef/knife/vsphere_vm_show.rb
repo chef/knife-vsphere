@@ -3,12 +3,15 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVmShow extends the BaseVspherecommand
 class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
-  banner 'knife vsphere vm show VMNAME QUERY.  See "http://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html" for allowed QUERY values.'
+  banner 'knife vsphere vm show VMNAME QUERY. See "https://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html" for allowed QUERY values.'
+
+  deps do
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 
