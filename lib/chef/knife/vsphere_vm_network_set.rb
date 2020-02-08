@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmNetworkSet < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm network set VMNAME NETWORKNAME"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

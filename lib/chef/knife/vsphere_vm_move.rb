@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm move VMNAME"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

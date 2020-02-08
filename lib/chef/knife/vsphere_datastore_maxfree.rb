@@ -23,6 +23,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereDatastoreMaxfree < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastore maxfree"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   option :regex,
     short: "-r REGEX",
     long: "--regex REGEX",

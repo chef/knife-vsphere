@@ -6,6 +6,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereVlanCreate < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vlan create NAME VID"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   option :switch,

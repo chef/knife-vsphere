@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm vmdk add VMNAME DISK_GB"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

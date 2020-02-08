@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmToolsconfig < Chef::Knife::BaseVsphereCommand
           for available properties and types."
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

@@ -15,6 +15,8 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm wait sysprep VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+
     require_relative "search_helper"
     include SearchHelper
 

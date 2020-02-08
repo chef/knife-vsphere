@@ -9,6 +9,7 @@ class Chef::Knife::VsphereVmNetworkDelete < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm network delete VMNAME NICNAME"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

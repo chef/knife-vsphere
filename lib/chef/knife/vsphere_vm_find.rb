@@ -10,6 +10,7 @@ class Chef::Knife::VsphereVmFind < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm find"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

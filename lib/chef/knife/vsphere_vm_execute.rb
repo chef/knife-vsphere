@@ -9,6 +9,7 @@ class Chef::Knife::VsphereVmExecute < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm execute VMNAME COMMAND ARGS"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

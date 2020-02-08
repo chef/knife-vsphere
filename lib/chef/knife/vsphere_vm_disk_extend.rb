@@ -10,6 +10,7 @@ class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm disk extend VMNAME SIZE. Extends the disk of vm VMNAME to SIZE kilobytes."
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

@@ -12,6 +12,7 @@ class Chef::Knife::VsphereTemplateList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere template list"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

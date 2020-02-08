@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
           for allowed ATTRIBUTE values (any property of type xs:string is supported)."
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

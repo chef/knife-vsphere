@@ -9,6 +9,7 @@ class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm property set VMNAME PROPERTY VALUE. Sets a vApp Property on VMNAME."
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

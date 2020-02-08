@@ -7,6 +7,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereDatastoreFile < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastore file"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   option :local_file,

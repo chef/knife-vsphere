@@ -6,7 +6,7 @@ class Chef::Knife::VspherePoolQuery < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere pool query POOLNAME QUERY. See "https://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.ComputeResource.html" for allowed QUERY values.'
 
   deps do
-    require "rbvmomi"
+    Chef::Knife::BaseVsphereCommand.load_deps
     require "netaddr"
   end
 

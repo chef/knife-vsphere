@@ -12,6 +12,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm delete VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
 

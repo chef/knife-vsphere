@@ -8,6 +8,7 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm cdrom VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end
@@ -69,15 +70,15 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
 
     vm = get_vm_by_name(vmname, get_config(:folder)) || fatal_exit("Could not find #{vmname}")
 
-    cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == RbVmomi::VIM::VirtualCdrom }
+    cdrom_obj = vm.config.hardware.device.find { |hw| hw.class == ::RbVmomi::VIM::VirtualCdrom }
     fatal_exit "Could not find a cd drive" unless cdrom_obj
 
     backing = if get_config(:attach)
-                RbVmomi::VIM::VirtualCdromIsoBackingInfo(
+                ::RbVmomi::VIM::VirtualCdromIsoBackingInfo(
                   fileName: iso_path
                 )
               else
-                RbVmomi::VIM::VirtualCdromRemoteAtapiBackingInfo(deviceName: EMPTY_DEVICE_NAME)
+                ::RbVmomi::VIM::VirtualCdromRemoteAtapiBackingInfo(deviceName: EMPTY_DEVICE_NAME)
               end
 
     vm.ReconfigVM_Task(
@@ -88,14 +89,14 @@ class Chef::Knife::VsphereVmCdrom < Chef::Knife::BaseVsphereCommand
   private
 
   def spec(cd_device, backing)
-    RbVmomi::VIM::VirtualMachineConfigSpec(
+    ::RbVmomi::VIM::VirtualMachineConfigSpec(
       deviceChange: [{
         operation: :edit,
-        device: RbVmomi::VIM::VirtualCdrom(
+        device: ::RbVmomi::VIM::VirtualCdrom(
           backing: backing,
           key: cd_device.key,
           controllerKey: cd_device.controllerKey,
-          connectable: RbVmomi::VIM::VirtualDeviceConnectInfo(
+          connectable: ::RbVmomi::VIM::VirtualDeviceConnectInfo(
             startConnected: get_config(:on_boot) || false,
             connected: get_config(:attach) || false,
             allowGuestControl: true

@@ -10,6 +10,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereFolderList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere folder list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   # Walks though the folders to find something

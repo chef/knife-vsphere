@@ -9,6 +9,7 @@ class Chef::Knife::VsphereVmShow < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere vm show VMNAME QUERY. See "https://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.VirtualMachine.html" for allowed QUERY values.'
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

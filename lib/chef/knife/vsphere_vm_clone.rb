@@ -14,6 +14,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm clone VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
     require "ipaddr"
@@ -21,7 +22,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     require "securerandom"
     require_relative "customization_helper"
     require "chef/json_compat"
-    Chef::Knife::Bootstrap.load_deps
     include CustomizationHelper
   end
 

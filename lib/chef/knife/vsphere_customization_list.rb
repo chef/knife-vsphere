@@ -10,6 +10,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereCustomizationList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere customization list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   # The main run method for customization_list

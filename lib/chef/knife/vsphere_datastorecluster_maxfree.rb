@@ -47,6 +47,10 @@ end
 class Chef::Knife::VsphereDatastoreclusterMaxfree < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastorecluster maxfree"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   option :regex,
     short: "-r REGEX",
     long: "--regex REGEX",

@@ -19,6 +19,7 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm state VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end

@@ -11,6 +11,7 @@ class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm net STATE VMNAME"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
     require_relative "search_helper"
     include SearchHelper
   end
