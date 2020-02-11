@@ -20,6 +20,7 @@ describe Chef::Knife::VsphereVmFind do
   let(:returned_vms) { [ vm1 ] }
 
   before do
+    described_class.load_deps
     expect(subject).to receive(:ui).and_return(ui)
     expect(subject).to receive(:get_all_vm_objects).with(properties: expected_properties).and_return(returned_vms)
   end

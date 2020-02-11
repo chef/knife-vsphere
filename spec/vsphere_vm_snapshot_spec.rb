@@ -9,6 +9,7 @@ describe Chef::Knife::VsphereVmSnapshot do
   subject { described_class.new }
 
   before do
+    described_class.load_deps
     subject.config[:vsphere_pass] = "password"
     subject.config[:vsphere_host] = "host"
   end

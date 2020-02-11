@@ -4,13 +4,17 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # migrate vm to specified resource pool , datastore and host
 class Chef::Knife::VsphereVmMigrate < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   # migrate --resource-pool --dest-host --dest-datastore
   banner "knife vsphere vm migrate VMNAME (options)"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

@@ -8,19 +8,20 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm clone VMNAME (options)"
 
   deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
     require "ipaddr"
     require "netaddr"
     require "securerandom"
     require_relative "customization_helper"
     require "chef/json_compat"
-    Chef::Knife::Bootstrap.load_deps
     include CustomizationHelper
   end
 
@@ -30,9 +31,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   NO_IPS ||= "".freeze
   # a linklayer origin is an actual nic
   ORIGIN_IS_REAL_NIC ||= "linklayer".freeze
-
-  # include Chef::Knife::WinrmBase
-  include SearchHelper
 
   common_options
 
@@ -84,7 +82,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   option :customization_plugin_data,
     long: "--cplugin-data CUST_PLUGIN_DATA",
-    description: "String of data to pass to the plugin.  Use any format you wish."
+    description: "String of data to pass to the plugin. Use any format you wish."
 
   option :customization_vlan,
     long: "--cvlan CUST_VLANS",
@@ -716,7 +714,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
             if @customization_plugin.respond_to?(:data=)
               @customization_plugin.data = cplugin_data
             else
-              abort "Customization plugin has no :data= accessor to receive the --cplugin-data argument.  Define both or neither."
+              abort "Customization plugin has no :data= accessor to receive the --cplugin-data argument. Define both or neither."
             end
           end
         else

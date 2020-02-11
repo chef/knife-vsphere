@@ -3,18 +3,22 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVMPropertySet extends Basevspherecommand
 class Chef::Knife::VsphereVmPropertySet < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
-  banner "knife vsphere vm property set VMNAME PROPERTY VALUE.  Sets a vApp Property on VMNAME."
+  banner "knife vsphere vm property set VMNAME PROPERTY VALUE. Sets a vApp Property on VMNAME."
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 
   option :ovf_environment_transport,
     long: "--ovf-environment-transport STRING",
-    description: "Comma delimited string.  Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo."
+    description: "Comma delimited string. Configures the transports to use for properties. Supported values are: iso and com.vmware.guestInfo."
 
   # The main run method for vm_property_set
   #

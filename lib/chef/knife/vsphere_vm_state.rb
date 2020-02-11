@@ -5,12 +5,10 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Manage power state of a virtual machine
 # VsphereVmState extends the BaseVspherecommand
 class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   # The Different power states that vSphere reports
   POWER_STATES ||= {
     PS_ON => "powered on",
@@ -19,6 +17,12 @@ class Chef::Knife::VsphereVmState < Chef::Knife::BaseVsphereCommand
   }.freeze
 
   banner "knife vsphere vm state VMNAME (options)"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

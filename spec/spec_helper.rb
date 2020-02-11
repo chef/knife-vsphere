@@ -96,6 +96,7 @@ end
 
 RSpec.shared_context "stub_vm_search" do
   before do
+    described_class.load_deps
     allow(subject).to receive(:get_vm_by_name).and_return(vm)
   end
 end

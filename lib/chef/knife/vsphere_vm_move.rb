@@ -4,13 +4,17 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Moves the VM to another folder or datastore
 # VsphereVmMove extends the BaseVspherecommand
 class Chef::Knife::VsphereVmMove < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm move VMNAME"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

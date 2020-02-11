@@ -5,6 +5,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereCpuRatio < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere cpu ratio [CLUSTER] [HOST]"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   # The main run method for cpu_ratio

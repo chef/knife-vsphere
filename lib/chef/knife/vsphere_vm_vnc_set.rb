@@ -4,12 +4,16 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Main class VsphereVMvncset extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm vncset VMNAME"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   option :vnc_port,
     long: "--vnc-port PORT",

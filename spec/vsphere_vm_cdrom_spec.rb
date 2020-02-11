@@ -13,6 +13,7 @@ describe Chef::Knife::VsphereVmCdrom do
   let(:task) { double("Task", wait_for_completion: true) }
 
   before do
+    described_class.load_deps
     allow(devices).to receive(:find).and_return(cd_rom)
     allow(subject).to receive(:find_in_folder).and_return(vm)
     allow(vm).to receive(:config).and_return(config)
@@ -52,7 +53,7 @@ describe Chef::Knife::VsphereVmCdrom do
           expect(op[:operation]).to eq(:edit)
           expect(op[:device].key).to eq("key")
           expect(op[:device].controllerKey).to eq("controllerKey")
-          expect(op[:device].connectable).to be_an_instance_of RbVmomi::VIM::VirtualDeviceConnectInfo
+          expect(op[:device].connectable).to be_an_instance_of ::RbVmomi::VIM::VirtualDeviceConnectInfo
           expect(op[:device].connectable.allowGuestControl).to be true
         end.and_return(task)
         subject.run
@@ -64,7 +65,7 @@ describe Chef::Knife::VsphereVmCdrom do
           spec = args[:spec]
           op = spec.deviceChange.first
 
-          expect(op[:device].backing).to be_an_instance_of RbVmomi::VIM::VirtualCdromIsoBackingInfo
+          expect(op[:device].backing).to be_an_instance_of ::RbVmomi::VIM::VirtualCdromIsoBackingInfo
           expect(op[:device].backing.fileName).to eq("[datastore] iso")
         end.and_return(task)
         subject.run

@@ -9,6 +9,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereVmList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   option :recursive,

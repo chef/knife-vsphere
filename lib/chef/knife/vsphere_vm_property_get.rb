@@ -3,12 +3,16 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVMPropertyget extends the BaseVspherecommand
 class Chef::Knife::VsphereVmPropertyGet < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
-  banner "knife vsphere vm property get VMNAME PROPERTY.  Gets a vApp Property on VMNAME."
+  banner "knife vsphere vm property get VMNAME PROPERTY. Gets a vApp Property on VMNAME."
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

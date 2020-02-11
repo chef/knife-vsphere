@@ -23,6 +23,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereDatastoreList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastore list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   option :list,

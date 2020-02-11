@@ -4,13 +4,18 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Switch VM networking state up/down (on all network interfaces)
 # VsphereVmNet extends the BaseVspherecommand
 class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm net STATE VMNAME"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
+
   common_options
 
   # The main run method for vm_net

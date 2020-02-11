@@ -4,13 +4,17 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # Add a new disk to a virtual machine
 # VsphereVmvmdkadd extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm vmdk add VMNAME DISK_GB"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

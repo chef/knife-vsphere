@@ -3,14 +3,18 @@
 
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 # VsphereVMconfig extends the BaseVspherecommand
 class Chef::Knife::VsphereVmConfig < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm config VMNAME PROPERTY VALUE (PROPERTY VALUE)...
           See \"https://www.vmware.com/support/developer/converter-sdk/conv60_apireference/vim.vm.ConfigSpec.html\"
           for allowed ATTRIBUTE values (any property of type xs:string is supported)."
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   common_options
 

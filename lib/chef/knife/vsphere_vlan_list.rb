@@ -22,6 +22,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereVlanList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vlan list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   # The main run method for vlan_list

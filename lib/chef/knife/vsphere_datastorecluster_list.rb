@@ -56,6 +56,10 @@ end
 class Chef::Knife::VsphereDatastoreclusterList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere datastorecluster list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   def run

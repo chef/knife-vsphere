@@ -7,7 +7,7 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere hosts list"
 
   deps do
-    require "rbvmomi"
+    Chef::Knife::BaseVsphereCommand.load_deps
     require "netaddr"
   end
 

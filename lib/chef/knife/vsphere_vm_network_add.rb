@@ -4,11 +4,15 @@
 #
 require "chef/knife"
 require_relative "base_vsphere_command"
-require_relative "search_helper"
 
 class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
-  include SearchHelper
   banner "knife vsphere vm network add VMNAME NETWORKNAME"
+
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+    require_relative "search_helper"
+    include SearchHelper
+  end
 
   option :adapter_type,
     long: "--adapter-type STRING",

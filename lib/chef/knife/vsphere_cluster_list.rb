@@ -10,6 +10,10 @@ require_relative "base_vsphere_command"
 class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere cluster list"
 
+  deps do
+    Chef::Knife::BaseVsphereCommand.load_deps
+  end
+
   common_options
 
   def traverse_folders(folder)
