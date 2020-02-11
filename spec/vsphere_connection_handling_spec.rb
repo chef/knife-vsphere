@@ -1,5 +1,5 @@
 require "spec_helper"
-require "chef/knife/base_vsphere_command"
+require "chef/knife/helpers/base_vsphere_command"
 
 describe Chef::Knife::BaseVsphereCommand do
   describe "#password" do

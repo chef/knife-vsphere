@@ -3,7 +3,7 @@
 # License:: Apache License, Version 2.0
 #
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Lists all customization specifications in the configured datacenter
 # VsphereCustomizationlist extends the BaseVspherecommand

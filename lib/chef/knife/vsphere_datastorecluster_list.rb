@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 def number_to_human_size(number)
   number = number.to_f

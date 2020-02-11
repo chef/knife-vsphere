@@ -1,5 +1,5 @@
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 class Chef::Knife::VspherePoolShow < Chef::Knife::BaseVsphereCommand
   banner 'knife vsphere pool show POOLNAME QUERY. See "https://pubs.vmware.com/vi3/sdk/ReferenceGuide/vim.ComputeResource.html" for allowed QUERY values.'

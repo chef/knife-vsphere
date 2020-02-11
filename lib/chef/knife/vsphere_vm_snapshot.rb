@@ -3,7 +3,7 @@
 #
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Manage snapshots of a virtual machine
 class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
@@ -11,7 +11,7 @@ class Chef::Knife::VsphereVmSnapshot < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
   end
 

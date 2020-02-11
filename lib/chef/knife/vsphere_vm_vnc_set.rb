@@ -3,7 +3,7 @@
 # License:: Apache License, Version 2.0
 #
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Main class VsphereVMvncset extends the BaseVspherecommand
 class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
@@ -11,7 +11,7 @@ class Chef::Knife::VsphereVmVncset < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
   end
 

@@ -1,37 +1,28 @@
-# Offense count: 1
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'lib/chef/knife/vsphere_vm_vnc_set.rb'
 
-# Offense count: 1
-# Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:
   Exclude:
     - 'lib/chef/knife/vsphere_vm_disk_list.rb'
 
-# Offense count: 1
 Lint/EmptyWhen:
   Exclude:
     - 'lib/chef/knife/vsphere_vm_network_add.rb'
 
-# Offense count: 1
 Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'lib/chef/knife/vsphere_vm_clone.rb'
 
-# Offense count: 3
 Lint/UselessAssignment:
   Exclude:
     - 'lib/chef/knife/vsphere_vm_clone.rb'
     - 'lib/chef/knife/vsphere_vm_disk_extend.rb'
     - 'lib/chef/knife/vsphere_vm_property_set.rb'
 
-# Offense count: 14
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: snake_case, camelCase
 Naming/VariableName:
   Exclude:
-    - 'lib/chef/knife/base_vsphere_command.rb'
+    - 'lib/chef/knife/helpers/base_vsphere_command.rb'
     - 'lib/chef/knife/vsphere_cluster_list.rb'
     - 'lib/chef/knife/vsphere_vm_delete.rb'
     - 'lib/chef/knife/vsphere_vm_vmdk_add.rb'

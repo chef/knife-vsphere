@@ -1,6 +1,6 @@
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Upload or download a file from a datastore
 # VsphereDatastoreFile extends the BaseVspherecommand

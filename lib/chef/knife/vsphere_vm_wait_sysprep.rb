@@ -5,7 +5,7 @@
 #
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Wait for vm finishing Sysprep.
 # usage:
@@ -17,10 +17,10 @@ class Chef::Knife::VsphereVmWaitSysprep < Chef::Knife::BaseVsphereCommand
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
 
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
 
-    require_relative "customization_helper"
+    require_relative "helpers/customization_helper"
     include CustomizationHelper
   end
 
