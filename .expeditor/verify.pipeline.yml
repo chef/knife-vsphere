@@ -6,7 +6,6 @@ expeditor:
 
 steps:
 
-
 - label: run-lint-and-specs-ruby-2.5
   command:
     - .expeditor/run_linux_tests.sh rake
