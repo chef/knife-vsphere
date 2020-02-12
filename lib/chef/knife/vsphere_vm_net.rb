@@ -3,7 +3,7 @@
 # License:: Apache License, Version 2.0
 #
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Switch VM networking state up/down (on all network interfaces)
 # VsphereVmNet extends the BaseVspherecommand
@@ -12,7 +12,7 @@ class Chef::Knife::VsphereVmNet < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
   end
 

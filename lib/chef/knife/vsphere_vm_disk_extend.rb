@@ -4,14 +4,14 @@
 #
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 class Chef::Knife::VsphereVmDiskExtend < Chef::Knife::BaseVsphereCommand
   banner "knife vsphere vm disk extend VMNAME SIZE. Extends the disk of vm VMNAME to SIZE kilobytes."
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
   end
 

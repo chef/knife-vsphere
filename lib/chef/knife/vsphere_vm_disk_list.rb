@@ -1,5 +1,5 @@
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # List the disks attached to a VM
 # VsphereVmdisklist extends the BaseVspherecommand
@@ -8,7 +8,7 @@ class Chef::Knife::VsphereVmDiskList < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
   end
 

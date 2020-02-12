@@ -4,7 +4,7 @@
 #
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Delete a virtual machine from vCenter
 # VsphereVmDelete extends the BaseVspherecommand
@@ -13,7 +13,7 @@ class Chef::Knife::VsphereVmDelete < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
+    require_relative "helpers/search_helper"
     include SearchHelper
 
     # These two are needed for the '--purge' deletion case

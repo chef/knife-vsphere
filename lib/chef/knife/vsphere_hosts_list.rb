@@ -1,5 +1,5 @@
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # list hosts belonging to pool
 # VsphereHostslist extends the BaseVspherecommand

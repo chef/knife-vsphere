@@ -7,7 +7,7 @@
 #
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # VsphereVmClone extends the BaseVspherecommand
 class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
@@ -15,13 +15,15 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require_relative "search_helper"
-    include SearchHelper
     require "ipaddr"
     require "netaddr"
     require "securerandom"
-    require_relative "customization_helper"
     require "chef/json_compat"
+
+    require_relative "helpers/search_helper"
+    include SearchHelper
+
+    require_relative "helpers/customization_helper"
     include CustomizationHelper
   end
 

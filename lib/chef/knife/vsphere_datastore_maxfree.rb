@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE
 
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Gets the data store with the most free space in datacenter
 # VsphereDatastoreMaxfree extends the BaseVspherecommand

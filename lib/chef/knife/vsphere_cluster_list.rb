@@ -4,7 +4,7 @@
 # License:: Apache License, Version 2.0
 #
 require "chef/knife"
-require_relative "base_vsphere_command"
+require_relative "helpers/base_vsphere_command"
 
 # Lists all known clusters in the configured datacenter
 class Chef::Knife::VsphereClusterList < Chef::Knife::BaseVsphereCommand
