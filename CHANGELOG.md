@@ -1,26 +1,23 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.3 -->
-## [v4.1.3](https://github.com/chef/knife-vsphere/tree/v4.1.3) (2020-02-12)
-
-#### Merged Pull Requests
-- Move helpers to their own dir to speedup loading [#499](https://github.com/chef/knife-vsphere/pull/499) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=4.1.1 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Move helpers to their own dir to speedup loading [#499](https://github.com/chef/knife-vsphere/pull/499) ([tas50](https://github.com/tas50)) <!-- 4.1.3 -->
-- Further speedup the plugin by lazy loading deps [#498](https://github.com/chef/knife-vsphere/pull/498) ([tas50](https://github.com/tas50)) <!-- 4.1.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v4.1.3](https://github.com/chef/knife-vsphere/tree/v4.1.3) (2020-02-12)
+
+#### Merged Pull Requests
+- Further speedup the plugin by lazy loading deps [#498](https://github.com/chef/knife-vsphere/pull/498) ([tas50](https://github.com/tas50))
+- Move helpers to their own dir to speedup loading [#499](https://github.com/chef/knife-vsphere/pull/499) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v4.1.1](https://github.com/chef/knife-vsphere/tree/v4.1.1) (2020-01-31)
 
 #### Merged Pull Requests
 - Move around more requires to speed up knife [#497](https://github.com/chef/knife-vsphere/pull/497) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v4.1.0](https://github.com/chef/knife-vsphere/tree/v4.1.0) (2020-01-30)
 
