@@ -1,9 +1,8 @@
 ﻿# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
-[![Build Status](https://travis-ci.org/chef/knife-vsphere.svg?branch=master)](https://travis-ci.org/chef/knife-vsphere)
+[![Build status](https://badge.buildkite.com/b68210c9f6436b2275b9365b0fe9ccdce80bd41a79f62424ac.svg&branch=master)](https://buildkite.com/chef-oss/chef-knife-vsphere-master-verify)
 [![Inline docs](http://inch-ci.org/github/chef/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef/knife-vsphere)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 **Umbrella Project**: [Knife](https://github.com/chef/chef-oss-practices/blob/master/projects/knife.md)
 
