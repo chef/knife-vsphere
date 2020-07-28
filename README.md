@@ -287,7 +287,7 @@ datacenter. Only name is currently displayed.
 
 Clones an existing VM template into a new VM instance, optionally applying an
 existing customization specification.  If customization arguments such as
-`--chost` and `--cdomain` are specified, or if the customization sepcification
+`--chost` and `--cdomain` are specified, or if the customization specification
 fetched from vSphere is considered, a default customization specification will
 be attempted.
 
@@ -607,7 +607,7 @@ mandatory.
 --folder FOLDER             - folder in which to search for VM
 --resource-pool POOL        - destination resource pool
 --dest-host HOST            - destination host (optional)
---dest-datastore DATASTORE  - destination datastore, accesible to HOST
+--dest-datastore DATASTORE  - destination datastore, accessible to HOST
 --priority PRIORITY         - migration priority (optional, default defaultPriority )
 ```
 

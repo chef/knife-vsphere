@@ -111,7 +111,7 @@ RSpec.shared_context "existing_vm" do
   before do
     allow(subject).to receive(:vim_connection).and_return(vim)
     # It is difficult to mock this because the current implementation checks
-    # for explicity RbVmomi class names
+    # for explicitly RbVmomi class names
     allow(subject).to receive(:datacenter).and_return(datacenter)
     allow(subject).to receive(:find_folder).and_return(empty_folder)
   end
@@ -130,7 +130,7 @@ RSpec.shared_context "basic_setup" do
   before do
     allow(subject).to receive(:vim_connection).and_return(vim)
     # It is difficult to mock this because the current implementation checks
-    # for explicity RbVmomi class names
+    # for explicitly RbVmomi class names
     allow(subject).to receive(:datacenter).and_return(datacenter)
     allow(subject).to receive(:find_available_hosts).and_return([host]) if subject.respond_to? :find_available_hosts
 
