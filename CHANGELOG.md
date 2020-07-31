@@ -1,26 +1,23 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.4 -->
+<!-- latest_release -->
+<!-- latest_release -->
+
+<!-- release_rollup -->
+<!-- release_rollup -->
+
+<!-- latest_stable_release -->
 ## [v4.1.4](https://github.com/chef/knife-vsphere/tree/v4.1.4) (2020-07-31)
 
 #### Merged Pull Requests
 - Update rbvmomi requirement from &gt;= 1.8, &lt; 3.0 to &gt;= 1.8, &lt; 4.0 [#501](https://github.com/chef/knife-vsphere/pull/501) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
-<!-- latest_release -->
-
-<!-- release_rollup since=4.1.3 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Update rbvmomi requirement from &gt;= 1.8, &lt; 3.0 to &gt;= 1.8, &lt; 4.0 [#501](https://github.com/chef/knife-vsphere/pull/501) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.4 -->
-<!-- release_rollup -->
-
 <!-- latest_stable_release -->
+
 ## [v4.1.3](https://github.com/chef/knife-vsphere/tree/v4.1.3) (2020-02-12)
 
 #### Merged Pull Requests
 - Further speedup the plugin by lazy loading deps [#498](https://github.com/chef/knife-vsphere/pull/498) ([tas50](https://github.com/tas50))
 - Move helpers to their own dir to speedup loading [#499](https://github.com/chef/knife-vsphere/pull/499) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v4.1.1](https://github.com/chef/knife-vsphere/tree/v4.1.1) (2020-01-31)
 
