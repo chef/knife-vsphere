@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 4.1.5 -->
+## [v4.1.5](https://github.com/chef/knife-vsphere/tree/v4.1.5) (2020-08-06)
+
+#### Merged Pull Requests
+- Fix minor spelling mistakes [#500](https://github.com/chef/knife-vsphere/pull/500) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=4.1.4 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Fix minor spelling mistakes [#500](https://github.com/chef/knife-vsphere/pull/500) ([tas50](https://github.com/tas50)) <!-- 4.1.5 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
