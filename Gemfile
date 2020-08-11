@@ -5,11 +5,15 @@ gemspec
 group :debug do
   gem "pry"
   gem "pry-byebug"
-  gem "pry-stack_explorer"
+  gem "pry-stack_explorer", "~> 0.4.0" # supports Ruby < 2.6
 end
 
 group :test do
   gem "chefstyle", "1.2.1"
+  if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6")
+    gem "chef-zero", "~> 14"
+    gem "chef", "~> 15"
+  end
   gem "rake"
   gem "rspec", "~> 3.0"
 end
