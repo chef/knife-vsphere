@@ -15,9 +15,9 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require "ipaddr"
-    require "netaddr"
-    require "securerandom"
+    require "ipaddr" unless defined?(IPAddr)
+    require "netaddr" unless defined?(NetAddr)
+    require "securerandom" unless defined?(SecureRandom)
     require "chef/json_compat"
 
     require_relative "helpers/search_helper"

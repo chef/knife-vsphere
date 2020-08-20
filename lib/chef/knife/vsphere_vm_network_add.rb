@@ -25,7 +25,7 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     required: false
 
   deps do
-    require "netaddr"
+    require "netaddr" unless defined?(NetAddr)
   end
 
   common_options
