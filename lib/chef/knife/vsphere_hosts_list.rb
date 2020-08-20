@@ -8,7 +8,7 @@ class Chef::Knife::VsphereHostsList < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require "netaddr"
+    require "netaddr" unless defined?(NetAddr)
   end
 
   common_options

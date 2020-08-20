@@ -23,9 +23,9 @@ class Chef
       deps do
         require "rbvmomi"
         Chef::Knife::Bootstrap.load_deps
-        require "base64"
+        require "base64" unless defined?(Base64)
         require "filesize"
-        require "socket"
+        require "socket" unless defined?(Socket)
         require "net/ssh/multi"
         require "readline"
         require "chef/json_compat"
