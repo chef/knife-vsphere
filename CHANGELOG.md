@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.6 -->
-## [v4.1.6](https://github.com/chef/knife-vsphere/tree/v4.1.6) (2020-08-11)
+<!-- latest_release 4.1.7 -->
+## [v4.1.7](https://github.com/chef/knife-vsphere/tree/v4.1.7) (2020-08-20)
 
 #### Merged Pull Requests
-- Update chefstyle requirement from = 1.2.0 to 1.2.1 [#502](https://github.com/chef/knife-vsphere/pull/502) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Optimize our requires [#503](https://github.com/chef/knife-vsphere/pull/503) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=4.1.4 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Optimize our requires [#503](https://github.com/chef/knife-vsphere/pull/503) ([tas50](https://github.com/tas50)) <!-- 4.1.7 -->
 - Update chefstyle requirement from = 1.2.0 to 1.2.1 [#502](https://github.com/chef/knife-vsphere/pull/502) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.6 -->
 - Fix minor spelling mistakes [#500](https://github.com/chef/knife-vsphere/pull/500) ([tas50](https://github.com/tas50)) <!-- 4.1.5 -->
 <!-- release_rollup -->
