@@ -9,7 +9,7 @@ group :debug do
 end
 
 group :test do
-  gem "chefstyle", "1.2.1"
+  gem "chefstyle", "1.3.2"
   if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6")
     gem "chef-zero", "~> 14"
     gem "chef", "~> 15"
