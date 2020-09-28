@@ -678,11 +678,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         ident = RbVmomi::VIM.CustomizationLinuxPrep
         ident.hostName = RbVmomi::VIM.CustomizationFixedName(name: hostname)
 
-        ident.domain = if get_config(:customization_domain)
-                         get_config(:customization_domain)
-                       else
-                         ""
-                       end
+        ident.domain = (get_config(:customization_domain) || "")
         cust_spec.identity = ident
       else
         ui.error("Customization only supports Linux and Windows currently.")

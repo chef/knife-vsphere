@@ -216,7 +216,7 @@ class Chef::Knife::VsphereVmVmdkAdd < Chef::Knife::BaseVsphereCommand
     end
 
     # ensure we don't try to add the controllers SCSI ID
-    new_unit_number = available_unit_numbers.sort[0]
+    new_unit_number = available_unit_numbers.min
     puts "using SCSI ID #{new_unit_number}"
 
     vmdk_backing = RbVmomi::VIM::VirtualDiskFlatVer2BackingInfo(
