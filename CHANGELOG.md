@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.9 -->
-## [v4.1.9](https://github.com/chef/knife-vsphere/tree/v4.1.9) (2021-03-25)
+<!-- latest_release 4.1.10 -->
+## [v4.1.10](https://github.com/chef/knife-vsphere/tree/v4.1.10) (2021-03-25)
 
 #### Merged Pull Requests
-- Fix password prompting [#509](https://github.com/chef/knife-vsphere/pull/509) ([marcparadise](https://github.com/marcparadise))
+- Update chefstyle requirement from 1.3.2 to 1.4.2 [#506](https://github.com/chef/knife-vsphere/pull/506) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=4.1.7 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Update chefstyle requirement from 1.3.2 to 1.4.2 [#506](https://github.com/chef/knife-vsphere/pull/506) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.10 -->
 - Fix password prompting [#509](https://github.com/chef/knife-vsphere/pull/509) ([marcparadise](https://github.com/marcparadise)) <!-- 4.1.9 -->
 - Update chefstyle requirement from 1.2.1 to 1.3.2 [#504](https://github.com/chef/knife-vsphere/pull/504) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.8 -->
 <!-- release_rollup -->
