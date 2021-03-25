@@ -122,7 +122,7 @@ class Chef
       end
 
       def get_password_from_stdin
-        @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
+        @password ||= ui.ask("Enter your password: ") { |q| q.echo(false) }
       end
 
       def traverse_folders_for_pools(folder)
