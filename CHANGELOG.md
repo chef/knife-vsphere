@@ -1,29 +1,26 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.10 -->
-## [v4.1.10](https://github.com/chef/knife-vsphere/tree/v4.1.10) (2021-03-25)
-
-#### Merged Pull Requests
-- Update chefstyle requirement from 1.3.2 to 1.4.2 [#506](https://github.com/chef/knife-vsphere/pull/506) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=4.1.7 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Update chefstyle requirement from 1.3.2 to 1.4.2 [#506](https://github.com/chef/knife-vsphere/pull/506) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.10 -->
-- Fix password prompting [#509](https://github.com/chef/knife-vsphere/pull/509) ([marcparadise](https://github.com/marcparadise)) <!-- 4.1.9 -->
-- Update chefstyle requirement from 1.2.1 to 1.3.2 [#504](https://github.com/chef/knife-vsphere/pull/504) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.8 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v4.1.10](https://github.com/chef/knife-vsphere/tree/v4.1.10) (2021-03-25)
+
+#### Merged Pull Requests
+- Update chefstyle requirement from 1.2.1 to 1.3.2 [#504](https://github.com/chef/knife-vsphere/pull/504) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Fix password prompting [#509](https://github.com/chef/knife-vsphere/pull/509) ([marcparadise](https://github.com/marcparadise))
+- Update chefstyle requirement from 1.3.2 to 1.4.2 [#506](https://github.com/chef/knife-vsphere/pull/506) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+<!-- latest_stable_release -->
+
 ## [v4.1.7](https://github.com/chef/knife-vsphere/tree/v4.1.7) (2020-08-21)
 
 #### Merged Pull Requests
 - Fix minor spelling mistakes [#500](https://github.com/chef/knife-vsphere/pull/500) ([tas50](https://github.com/tas50))
 - Update chefstyle requirement from = 1.2.0 to 1.2.1 [#502](https://github.com/chef/knife-vsphere/pull/502) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Optimize our requires [#503](https://github.com/chef/knife-vsphere/pull/503) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v4.1.4](https://github.com/chef/knife-vsphere/tree/v4.1.4) (2020-07-31)
 
