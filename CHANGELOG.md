@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 4.1.13 -->
-## [v4.1.13](https://github.com/chef/knife-vsphere/tree/v4.1.13) (2021-06-25)
+<!-- latest_release 4.1.14 -->
+## [v4.1.14](https://github.com/chef/knife-vsphere/tree/v4.1.14) (2021-06-25)
 
 #### Merged Pull Requests
-- Upgrade to GitHub-native Dependabot [#512](https://github.com/chef/knife-vsphere/pull/512) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update chefstyle requirement from 1.7.5 to 2.0.5 [#515](https://github.com/chef/knife-vsphere/pull/515) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=4.1.10 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Update chefstyle requirement from 1.7.5 to 2.0.5 [#515](https://github.com/chef/knife-vsphere/pull/515) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.14 -->
 - Upgrade to GitHub-native Dependabot [#512](https://github.com/chef/knife-vsphere/pull/512) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.13 -->
 - Update chefstyle requirement from 1.7.4 to 1.7.5 [#511](https://github.com/chef/knife-vsphere/pull/511) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.12 -->
 - Update chefstyle requirement from 1.4.2 to 1.7.4 [#510](https://github.com/chef/knife-vsphere/pull/510) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 4.1.11 -->
