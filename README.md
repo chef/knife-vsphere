@@ -22,23 +22,12 @@ Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
 ## Installation
 
-If you're using [ChefDK](https://downloads.chef.io/chef-dk/), install the
-Gem:
+This gem ships as part of Chef Workstation so the easiest way to get started is to install Chef Workstation
 
-```bash
-$ chef gem install knife-vsphere
-```
-
-This plugin is distributed as a Ruby Gem. To install it, run:
-
-```bash
-$ gem install knife-vsphere
-```
-
-If you're using bundler as part of a project, add Chef and `knife-vsphere` to your `Gemfile`:
+If you're using bundler as part of a project, add `knife` and `knife-vsphere` to your `Gemfile`:
 
 ```ruby
-gem 'chef'
+gem 'knife'
 gem 'knife-vsphere
 ```
 

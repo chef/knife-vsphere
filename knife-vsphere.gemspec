@@ -9,12 +9,12 @@ Gem::Specification.new do |s|
   s.description = "VMware vSphere support for Chef Infra's Knife command"
   s.email = "ezra@cpan.org"
   s.files = Dir["lib/**/*"] + %w{LICENSE}
-  s.required_ruby_version = ">= 2.5"
+  s.required_ruby_version = ">= 2.7"
   s.homepage = "https://github.com/chef/knife-vsphere"
   s.license = "Apache-2.0"
-  s.add_dependency "netaddr", ["~> 1.5"]
+  s.add_dependency "netaddr", "~> 1.5"
   s.add_dependency "rbvmomi", ">= 1.8", "< 4.0"
   s.add_dependency "filesize", ">= 0.1.1", "< 0.3.0"
-  s.add_dependency "chef-vault", [">= 2.6.0"]
-  s.add_dependency "chef", ">= 15.1"
+  s.add_dependency "chef-vault", ">= 2.6"
+  s.add_dependency "knife", ">= 17"
 end
