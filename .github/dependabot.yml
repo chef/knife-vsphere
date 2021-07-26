@@ -7,7 +7,3 @@ updates:
     time: "06:00"
     timezone: America/Los_Angeles
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: netaddr
-    versions:
-    - ">= 2.a, < 3"
