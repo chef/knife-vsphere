@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 5.0.1 -->
+## [v5.0.1](https://github.com/chef/knife-vsphere/tree/v5.0.1) (2021-09-30)
+
+#### Merged Pull Requests
+- Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=5.0.0 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 5.0.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
