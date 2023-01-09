@@ -1,21 +1,19 @@
 # knife-vsphere changelog
 
-<!-- latest_release 5.1.0 -->
-## [v5.1.0](https://github.com/chef/knife-vsphere/tree/v5.1.0) (2023-01-09)
-
-#### Merged Pull Requests
-- Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=5.0.0 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps)) <!-- 5.1.0 -->
-- Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 5.0.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v5.1.0](https://github.com/chef/knife-vsphere/tree/v5.1.0) (2023-01-09)
+
+#### Merged Pull Requests
+- Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps))
+<!-- latest_stable_release -->
+
 ## [v5.0.0](https://github.com/chef/knife-vsphere/tree/v5.0.0) (2021-07-26)
 
 #### Merged Pull Requests
@@ -24,7 +22,6 @@
 - Upgrade to GitHub-native Dependabot [#512](https://github.com/chef/knife-vsphere/pull/512) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Update chefstyle requirement from 1.7.5 to 2.0.5 [#515](https://github.com/chef/knife-vsphere/pull/515) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Require knife 17 instead of chef 15+ [#519](https://github.com/chef/knife-vsphere/pull/519) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v4.1.10](https://github.com/chef/knife-vsphere/tree/v4.1.10) (2021-03-25)
 
