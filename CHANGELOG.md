@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 5.0.1 -->
-## [v5.0.1](https://github.com/chef/knife-vsphere/tree/v5.0.1) (2021-09-30)
+<!-- latest_release 5.1.0 -->
+## [v5.1.0](https://github.com/chef/knife-vsphere/tree/v5.1.0) (2023-01-09)
 
 #### Merged Pull Requests
-- Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
 <!-- release_rollup since=5.0.0 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps)) <!-- 5.1.0 -->
 - Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 5.0.1 -->
 <!-- release_rollup -->
 
