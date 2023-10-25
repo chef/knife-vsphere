@@ -24,10 +24,6 @@ class Chef::Knife::VsphereVmNetworkAdd < Chef::Knife::BaseVsphereCommand
     description: "Adapter MAC address eg. AA:BB:CC:DD:EE:FF",
     required: false
 
-  deps do
-    require "netaddr" unless defined?(NetAddr)
-  end
-
   common_options
 
   def run

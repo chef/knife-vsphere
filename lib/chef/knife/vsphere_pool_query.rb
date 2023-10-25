@@ -7,7 +7,6 @@ class Chef::Knife::VspherePoolQuery < Chef::Knife::BaseVsphereCommand
 
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
-    require "netaddr" unless defined?(NetAddr)
   end
 
   common_options
