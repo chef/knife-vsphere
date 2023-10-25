@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = "VMware vSphere support for Chef Infra's Knife command"
   s.email = "ezra@cpan.org"
   s.files = Dir["lib/**/*"] + %w{LICENSE}
-  s.required_ruby_version = ">= 2.7"
+  s.required_ruby_version = ">= 3.1"
   s.homepage = "https://github.com/chef/knife-vsphere"
   s.license = "Apache-2.0"
   s.add_dependency "rbvmomi2", ">= 3.5.0", "< 4.0"
