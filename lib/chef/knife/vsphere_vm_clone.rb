@@ -16,7 +16,6 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   deps do
     Chef::Knife::BaseVsphereCommand.load_deps
     require "ipaddr" unless defined?(IPAddr)
-    require "netaddr" unless defined?(NetAddr)
     require "securerandom" unless defined?(SecureRandom)
     require "chef/json_compat"
 
@@ -742,18 +741,20 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     if ip.nil? || ip.casecmp("dhcp") == 0
       settings.ip = RbVmomi::VIM::CustomizationDhcpIpGenerator.new
     else
-      cidr_ip = NetAddr::CIDR.create(ip)
-      settings.ip = RbVmomi::VIM::CustomizationFixedIp(ipAddress: cidr_ip.ip)
-      settings.subnetMask = cidr_ip.netmask_ext
+      ip_addr = IPAddr.new(ip)
+      ip_string, _length = ip.split("/")
+      settings.ip = RbVmomi::VIM::CustomizationFixedIp(ipAddress: ip_string)
+      settings.subnetMask = ip_addr.netmask
 
       # TODO: want to confirm gw/ip are in same subnet?
       # Only set gateway on first IP.
       if config[:customization_ips].split(",").first == ip
         if gw.nil?
-          settings.gateway = [cidr_ip.network(Objectify: true).next_ip]
+          next_ip = IPAddr.new(ip_addr.to_i + 1, Socket::AF_INET).to_s
+          settings.gateway = [next_ip]
         else
-          gw_cidr = NetAddr::CIDR.create(gw)
-          settings.gateway = [gw_cidr.ip]
+          gw_string, _length = gw.split("/")
+          settings.gateway = [gw_string]
         end
       end
     end
