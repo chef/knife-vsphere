@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 5.2.0 -->
+## [v5.2.0](https://github.com/chef/knife-vsphere/tree/v5.2.0) (2023-11-02)
+
+#### Merged Pull Requests
+- [CVE] Removed the netaddr gem [#535](https://github.com/chef/knife-vsphere/pull/535) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=5.1.0 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- [CVE] Removed the netaddr gem [#535](https://github.com/chef/knife-vsphere/pull/535) ([ashiqueps](https://github.com/ashiqueps)) <!-- 5.2.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
