@@ -1,26 +1,23 @@
 # knife-vsphere changelog
 
-<!-- latest_release 5.2.0 -->
-## [v5.2.0](https://github.com/chef/knife-vsphere/tree/v5.2.0) (2023-11-02)
-
-#### Merged Pull Requests
-- [CVE] Removed the netaddr gem [#535](https://github.com/chef/knife-vsphere/pull/535) ([ashiqueps](https://github.com/ashiqueps))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=5.1.0 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- [CVE] Removed the netaddr gem [#535](https://github.com/chef/knife-vsphere/pull/535) ([ashiqueps](https://github.com/ashiqueps)) <!-- 5.2.0 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v5.2.0](https://github.com/chef/knife-vsphere/tree/v5.2.0) (2023-11-06)
+
+#### Merged Pull Requests
+- [CVE] Removed the netaddr gem [#535](https://github.com/chef/knife-vsphere/pull/535) ([ashiqueps](https://github.com/ashiqueps))
+<!-- latest_stable_release -->
+
 ## [v5.1.0](https://github.com/chef/knife-vsphere/tree/v5.1.0) (2023-01-09)
 
 #### Merged Pull Requests
 - Update chefstyle requirement from 2.0.5 to 2.1.0 [#524](https://github.com/chef/knife-vsphere/pull/524) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Use rbvmomi2 gem [#532](https://github.com/chef/knife-vsphere/pull/532) ([ashiqueps](https://github.com/ashiqueps))
-<!-- latest_stable_release -->
 
 ## [v5.0.0](https://github.com/chef/knife-vsphere/tree/v5.0.0) (2021-07-26)
 
