@@ -1,16 +1,8 @@
-﻿# knife vSphere
+# knife vSphere
 
 [![Gem Version](https://badge.fury.io/rb/knife-vsphere.svg)](https://rubygems.org/gems/knife-vsphere)
 [![Build status](https://badge.buildkite.com/b68210c9f6436b2275b9365b0fe9ccdce80bd41a79f62424ac.svg?branch=master)](https://buildkite.com/chef-oss/chef-knife-vsphere-master-verify)
 [![Inline docs](http://inch-ci.org/github/chef/knife-vsphere.svg?branch=master)](http://inch-ci.org/github/chef/knife-vsphere)
-
-**Umbrella Project**: [Knife](https://github.com/chef/chef-oss-practices/blob/master/projects/knife.md)
-
- **Project State**: [Active](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#active)
-
- **Issues [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
-
- **Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
 
 Please refer to the [CHANGELOG](CHANGELOG) for version history and known issues.
 
