@@ -784,7 +784,6 @@ Authors
 ```
 Copyright
   Copyright © 2011-2013 Ezra Pagel
-  Copyright © 2015-2017 Chef Software, Inc
 ```
 
 ```
@@ -810,3 +809,6 @@ information on Dell SecureWorks security services please browse to
 http://www.secureworks.com
 
 © Dell SecureWorks 2015
+
+# Copyright
+See [COPYRIGHT.md](./COPYRIGHT.md).
