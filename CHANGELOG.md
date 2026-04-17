@@ -1,9 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release -->
+<!-- latest_release 5.2.1 -->
+## [v5.2.1](https://github.com/chef/knife-vsphere/tree/v5.2.1) (2026-04-17)
+
+#### Merged Pull Requests
+- CHEF-28563 - Create SECURITY.md file with standard template [#541](https://github.com/chef/knife-vsphere/pull/541) ([cgunasree08](https://github.com/cgunasree08))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=5.2.0 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- CHEF-28563 - Create SECURITY.md file with standard template [#541](https://github.com/chef/knife-vsphere/pull/541) ([cgunasree08](https://github.com/cgunasree08)) <!-- 5.2.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
