@@ -1,3 +1,5 @@
+#
+# Copyright:: Copyright (c) 2012-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Some helpers for faster searching of the inventory
 module SearchHelper
   # Retrieves all the VM objects and returns their ObjectContents

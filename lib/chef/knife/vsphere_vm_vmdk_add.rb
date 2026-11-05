@@ -1,4 +1,5 @@
 #
+# Copyright:: Copyright (c) 2012-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Author:: Brian Flad (<bflad417@gmail.com>)
 # License:: Apache License, Version 2.0
 #
