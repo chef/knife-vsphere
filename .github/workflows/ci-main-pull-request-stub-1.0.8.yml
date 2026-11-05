@@ -7,9 +7,9 @@ name: CI Pull Request on Main Branch
 
 on:
   pull_request:
-    branches: [ main, release/** ]
+    branches: [ main, sanjain/CHEF-32144/ruby_3.4, release/** ]
   push:
-    branches: [ main, release/** ]
+    branches: [ main, sanjain/CHEF-32144/ruby_3.4,release/** ]
 
   workflow_dispatch:
 
