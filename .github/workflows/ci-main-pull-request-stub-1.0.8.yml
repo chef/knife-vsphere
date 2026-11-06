@@ -81,7 +81,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   call-ci-main-pr-check-pipeline:
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@fix/sbom-ruby-version-3.4
     needs: detect-custom-metadata
     secrets: inherit
     permissions:
