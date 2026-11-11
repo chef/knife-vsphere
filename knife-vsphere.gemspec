@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.license = "Apache-2.0"
   s.add_dependency "rbvmomi2", ">= 3.5.0", "< 4.0"
   s.add_dependency "filesize", ">= 0.1.1", "< 0.3.0"
+  s.add_dependency "chef", ">= 18.10"
   s.add_dependency "chef-vault", ">= 2.6"
   s.add_dependency "knife", ">= 17"
 end

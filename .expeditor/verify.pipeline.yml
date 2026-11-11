@@ -4,6 +4,9 @@ expeditor:
     - vendor
   defaults:
     buildkite:
+      retry:
+        automatic:
+          limit: 1
       timeout_in_minutes: 30
 
 steps:
@@ -13,7 +16,17 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:3.1-buster
+        # ruby:3.1-buster (Debian 10) ships glibc 2.28, which is too old for
+        # precompiled native gems (e.g. nokogiri >= 1.15). Use bookworm instead.
+        image: ruby:3.1-bookworm
+
+- label: run-lint-and-specs-ruby-3.4
+  command:
+    - .expeditor/run_linux_tests.sh rake
+  expeditor:
+    executor:
+      docker:
+        image: ruby:3.4-bookworm
 
 - label: run-specs-windows-ruby-3.1
   command:
@@ -26,3 +39,15 @@ steps:
       docker:
         host_os: windows
         image: rubydistros/windows-2019:3.1
+
+- label: run-specs-windows-ruby-3.4
+  command:
+    - bundle config --local path vendor/bundle
+    - bundle config set --local without docs debug
+    - bundle install --jobs=7 --retry=3
+    - bundle exec rake
+  expeditor:
+    executor:
+      docker:
+        host_os: windows
+        image: rubydistros/windows-2019:3.4
