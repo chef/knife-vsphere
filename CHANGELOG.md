@@ -1,16 +1,17 @@
 # knife-vsphere changelog
 
-<!-- latest_release 5.2.1 -->
-## [v5.2.1](https://github.com/chef/knife-vsphere/tree/v5.2.1) (2026-04-17)
+<!-- latest_release 5.2.2 -->
+## [v5.2.2](https://github.com/chef/knife-vsphere/tree/v5.2.2) (2026-11-11)
 
 #### Merged Pull Requests
-- CHEF-28563 - Create SECURITY.md file with standard template [#541](https://github.com/chef/knife-vsphere/pull/541) ([cgunasree08](https://github.com/cgunasree08))
+- CHEF-32145 - Add Ruby 3.4 to Expeditor verify pipeline [#543](https://github.com/chef/knife-vsphere/pull/543) ([sanjain-progress](https://github.com/sanjain-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=5.2.0 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- CHEF-32145 - Add Ruby 3.4 to Expeditor verify pipeline [#543](https://github.com/chef/knife-vsphere/pull/543) ([sanjain-progress](https://github.com/sanjain-progress)) <!-- 5.2.2 -->
 - CHEF-28563 - Create SECURITY.md file with standard template [#541](https://github.com/chef/knife-vsphere/pull/541) ([cgunasree08](https://github.com/cgunasree08)) <!-- 5.2.1 -->
 <!-- release_rollup -->
 
