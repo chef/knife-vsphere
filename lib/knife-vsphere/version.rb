@@ -1,5 +1,5 @@
 # The main knife-vsphere module.
 module KnifeVsphere
   # The version of this gem.
-  VERSION = "5.2.2".freeze
+  VERSION = "5.2.3".freeze
 end
