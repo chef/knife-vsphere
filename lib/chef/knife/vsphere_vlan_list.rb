@@ -1,3 +1,5 @@
+#
+# Copyright:: Copyright (c) 2012-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Author: Jesse Campbell
 #
 # Permission to use, copy, modify, and/or distribute this software for
