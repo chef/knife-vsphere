@@ -227,6 +227,8 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
     winrm_warn_no_ssl_verification
     warn_on_short_session_timeout
 
+    fetch_license if get_config(:bootstrap) && respond_to?(:fetch_license, true)
+
     plugin_create_instance!
 
     return unless get_config(:bootstrap)
