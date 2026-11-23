@@ -93,6 +93,16 @@ describe Chef::Knife::VsphereVmClone do
     end
   end
 
+  if Chef::Knife::Bootstrap.method_defined?(:fetch_license) || Chef::Knife::Bootstrap.private_method_defined?(:fetch_license)
+    it "does not fetch an installer license when cloning without bootstrapping" do
+      subject.name_args = ["foo"]
+      subject.config[:source_vm] = "my_template"
+      expect(subject).not_to receive(:fetch_license)
+      expect(subject).to receive(:plugin_create_instance!)
+      subject.run
+    end
+  end
+
   context "customizing the mac" do
     before do
       allow(subject).to receive(:vim_connection).and_return(vim)
@@ -373,10 +383,51 @@ describe Chef::Knife::VsphereVmClone do
 
     before do
       subject.config[:bootstrap] = true
+      allow(subject).to receive(:fetch_license) if subject.respond_to?(:fetch_license, true)
       allow(subject).to receive(:get_vm_by_name).with("foo", "").and_return(guest)
       allow(guest).to receive(:PowerOnVM_Task).and_return(task)
       allow(guest).to receive(:guest).and_return(guest)
       allow(subject).to receive(:tcp_test_ssh).with("foo.bar", 22).and_return(true) # cheat
+    end
+
+    if Chef::Knife::Bootstrap.method_defined?(:fetch_license) || Chef::Knife::Bootstrap.private_method_defined?(:fetch_license)
+      context "installer license" do
+        before do
+          subject.config[:fqdn] = "foo.bar"
+          allow(subject).to receive(:fetch_license).and_call_original
+        end
+
+        it "sets the installer URL before cloning and rendering the bootstrap" do
+          license = double("License", install_sh_url: "https://example.test/install.sh?license_id=test",
+            license_key: "test", omnitruck_url: "https://example.test/%s", license_type: "trial")
+          allow(subject).to receive(:connection).and_return(double("Connection", windows?: false))
+          allow(ChefLicensing::Config).to receive(:require_license_for).and_yield
+          allow(Chef::Utils::LicensingHandler).to receive(:validate!).and_return(license)
+          expect(template).to receive(:CloneVM_Task) do
+            expect(subject.config[:license_url]).to eq("https://example.test/install.sh?license_id=test")
+            task
+          end
+          expect(subject).to receive(:render_template).and_wrap_original do |original, *args|
+            content = original.call(*args)
+            expect(content).to include('install_sh="https://example.test/install.sh?license_id=test"')
+            content
+          end
+          subject.run
+        end
+
+        it "stops before cloning if license setup fails" do
+          allow(subject).to receive(:fetch_license).and_raise("license setup failed")
+          expect(subject).not_to receive(:plugin_create_instance!)
+          expect { subject.run }.to raise_error("license setup failed")
+        end
+
+        it "does not fetch a license when a custom bootstrap URL is provided" do
+          subject.config[:bootstrap_url] = "https://example.test/custom-install.sh"
+          expect(Chef::Utils::LicensingHandler).not_to receive(:validate!)
+          expect(template).to receive(:CloneVM_Task).and_return(task)
+          subject.run
+        end
+      end
     end
 
     context "with an fqdn" do
