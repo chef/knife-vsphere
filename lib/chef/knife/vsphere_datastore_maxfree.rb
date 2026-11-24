@@ -1,3 +1,5 @@
+#
+# Copyright:: Copyright (c) 2012-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Copyright (C) 2012, SCM Ventures AB
 # Author: Ian Delahorne <ian@scmventures.se>
 #
